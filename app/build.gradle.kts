@@ -65,10 +65,27 @@ android {
 dependencies {
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib:${Versions.kotlin}")
+    val coroutinesVersion = "1.4.1"
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
+
     implementation("androidx.core:core-ktx:1.6.0")
     implementation("androidx.appcompat:appcompat:1.3.1")
     implementation("com.google.android.material:material:1.4.0")
     implementation("androidx.constraintlayout:constraintlayout:2.0.4")
+
+    val mobiusVersion = "1.5.3"
+    implementation("com.spotify.mobius:mobius-core:$mobiusVersion")
+    implementation("com.spotify.mobius:mobius-android:$mobiusVersion")
+    implementation("com.spotify.mobius:mobius-extras:$mobiusVersion")
+    debugImplementation("org.slf4j:slf4j-api:1.7.30")
+    debugImplementation("uk.uuid.slf4j:slf4j-android:1.7.30-0")
+
+    implementation("com.hannesdorfmann:adapterdelegates4-kotlin-dsl-viewbinding:4.3.0")
+
+    implementation("com.github.terrakok:cicerone:7.1")
+
+    implementation("com.elvishew:xlog:1.10.1")
 
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
 
