@@ -29,7 +29,7 @@ class ControllerFragmentDelegate<VM, M : Parcelable, E, F>(
     private val initialState: Init<M, F>,
     private val defaultStateProvider: () -> M,
     private val modelMapper: (M) -> VM,
-    private val render: ViewModelRender<VM>
+    private val render: ViewModelRender<VM>?
 ) : SimpleFragmentDelegate(),
     Connectable<VM, E>,
     EventSender<E> {
@@ -64,7 +64,7 @@ class ControllerFragmentDelegate<VM, M : Parcelable, E, F>(
         fragment: Fragment,
         savedInstanceState: Bundle?
     ) {
-        render.renderViewModel(
+        render?.renderViewModel(
             getDefaultViewModel(
                 savedInstanceState
             )
@@ -121,7 +121,7 @@ class ControllerFragmentDelegate<VM, M : Parcelable, E, F>(
 
         return object : Connection<VM> {
             override fun accept(value: VM) {
-                render.renderViewModel(value)
+                render?.renderViewModel(value)
             }
 
             override fun dispose() {

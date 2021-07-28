@@ -83,13 +83,9 @@ abstract class RouterFragment :
     }
 
     override fun navigateTo(
-        screen: Screen,
-        clearContainer: Boolean
+        screen: Screen
     ) {
-        router.navigateTo(
-            screen,
-            clearContainer
-        )
+        router.navigateTo(screen)
     }
 
     override fun newRootScreen(screen: Screen) {
@@ -101,23 +97,15 @@ abstract class RouterFragment :
     }
 
     override fun newChain(
-        vararg screens: Screen,
-        clearContainer: Boolean
+        vararg screens: Screen
     ) {
-        router.newChain(
-            *screens,
-            clearContainer = clearContainer
-        )
+        router.newChain(*screens)
     }
 
     override fun newRootChain(
-        vararg screens: Screen,
-        clearContainer: Boolean
+        vararg screens: Screen
     ) {
-        router.newRootChain(
-            *screens,
-            clearContainer = clearContainer
-        )
+        router.newRootChain(*screens)
     }
 
     override fun finishChain() {

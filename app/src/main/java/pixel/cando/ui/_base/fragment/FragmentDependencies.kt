@@ -14,12 +14,10 @@ inline fun <reified L : Any> Fragment.findImplementation(): L? {
 fun <L : Any> Fragment.findImplementation(klass: Class<L>): L? {
     val activity = this.activity
     val parentFragment = this.parentFragment
-    val targetFragment = this.targetFragment
 
     return when {
-        klass.isInstance(parentFragment) -> parentFragment as L
-        klass.isInstance(targetFragment) -> targetFragment as L
-        klass.isInstance(activity) && parentFragment == null -> activity as L
+        klass.isInstance(parentFragment) -> klass.cast(parentFragment)
+        klass.isInstance(activity) && parentFragment == null -> klass.cast(activity)
         else -> parentFragment?.findImplementation(klass)
     }
 }

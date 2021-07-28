@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     kotlin("android")
     id("kotlin-parcelize")
+    kotlin("kapt")
 }
 
 android {
@@ -65,7 +66,7 @@ android {
 dependencies {
 
     implementation("org.jetbrains.kotlin:kotlin-stdlib:${Versions.kotlin}")
-    val coroutinesVersion = "1.4.1"
+    val coroutinesVersion = "1.5.1"
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$coroutinesVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-android:$coroutinesVersion")
 
@@ -84,6 +85,15 @@ dependencies {
     implementation("com.hannesdorfmann:adapterdelegates4-kotlin-dsl-viewbinding:4.3.0")
 
     implementation("com.github.terrakok:cicerone:7.1")
+
+    val retrofitVersion = "2.9.0"
+    implementation("com.squareup.retrofit2:retrofit:$retrofitVersion")
+    implementation("com.squareup.retrofit2:converter-moshi:$retrofitVersion")
+    implementation("com.squareup.okhttp3:logging-interceptor:4.9.1")
+
+    val moshiVersion = "1.12.0"
+    implementation("com.squareup.moshi:moshi-kotlin:$moshiVersion")
+    kapt("com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion")
 
     implementation("com.elvishew:xlog:1.10.1")
 

@@ -150,7 +150,9 @@ interface FragmentDelegate {
         fragment: Fragment
     )
 
-    fun onFragmentHiddenChanged(hidden: Boolean)
+    fun onFragmentHiddenChanged(
+        hidden: Boolean
+    )
 
     fun onFragmentSaveInstanceState(
         fragment: Fragment,

@@ -22,14 +22,14 @@ abstract class ViewBindingBottomSheetFragment<VB : ViewBinding> : BottomSheetDia
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
-    ) = viewBindingStore.onCreateView(
+    ) = viewBindingStore.createViewBinding(
         inflater,
         container
     )
 
     override fun onDestroyView() {
         super.onDestroyView()
-        viewBindingStore.onDestroyView()
+        viewBindingStore.destroyViewBinding()
     }
 
 }
