@@ -1,5 +1,6 @@
 package pixel.cando.utils.diffuser
 
+import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
 import pixel.cando.ui._base.fragment.SimpleViewBindingFragmentDelegate
@@ -23,7 +24,8 @@ class DiffuserFragmentDelegate<T, VB : ViewBinding>(
 
     override fun onFragmentViewBindingCreated(
         fragment: Fragment,
-        viewBinding: VB
+        viewBinding: VB,
+        savedInstanceState: Bundle?
     ) {
         diffuser = diffuserCreator.createDiffuser(viewBinding)
     }

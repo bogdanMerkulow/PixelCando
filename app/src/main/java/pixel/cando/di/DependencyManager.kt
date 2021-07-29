@@ -15,6 +15,7 @@ import pixel.cando.ui.RootFragment
 import pixel.cando.ui._base.fragment.RootRouter
 import pixel.cando.ui.auth.sign_in.SignInFragment
 import pixel.cando.ui.createUnauthorizedResultEventSource
+import pixel.cando.ui.main.home.HomeFragment
 import pixel.cando.utils.RealResourceProvider
 import pixel.cando.utils.ResourceProvider
 import java.lang.ref.WeakReference
@@ -127,6 +128,13 @@ class DependencyManager(
                                         remoteRepository = remoteRepository,
                                         accessTokenStore = accessTokenStore,
                                         userRoleStore = userRoleStore,
+                                    )
+                                }
+                                is HomeFragment -> {
+                                    setup(
+                                        fragment = fragment,
+                                        userRoleStore = userRoleStore,
+                                        resourceProvider = resourceProvider,
                                     )
                                 }
                             }

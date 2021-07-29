@@ -144,11 +144,19 @@ object SignInLogic {
                 }
                 is SignInEffect.NavigateToHome -> {
                     rootRouter.replaceScreen(
-                        Screens.homeFlow()
+                        Screens.mainFlow()
                     )
                 }
             }
         }
+
+    fun initialModel(
+    ) = SignInDataModel(
+        email = "",
+        password = "",
+        isLoaderVisible = false,
+        isSignInButtonEnabled = false
+    )
 
 }
 
@@ -184,19 +192,7 @@ data class SignInDataModel(
     val password: String,
     val isLoaderVisible: Boolean,
     val isSignInButtonEnabled: Boolean
-) : Parcelable {
-
-    companion object {
-        val initial: SignInDataModel
-            get() = SignInDataModel(
-                email = "",
-                password = "",
-                isLoaderVisible = false,
-                isSignInButtonEnabled = false
-            )
-    }
-
-}
+) : Parcelable
 
 data class SignInViewModel(
     val email: String,

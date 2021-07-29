@@ -62,13 +62,17 @@ abstract class ViewBindingFragment<VB : ViewBinding> : DelegatingFragment() {
     ) {
         super.onViewCreated(view, savedInstanceState)
         viewBinding?.let {
-            onViewBindingCreated(it)
+            onViewBindingCreated(
+                it,
+                savedInstanceState
+            )
         }
     }
 
     @OverridingMethodsMustInvokeSuper
     open fun onViewBindingCreated(
-        viewBinding: VB
+        viewBinding: VB,
+        savedInstanceState: Bundle?
     ) {
         delegates
             .mapNotNull {
@@ -77,7 +81,8 @@ abstract class ViewBindingFragment<VB : ViewBinding> : DelegatingFragment() {
             .forEach {
                 it.onFragmentViewBindingCreated(
                     this,
-                    viewBinding
+                    viewBinding,
+                    savedInstanceState
                 )
             }
     }
@@ -108,7 +113,8 @@ interface ViewBindingFragmentDelegate<VB : ViewBinding> : FragmentDelegate {
 
     fun onFragmentViewBindingCreated(
         fragment: Fragment,
-        viewBinding: VB
+        viewBinding: VB,
+        savedInstanceState: Bundle?
     )
 
     fun onFragmentViewBindingDestroyed(
@@ -122,7 +128,8 @@ open class SimpleViewBindingFragmentDelegate<VB : ViewBinding> : SimpleFragmentD
 
     override fun onFragmentViewBindingCreated(
         fragment: Fragment,
-        viewBinding: VB
+        viewBinding: VB,
+        savedInstanceState: Bundle?
     ) {
     }
 

@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">Pixelcando</string>
+
+    <string name="tab_title_chat">Chat</string>
+    <string name="tab_title_chats">Chats</string>
+    <string name="tab_title_photos">Photos</string>
+    <string name="tab_title_patients">Patients</string>
+    <string name="tab_title_profile">Profile</string>
 </resources>

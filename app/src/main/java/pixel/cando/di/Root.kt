@@ -47,7 +47,7 @@ fun setup(
             RootLogic.init(it)
         },
         defaultStateProvider = {
-            RootDataModel.initial
+            RootLogic.initialModel()
         },
         modelMapper = {
             it.viewModel

@@ -86,7 +86,7 @@ object RootLogic {
                 }
                 is RootEffect.NavigateToHomeFlow -> {
                     rootRouter.replaceScreen(
-                        Screens.homeFlow()
+                        Screens.mainFlow()
                     )
                 }
                 is RootEffect.ClearSession -> {
@@ -94,6 +94,11 @@ object RootLogic {
                 }
             }
         }
+
+    fun initialModel(
+    ) = RootDataModel(
+        flow = null
+    )
 
 }
 
@@ -114,16 +119,7 @@ sealed class RootEffect {
 @Parcelize
 data class RootDataModel(
     val flow: RootFlow?
-) : Parcelable {
-
-    companion object {
-        val initial: RootDataModel
-            get() = RootDataModel(
-                flow = null
-            )
-    }
-
-}
+) : Parcelable
 
 object RootViewModel
 

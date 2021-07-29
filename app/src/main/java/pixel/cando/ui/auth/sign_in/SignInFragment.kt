@@ -1,5 +1,6 @@
 package pixel.cando.ui.auth.sign_in
 
+import android.os.Bundle
 import pixel.cando.databinding.FragmentSignInBinding
 import pixel.cando.ui._base.fragment.ViewBindingCreator
 import pixel.cando.ui._base.fragment.ViewBindingFragment
@@ -53,9 +54,10 @@ class SignInFragment : ViewBindingFragment<FragmentSignInBinding>(),
     }
 
     override fun onViewBindingCreated(
-        viewBinding: FragmentSignInBinding
+        viewBinding: FragmentSignInBinding,
+        savedInstanceState: Bundle?
     ) {
-        super.onViewBindingCreated(viewBinding)
+        super.onViewBindingCreated(viewBinding, savedInstanceState)
         viewBinding.emailField.doAfterTextChanged { email ->
             eventSender?.sendEvent(
                 SignInEvent.EmailChanged(

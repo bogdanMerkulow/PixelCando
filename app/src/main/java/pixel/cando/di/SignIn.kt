@@ -47,7 +47,7 @@ fun setup(
             SignInLogic.init(it)
         },
         defaultStateProvider = {
-            SignInDataModel.initial
+            SignInLogic.initialModel()
         },
         modelMapper = {
             it.viewModel
