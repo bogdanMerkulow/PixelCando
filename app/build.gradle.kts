@@ -96,6 +96,12 @@ dependencies {
     implementation("com.squareup.moshi:moshi-kotlin:$moshiVersion")
     kapt("com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion")
 
+    val cameraVersion = "1.0.1"
+    implementation("androidx.camera:camera-camera2:$cameraVersion")
+    implementation("androidx.camera:camera-lifecycle:$cameraVersion")
+    implementation("androidx.camera:camera-view:1.0.0-alpha27")
+    implementation("androidx.exifinterface:exifinterface:1.3.2")
+
     implementation("com.elvishew:xlog:1.10.1")
 
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")

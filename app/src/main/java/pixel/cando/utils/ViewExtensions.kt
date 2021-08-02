@@ -3,6 +3,8 @@ package pixel.cando.utils
 import android.content.Context
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.TypedValue
+import android.view.View
 import android.widget.EditText
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
@@ -117,4 +119,14 @@ fun RecyclerView.addLoadMoreListener(
         }
     })
 
+}
+
+fun View.dpToPx(
+    dps: Float
+): Float {
+    return TypedValue.applyDimension(
+        TypedValue.COMPLEX_UNIT_DIP,
+        dps,
+        resources.displayMetrics
+    )
 }
