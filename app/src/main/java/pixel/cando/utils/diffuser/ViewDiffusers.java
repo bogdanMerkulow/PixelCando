@@ -109,7 +109,8 @@ public class ViewDiffusers {
      * @return A Diffuser which supplies a ListAdapter with data.
      */
     public static <T, VH extends RecyclerView.ViewHolder> Diffuser<List<T>> intoListAdapter(
-            ListAdapter<T, VH> listAdapter) {
+            ListAdapter<T, VH> listAdapter
+    ) {
         return intoAlways(listAdapter::submitList);
     }
 

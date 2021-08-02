@@ -1,7 +1,7 @@
 package pixel.cando.data.local
 
 import android.content.SharedPreferences
-import pixel.cando.ui._models.UserRole
+import pixel.cando.data.models.UserRole
 
 interface UserRoleStore {
     var userRole: UserRole?

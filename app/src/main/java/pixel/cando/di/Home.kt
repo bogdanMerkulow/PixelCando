@@ -5,8 +5,8 @@ import com.spotify.mobius.Update
 import com.spotify.mobius.android.AndroidLogger
 import pixel.cando.R
 import pixel.cando.data.local.UserRoleStore
+import pixel.cando.data.models.UserRole
 import pixel.cando.ui._base.tea.ControllerFragmentDelegate
-import pixel.cando.ui._models.UserRole
 import pixel.cando.ui.main.chat.ChatFragment
 import pixel.cando.ui.main.chat_list.ChatListFragment
 import pixel.cando.ui.main.home.*

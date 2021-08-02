@@ -1,8 +1,11 @@
 package pixel.cando.utils
 
+import android.content.Context
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.EditText
+import androidx.recyclerview.widget.RecyclerView
+import androidx.viewbinding.ViewBinding
 
 fun EditText.doAfterTextChanged(
     action: (String) -> Unit
@@ -63,4 +66,55 @@ fun EditText.addTextChangedWatcher(
     addTextChangedListener(textWatcher)
 
     return textWatcher
+}
+
+val ViewBinding.context: Context
+    get() = this.root.context
+
+fun RecyclerView.addLoadMoreListener(
+    reversed: Boolean = false,
+    threshold: Int = 5,
+    onLoadMore: () -> Unit
+) {
+    this.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+        override fun onScrolled(
+            recyclerView: RecyclerView,
+            dx: Int,
+            dy: Int
+        ) {
+            if (recyclerView.scrollState == RecyclerView.SCROLL_STATE_IDLE) {
+                return
+            }
+            val adapter = recyclerView.adapter ?: return
+            if (adapter.itemCount == 0) {
+                return
+            }
+            if (reversed) {
+                val firstVisiblePosition = if (recyclerView.childCount != 0) {
+                    recyclerView.getChildViewHolder(recyclerView.getChildAt(0)).adapterPosition
+                } else RecyclerView.NO_POSITION
+                if (firstVisiblePosition == RecyclerView.NO_POSITION) {
+                    return
+                }
+                if (firstVisiblePosition <= threshold
+                    || adapter.itemCount < threshold
+                ) {
+                    onLoadMore()
+                }
+            } else {
+                val lastVisiblePosition = if (recyclerView.childCount != 0) {
+                    recyclerView.getChildAdapterPosition(recyclerView.getChildAt(recyclerView.childCount - 1))
+                } else RecyclerView.NO_POSITION
+                if (lastVisiblePosition == RecyclerView.NO_POSITION) {
+                    return
+                }
+                if (lastVisiblePosition >= adapter.itemCount - threshold
+                    || adapter.itemCount < threshold
+                ) {
+                    onLoadMore()
+                }
+            }
+        }
+    })
+
 }

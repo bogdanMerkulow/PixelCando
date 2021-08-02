@@ -8,6 +8,8 @@ import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import pixel.cando.data.local.*
+import pixel.cando.data.remote.AuthRepository
+import pixel.cando.data.remote.RealAuthRepository
 import pixel.cando.data.remote.RealRemoteRepository
 import pixel.cando.data.remote.RemoteRepository
 import pixel.cando.ui.RootEvent
@@ -16,6 +18,7 @@ import pixel.cando.ui._base.fragment.RootRouter
 import pixel.cando.ui.auth.sign_in.SignInFragment
 import pixel.cando.ui.createUnauthorizedResultEventSource
 import pixel.cando.ui.main.home.HomeFragment
+import pixel.cando.ui.main.patient_list.PatientListFragment
 import pixel.cando.utils.RealResourceProvider
 import pixel.cando.utils.ResourceProvider
 import java.lang.ref.WeakReference
@@ -65,25 +68,40 @@ class DependencyManager(
         )
     }
 
+    private val moshi by lazy {
+        assembleMoshi()
+    }
+
     private val restApi by lazy {
-        assembleWebApi(
-            resourceProvider = resourceProvider
+        assembleRestApi(
+            resourceProvider = resourceProvider,
+            accessTokenProvider = accessTokenStore,
+            moshi = moshi,
         )
     }
 
-    private val moshi by lazy {
-        assembleMoshi()
+    private val authApi by lazy {
+        assembleAuthApi(
+            resourceProvider = resourceProvider,
+            moshi = moshi,
+        )
     }
 
     private val remoteRepository: RemoteRepository by lazy {
         RealRemoteRepository(
             restApi = restApi,
-            moshi = moshi,
             unauthorizedHandler = {
                 unauthorizedResultEventSource.emit(
                     RootEvent.UserAuthorizationGotInvalid
                 )
             }
+        )
+    }
+
+    private val authRepository: AuthRepository by lazy {
+        RealAuthRepository(
+            authApi = authApi,
+            moshi = moshi,
         )
     }
 
@@ -125,7 +143,7 @@ class DependencyManager(
                                     setup(
                                         fragment = fragment,
                                         rootRouter = requireRootRouter(),
-                                        remoteRepository = remoteRepository,
+                                        authRepository = authRepository,
                                         accessTokenStore = accessTokenStore,
                                         userRoleStore = userRoleStore,
                                     )
@@ -135,6 +153,12 @@ class DependencyManager(
                                         fragment = fragment,
                                         userRoleStore = userRoleStore,
                                         resourceProvider = resourceProvider,
+                                    )
+                                }
+                                is PatientListFragment -> {
+                                    setup(
+                                        fragment = fragment,
+                                        remoteRepository = remoteRepository,
                                     )
                                 }
                             }

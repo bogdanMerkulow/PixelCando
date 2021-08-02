@@ -1,68 +1,48 @@
 package pixel.cando.data.remote
 
-import com.squareup.moshi.Moshi
-import pixel.cando.data.remote.dto.FailureResponse
-import pixel.cando.data.remote.dto.SignInRequest
-import pixel.cando.ui._models.SignInFailure
-import pixel.cando.ui._models.SignInSuccess
-import pixel.cando.ui._models.UserRole
+import pixel.cando.data.models.PatientBriefInfo
+import pixel.cando.data.remote.dto.PatientListRequest
+import pixel.cando.data.remote.dto.QueryFilterDto
 import pixel.cando.utils.Either
-import pixel.cando.utils.objectFromJson
+import pixel.cando.utils.mapOnlyLeft
 import retrofit2.Response
 import java.io.IOException
 
 interface RemoteRepository {
 
-    suspend fun signIn(
-        email: String,
-        password: String
-    ): Either<SignInSuccess, SignInFailure>
+    suspend fun getPatients(
+        page: Int,
+    ): Either<List<PatientBriefInfo>, Throwable>
 
 }
 
 class RealRemoteRepository(
     private val restApi: RestApi,
-    private val moshi: Moshi,
-    private val unauthorizedHandler: () -> Unit
+    private val unauthorizedHandler: () -> Unit,
 ) : RemoteRepository {
 
-    override suspend fun signIn(
-        email: String,
-        password: String
-    ): Either<SignInSuccess, SignInFailure> {
-        return try {
-            val response = restApi.signIn(
-                SignInRequest(
-                    email = email,
-                    password = password
+    private val pageSize = 20
+
+    override suspend fun getPatients(
+        page: Int,
+    ): Either<List<PatientBriefInfo>, Throwable> {
+        return callApi {
+            restApi.getPatients(
+                PatientListRequest(
+                    offset = page * pageSize,
+                    limit = pageSize,
+                    filter = QueryFilterDto(
+                        query = ""
+                    )
                 )
             )
-            if (response.isSuccessful) {
-                response.body()!!.customer.user.let { user ->
-                    user.role.userRole?.let { userRole ->
-                        Either.Left(
-                            SignInSuccess(
-                                accessToken = user.accessToken,
-                                userRole = userRole
-                            )
-                        )
-                    } ?: Either.Right(
-                        SignInFailure.UnsupportedUserRole
-                    )
-                }
-            } else {
-                Either.Right(
-                    response.errorMessage?.let {
-                        SignInFailure.CustomMessage(it)
-                    } ?: SignInFailure.UnknownError(
-                        IllegalStateException("Can not handle")
-                    )
+        }.mapOnlyLeft {
+            it.results.map {
+                PatientBriefInfo(
+                    id = it.userId,
+                    fullName = it.user.fullName,
                 )
             }
-        } catch (ex: Throwable) {
-            Either.Right(
-                SignInFailure.UnknownError(ex)
-            )
         }
     }
 
@@ -88,33 +68,6 @@ class RealRemoteRepository(
         }
     }
 
-    private val <R> Response<R>.errorMessage: String?
-        get() {
-            if (isSuccessful.not()) {
-                val failureResponse: FailureResponse? = moshi.objectFromJson(
-                    errorBody()!!.string()
-                )
-                return failureResponse?.exception?.message
-            }
-            return null
-        }
-
 }
-
-private const val doctorRoleServerValue = "customer"
-private const val patientRoleServerValue = "patient"
-
-private val String.userRole: UserRole?
-    get() = when (this) {
-        doctorRoleServerValue -> UserRole.DOCTOR
-        patientRoleServerValue -> UserRole.PATIENT
-        else -> null
-    }
-
-private val UserRole.serverValue: String
-    get() = when (this) {
-        UserRole.DOCTOR -> doctorRoleServerValue
-        UserRole.PATIENT -> patientRoleServerValue
-    }
 
 class NotAuthorizedException : IOException()

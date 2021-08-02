@@ -1,4 +1,4 @@
-package pixel.cando.ui._models
+package pixel.cando.data.models
 
 data class SignInSuccess(
     val accessToken: String,

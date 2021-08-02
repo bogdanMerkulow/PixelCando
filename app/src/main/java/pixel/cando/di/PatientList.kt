@@ -3,51 +3,42 @@ package pixel.cando.di
 import com.spotify.mobius.Mobius
 import com.spotify.mobius.Update
 import com.spotify.mobius.android.AndroidLogger
-import pixel.cando.data.local.AccessTokenStore
-import pixel.cando.data.local.UserRoleStore
-import pixel.cando.data.remote.AuthRepository
-import pixel.cando.ui._base.fragment.RootRouter
+import pixel.cando.data.remote.RemoteRepository
 import pixel.cando.ui._base.tea.ControllerFragmentDelegate
-import pixel.cando.ui.auth.sign_in.*
+import pixel.cando.ui.main.patient_list.*
 import pixel.cando.utils.diffuser.DiffuserFragmentDelegate
 import pixel.cando.utils.messageDisplayer
 
 fun setup(
-    fragment: SignInFragment,
-    rootRouter: RootRouter,
-    authRepository: AuthRepository,
-    accessTokenStore: AccessTokenStore,
-    userRoleStore: UserRoleStore,
+    fragment: PatientListFragment,
+    remoteRepository: RemoteRepository,
 ) {
     if (fragment.delegates.isNotEmpty()) {
         return
     }
     val controllerFragmentDelegate = ControllerFragmentDelegate<
-            SignInViewModel,
-            SignInDataModel,
-            SignInEvent,
-            SignInEffect>(
+            PatientListViewModel,
+            PatientListDataModel,
+            PatientListEvent,
+            PatientListEffect>(
         loop = Mobius.loop(
-            Update<SignInDataModel, SignInEvent, SignInEffect> { model, event ->
-                SignInLogic.update(
+            Update<PatientListDataModel, PatientListEvent, PatientListEffect> { model, event ->
+                PatientListLogic.update(
                     model,
                     event
                 )
             },
-            SignInLogic.effectHandler(
-                rootRouter = rootRouter,
-                authRepository = authRepository,
-                accessTokenStore = accessTokenStore,
-                userRoleStore = userRoleStore,
+            PatientListLogic.effectHandler(
+                remoteRepository = remoteRepository,
                 messageDisplayer = fragment.messageDisplayer,
             )
         )
-            .logger(AndroidLogger.tag("SignIn")),
+            .logger(AndroidLogger.tag("PatientList")),
         initialState = {
-            SignInLogic.init(it)
+            PatientListLogic.init(it)
         },
         defaultStateProvider = {
-            SignInLogic.initialModel()
+            PatientListLogic.initialModel()
         },
         modelMapper = {
             it.viewModel

@@ -3,6 +3,7 @@ package pixel.cando.utils.diffuser
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.viewbinding.ViewBinding
+import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import pixel.cando.ui._base.fragment.SimpleViewBindingFragmentDelegate
 
 fun <A, B> map(
@@ -13,6 +14,14 @@ fun <A, B> map(
         { transform.invoke(it) },
         diffuser
     )
+}
+
+fun <T> intoListDifferAdapter(
+    listAdapter: AsyncListDifferDelegationAdapter<T>
+): Diffuser<List<T>?> {
+    return Diffuser.intoAlways { list: List<T>? ->
+        listAdapter.items = list
+    }
 }
 
 class DiffuserFragmentDelegate<T, VB : ViewBinding>(

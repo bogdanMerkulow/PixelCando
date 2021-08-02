@@ -7,11 +7,11 @@ import com.spotify.mobius.Next
 import kotlinx.parcelize.Parcelize
 import pixel.cando.data.local.AccessTokenStore
 import pixel.cando.data.local.UserRoleStore
-import pixel.cando.data.remote.RemoteRepository
+import pixel.cando.data.models.SignInFailure
+import pixel.cando.data.remote.AuthRepository
 import pixel.cando.ui.Screens
 import pixel.cando.ui._base.fragment.RootRouter
 import pixel.cando.ui._base.tea.CoroutineScopeEffectHandler
-import pixel.cando.ui._models.SignInFailure
 import pixel.cando.utils.Either
 import pixel.cando.utils.MessageDisplayer
 import pixel.cando.utils.logError
@@ -102,7 +102,7 @@ object SignInLogic {
 
     fun effectHandler(
         rootRouter: RootRouter,
-        remoteRepository: RemoteRepository,
+        authRepository: AuthRepository,
         accessTokenStore: AccessTokenStore,
         userRoleStore: UserRoleStore,
         messageDisplayer: MessageDisplayer,
@@ -110,7 +110,7 @@ object SignInLogic {
         CoroutineScopeEffectHandler { effect, output ->
             when (effect) {
                 is SignInEffect.TrySignIn -> {
-                    val result = remoteRepository.signIn(
+                    val result = authRepository.signIn(
                         email = effect.email,
                         password = effect.password
                     )

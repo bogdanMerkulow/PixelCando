@@ -2,8 +2,12 @@ package pixel.cando.data.local
 
 import android.content.SharedPreferences
 
-interface AccessTokenStore {
-    var accessToken: String?
+interface AccessTokenProvider {
+    val accessToken: String?
+}
+
+interface AccessTokenStore : AccessTokenProvider {
+    override var accessToken: String?
 }
 
 class RealAccessTokenStore(

@@ -6,4 +6,7 @@
     <string name="tab_title_photos">Photos</string>
     <string name="tab_title_patients">Patients</string>
     <string name="tab_title_profile">Profile</string>
+
+    <string name="screen_title_patients">Patients</string>
+    <string name="no_patients">No Patients</string>
 </resources>
