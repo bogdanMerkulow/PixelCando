@@ -3,54 +3,51 @@ package pixel.cando.di
 import com.spotify.mobius.Mobius
 import com.spotify.mobius.Update
 import com.spotify.mobius.android.AndroidLogger
-import pixel.cando.data.local.AccessTokenStore
-import pixel.cando.data.local.UserRoleStore
 import pixel.cando.data.remote.AuthRepository
 import pixel.cando.ui._base.fragment.FlowRouter
-import pixel.cando.ui._base.fragment.RootRouter
+import pixel.cando.ui._base.fragment.getArgument
 import pixel.cando.ui._base.tea.ControllerFragmentDelegate
-import pixel.cando.ui.auth.sign_in.*
+import pixel.cando.ui.auth.password_recovery.*
+import pixel.cando.utils.ResourceProvider
 import pixel.cando.utils.diffuser.DiffuserFragmentDelegate
 import pixel.cando.utils.messageDisplayer
 
 fun setup(
-    fragment: SignInFragment,
-    rootRouter: RootRouter,
-    flowRouter: FlowRouter,
+    fragment: PasswordRecoveryFragment,
     authRepository: AuthRepository,
-    accessTokenStore: AccessTokenStore,
-    userRoleStore: UserRoleStore,
+    resourceProvider: ResourceProvider,
+    flowRouter: FlowRouter,
 ) {
     if (fragment.delegates.isNotEmpty()) {
         return
     }
     val controllerFragmentDelegate = ControllerFragmentDelegate<
-            SignInViewModel,
-            SignInDataModel,
-            SignInEvent,
-            SignInEffect>(
+            PasswordRecoveryViewModel,
+            PasswordRecoveryDataModel,
+            PasswordRecoveryEvent,
+            PasswordRecoveryEffect>(
         loop = Mobius.loop(
-            Update<SignInDataModel, SignInEvent, SignInEffect> { model, event ->
-                SignInLogic.update(
+            Update<PasswordRecoveryDataModel, PasswordRecoveryEvent, PasswordRecoveryEffect> { model, event ->
+                PasswordRecoveryLogic.update(
                     model,
                     event
                 )
             },
-            SignInLogic.effectHandler(
-                rootRouter = rootRouter,
-                flowRouter = flowRouter,
+            PasswordRecoveryLogic.effectHandler(
                 authRepository = authRepository,
-                accessTokenStore = accessTokenStore,
-                userRoleStore = userRoleStore,
+                resourceProvider = resourceProvider,
                 messageDisplayer = fragment.messageDisplayer,
+                flowRouter = flowRouter,
             )
         )
-            .logger(AndroidLogger.tag("SignIn")),
+            .logger(AndroidLogger.tag("PasswordRecovery")),
         initialState = {
-            SignInLogic.init(it)
+            PasswordRecoveryLogic.init(it)
         },
         defaultStateProvider = {
-            SignInLogic.initialModel()
+            PasswordRecoveryLogic.initialModel(
+                email = fragment.getArgument()
+            )
         },
         modelMapper = {
             it.viewModel

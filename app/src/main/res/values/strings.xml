@@ -9,4 +9,7 @@
 
     <string name="screen_title_patients">Patients</string>
     <string name="no_patients">No Patients</string>
+
+    <string name="something_went_wrong">Something went wrong</string>
+
 </resources>

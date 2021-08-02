@@ -10,6 +10,7 @@ import pixel.cando.data.local.UserRoleStore
 import pixel.cando.data.models.SignInFailure
 import pixel.cando.data.remote.AuthRepository
 import pixel.cando.ui.Screens
+import pixel.cando.ui._base.fragment.FlowRouter
 import pixel.cando.ui._base.fragment.RootRouter
 import pixel.cando.ui._base.tea.CoroutineScopeEffectHandler
 import pixel.cando.utils.Either
@@ -29,6 +30,7 @@ object SignInLogic {
         event: SignInEvent
     ): Next<SignInDataModel, SignInEffect> {
         return when (event) {
+            // ui
             is SignInEvent.EmailChanged -> {
                 if (event.email == model.email) Next.noChange()
                 else Next.next(
@@ -76,6 +78,16 @@ object SignInLogic {
                     Next.noChange()
                 }
             }
+            is SignInEvent.TapRecoverPassword -> {
+                Next.dispatch(
+                    setOf(
+                        SignInEffect.NavigateToPasswordRecovery(
+                            email = model.email
+                        )
+                    )
+                )
+            }
+            // model
             is SignInEvent.SignInSucceeded -> {
                 Next.next(
                     model.copy(
@@ -102,6 +114,7 @@ object SignInLogic {
 
     fun effectHandler(
         rootRouter: RootRouter,
+        flowRouter: FlowRouter,
         authRepository: AuthRepository,
         accessTokenStore: AccessTokenStore,
         userRoleStore: UserRoleStore,
@@ -147,6 +160,13 @@ object SignInLogic {
                         Screens.mainFlow()
                     )
                 }
+                is SignInEffect.NavigateToPasswordRecovery -> {
+                    flowRouter.navigateTo(
+                        Screens.passwordRecovery(
+                            email = effect.email
+                        )
+                    )
+                }
             }
         }
 
@@ -172,6 +192,8 @@ sealed class SignInEvent {
 
     object TapSignIn : SignInEvent()
 
+    object TapRecoverPassword : SignInEvent()
+
     // model
     object SignInSucceeded : SignInEvent()
     object SignInFailed : SignInEvent()
@@ -184,6 +206,10 @@ sealed class SignInEffect {
     ) : SignInEffect()
 
     object NavigateToHome : SignInEffect()
+
+    data class NavigateToPasswordRecovery(
+        val email: String,
+    ) : SignInEffect()
 }
 
 @Parcelize

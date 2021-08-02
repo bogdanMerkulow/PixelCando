@@ -60,13 +60,13 @@ abstract class ViewBindingFragment<VB : ViewBinding> : DelegatingFragment() {
         view: View,
         savedInstanceState: Bundle?
     ) {
-        super.onViewCreated(view, savedInstanceState)
         viewBinding?.let {
             onViewBindingCreated(
                 it,
                 savedInstanceState
             )
         }
+        super.onViewCreated(view, savedInstanceState)
     }
 
     @OverridingMethodsMustInvokeSuper

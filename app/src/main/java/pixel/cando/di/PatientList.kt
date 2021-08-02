@@ -46,14 +46,14 @@ fun setup(
         render = fragment
     )
 
-    val viewBindingFragmentDelegate = DiffuserFragmentDelegate(
+    val diffuserFragmentDelegate = DiffuserFragmentDelegate(
         fragment
     )
 
     fragment.eventSender = controllerFragmentDelegate
-    fragment.diffuserProvider = { viewBindingFragmentDelegate.diffuser }
+    fragment.diffuserProvider = { diffuserFragmentDelegate.diffuser }
     fragment.delegates = setOf(
+        diffuserFragmentDelegate,
         controllerFragmentDelegate,
-        viewBindingFragmentDelegate
     )
 }

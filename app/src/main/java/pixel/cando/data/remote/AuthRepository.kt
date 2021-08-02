@@ -5,6 +5,7 @@ import pixel.cando.data.models.SignInFailure
 import pixel.cando.data.models.SignInSuccess
 import pixel.cando.data.models.UserRole
 import pixel.cando.data.remote.dto.FailureResponse
+import pixel.cando.data.remote.dto.PasswordRecoveryRequest
 import pixel.cando.data.remote.dto.SignInRequest
 import pixel.cando.utils.Either
 import pixel.cando.utils.objectFromJson
@@ -16,6 +17,10 @@ interface AuthRepository {
         email: String,
         password: String,
     ): Either<SignInSuccess, SignInFailure>
+
+    suspend fun recoverPassword(
+        email: String
+    ): Either<Unit, Throwable>
 
 }
 
@@ -61,6 +66,37 @@ class RealAuthRepository(
             Either.Right(
                 SignInFailure.UnknownError(ex)
             )
+        }
+    }
+
+    override suspend fun recoverPassword(
+        email: String
+    ): Either<Unit, Throwable> {
+        return callApi {
+            authApi.recoverPassword(
+                PasswordRecoveryRequest(
+                    email = email
+                )
+            )
+        }
+    }
+
+    private suspend fun <R> callApi(
+        action: suspend () -> Response<R>
+    ): Either<R, Throwable> {
+        return try {
+            val response = action.invoke()
+            if (response.isSuccessful) {
+                Either.Left(response.body()!!)
+            } else {
+                Either.Right(
+                    IllegalStateException(
+                        "Unsuccessful response received"
+                    )
+                )
+            }
+        } catch (ex: Throwable) {
+            Either.Right(ex)
         }
     }
 
