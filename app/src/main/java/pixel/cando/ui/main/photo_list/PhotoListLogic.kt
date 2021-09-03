@@ -1,12 +1,17 @@
 package pixel.cando.ui.main.photo_list
 
+import android.Manifest
+import android.graphics.Bitmap
 import android.os.Parcelable
 import com.spotify.mobius.Connectable
 import com.spotify.mobius.First
 import com.spotify.mobius.Next
 import kotlinx.parcelize.Parcelize
+import pixel.cando.R
+import pixel.cando.data.remote.RemoteRepository
 import pixel.cando.ui._base.list.ListItem
 import pixel.cando.ui._base.tea.CoroutineScopeEffectHandler
+import pixel.cando.utils.*
 
 object PhotoListLogic {
 
@@ -22,16 +27,112 @@ object PhotoListLogic {
         event: PhotoListEvent
     ): Next<PhotoListDataModel, PhotoListEffect> {
         return when (event) {
+            // ui
             is PhotoListEvent.UploadPhotoClick -> {
-                Next.noChange()
+                Next.dispatch(
+                    setOf(
+                        PhotoListEffect.CheckCameraPermission
+                    )
+                )
+            }
+            is PhotoListEvent.PhotoTaken -> {
+                Next.next(
+                    model.copy(
+                        isLoading = true,
+                    ),
+                    setOf(
+                        PhotoListEffect.UploadPhoto(
+                            bitmap = event.bitmap
+                        )
+                    )
+                )
+            }
+            // model
+            is PhotoListEvent.PhotoUploadSuccess -> {
+                Next.next(
+                    model.copy(
+                        isLoading = false,
+                    )
+                )
+            }
+            is PhotoListEvent.PhotoUploadFailure -> {
+                Next.next(
+                    model.copy(
+                        isLoading = false,
+                    ),
+                    setOf(
+                        PhotoListEffect.ShowUnexpectedError
+                    )
+                )
+            }
+            is PhotoListEvent.CameraPermissionGranted -> {
+                Next.dispatch(
+                    setOf(
+                        PhotoListEffect.OpenPhotoTaker
+                    )
+                )
+            }
+            is PhotoListEvent.CameraPermissionDenied -> {
+                Next.dispatch(
+                    setOf(
+                        PhotoListEffect.ShowUnexpectedError // TODO change the message
+                    )
+                )
             }
         }
     }
 
     fun effectHandler(
+        photoTakerOpener: () -> Unit,
+        remoteRepository: RemoteRepository,
+        messageDisplayer: MessageDisplayer,
+        resourceProvider: ResourceProvider,
+        permissionChecker: PermissionChecker,
     ): Connectable<PhotoListEffect, PhotoListEvent> =
         CoroutineScopeEffectHandler { effect, output ->
-
+            when (effect) {
+                is PhotoListEffect.OpenPhotoTaker -> {
+                    photoTakerOpener.invoke()
+                }
+                is PhotoListEffect.UploadPhoto -> {
+                    val base64 = effect.bitmap.base64ForSending
+                    if (base64 != null) {
+                        val result = remoteRepository.uploadPhoto(
+                            photo = base64
+                        )
+                        result.onLeft {
+                            output.accept(
+                                PhotoListEvent.PhotoUploadSuccess
+                            )
+                        }
+                        result.onRight {
+                            logError(it)
+                            output.accept(
+                                PhotoListEvent.PhotoUploadFailure
+                            )
+                        }
+                    } else {
+                        output.accept(
+                            PhotoListEvent.PhotoUploadFailure
+                        )
+                    }
+                }
+                is PhotoListEffect.CheckCameraPermission -> {
+                    val permission = Manifest.permission.CAMERA
+                    if (permissionChecker.checkPermission(permission)) {
+                        output.accept(
+                            PhotoListEvent.CameraPermissionGranted
+                        )
+                    } else {
+                        permissionChecker.requestPermission(permission)
+                    }
+                }
+                is PhotoListEffect.ShowUnexpectedError -> {
+                    messageDisplayer.showMessage(
+                        resourceProvider.getString(R.string.something_went_wrong)
+                    )
+                }
+            }
         }
 
     fun initialModel(
@@ -43,11 +144,29 @@ object PhotoListLogic {
 }
 
 sealed class PhotoListEvent {
+    // ui
     object UploadPhotoClick : PhotoListEvent()
+    data class PhotoTaken(
+        val bitmap: Bitmap
+    ) : PhotoListEvent()
+
+    // model
+    object PhotoUploadSuccess : PhotoListEvent()
+    object PhotoUploadFailure : PhotoListEvent()
+
+    object CameraPermissionGranted : PhotoListEvent()
+    object CameraPermissionDenied : PhotoListEvent()
 }
 
 sealed class PhotoListEffect {
+    object OpenPhotoTaker : PhotoListEffect()
+    data class UploadPhoto(
+        val bitmap: Bitmap
+    ) : PhotoListEffect()
 
+    object ShowUnexpectedError : PhotoListEffect()
+
+    object CheckCameraPermission : PhotoListEffect()
 }
 
 @Parcelize

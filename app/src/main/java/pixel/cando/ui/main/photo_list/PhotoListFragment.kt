@@ -1,5 +1,6 @@
 package pixel.cando.ui.main.photo_list
 
+import android.graphics.Bitmap
 import android.os.Bundle
 import pixel.cando.databinding.FragmentPhotoListBinding
 import pixel.cando.databinding.ListItemNoPhotosBinding
@@ -10,13 +11,16 @@ import pixel.cando.ui._base.list.createDifferAdapterDelegate
 import pixel.cando.ui._base.tea.EventSender
 import pixel.cando.ui._base.tea.EventSenderNeeder
 import pixel.cando.ui._base.tea.ViewModelRender
+import pixel.cando.ui.main.camera.CameraFragment
 import pixel.cando.utils.diffuser.*
+import pixel.cando.utils.diffuser.ViewDiffusers.intoVisibleOrGone
 
 class PhotoListFragment : ViewBindingFragment<FragmentPhotoListBinding>(),
     ViewModelRender<PhotoListViewModel>,
     EventSenderNeeder<PhotoListEvent>,
     DiffuserCreator<PhotoListViewModel, FragmentPhotoListBinding>,
-    DiffuserProviderNeeder<PhotoListViewModel> {
+    DiffuserProviderNeeder<PhotoListViewModel>,
+    CameraFragment.Callback {
 
     override val viewBindingCreator: ViewBindingCreator<FragmentPhotoListBinding>
         get() = FragmentPhotoListBinding::inflate
@@ -42,6 +46,10 @@ class PhotoListFragment : ViewBindingFragment<FragmentPhotoListBinding>(),
             map(
                 { it.listItems },
                 intoListDifferAdapter(adapter)
+            ),
+            map(
+                { it.isLoaderVisible },
+                intoVisibleOrGone(viewBinding.progressBar)
             )
         )
     }
@@ -60,6 +68,20 @@ class PhotoListFragment : ViewBindingFragment<FragmentPhotoListBinding>(),
     ) {
         diffuserProvider?.invoke()?.run(viewModel)
     }
+
+    override fun onCameraResult(
+        bitmap: Bitmap
+    ) {
+        eventSender?.sendEvent(
+            PhotoListEvent.PhotoTaken(
+                bitmap = bitmap
+            )
+        )
+    }
+
+    override fun onCameraCancel() {
+    }
+
 }
 
 private fun noPhotosAdapterDelegate(

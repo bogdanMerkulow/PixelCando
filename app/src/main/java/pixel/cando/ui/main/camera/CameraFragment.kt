@@ -23,10 +23,11 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.exifinterface.media.ExifInterface
+import androidx.fragment.app.FragmentManager
 import pixel.cando.R
 import pixel.cando.databinding.FragmentCameraBinding
 import pixel.cando.ui._base.fragment.ViewBindingCreator
-import pixel.cando.ui._base.fragment.ViewBindingFragment
+import pixel.cando.ui._base.fragment.ViewBindingFullscreenDialogFragment
 import pixel.cando.ui._base.fragment.findImplementation
 import pixel.cando.utils.context
 import pixel.cando.utils.dpToPx
@@ -35,7 +36,17 @@ import java.io.File
 import java.io.IOException
 import java.util.*
 
-class CameraFragment : ViewBindingFragment<FragmentCameraBinding>() {
+class CameraFragment : ViewBindingFullscreenDialogFragment<FragmentCameraBinding>() {
+
+    companion object {
+        fun show(
+            fragmentManager: FragmentManager
+        ) {
+            CameraFragment().show(
+                fragmentManager, ""
+            )
+        }
+    }
 
     override val viewBindingCreator: ViewBindingCreator<FragmentCameraBinding>
         get() = FragmentCameraBinding::inflate
@@ -132,6 +143,7 @@ class CameraFragment : ViewBindingFragment<FragmentCameraBinding>() {
         }
 
         viewBinding.cancel.setOnClickListener {
+            dismiss()
             findImplementation<Callback>()?.onCameraCancel()
         }
     }
@@ -272,6 +284,7 @@ class CameraFragment : ViewBindingFragment<FragmentCameraBinding>() {
                             photoFile.toUri()
                         )
                         photoFile.delete()
+                        dismiss()
                         findImplementation<Callback>()?.onCameraResult(bitmap)
                     }
                 })

@@ -3,6 +3,7 @@ package pixel.cando.data.remote
 import pixel.cando.data.models.PatientBriefInfo
 import pixel.cando.data.remote.dto.PatientListRequest
 import pixel.cando.data.remote.dto.QueryFilterDto
+import pixel.cando.data.remote.dto.UploadPhotoRequest
 import pixel.cando.utils.Either
 import pixel.cando.utils.mapOnlyLeft
 import retrofit2.Response
@@ -13,6 +14,10 @@ interface RemoteRepository {
     suspend fun getPatients(
         page: Int,
     ): Either<List<PatientBriefInfo>, Throwable>
+
+    suspend fun uploadPhoto(
+        photo: String
+    ): Either<Unit, Throwable>
 
 }
 
@@ -43,6 +48,18 @@ class RealRemoteRepository(
                     fullName = it.user.fullName,
                 )
             }
+        }
+    }
+
+    override suspend fun uploadPhoto(
+        photo: String
+    ): Either<Unit, Throwable> {
+        return callApi {
+            restApi.uploadPhoto(
+                UploadPhotoRequest(
+                    photo = photo,
+                )
+            )
         }
     }
 
