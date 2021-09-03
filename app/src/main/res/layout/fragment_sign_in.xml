@@ -8,38 +8,64 @@
     android:orientation="vertical"
     >
 
-    <EditText
-        android:id="@+id/emailField"
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/emailFieldParent"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:inputType="textEmailAddress"
-        app:layout_constraintBottom_toTopOf="@+id/passwordField"
+        android:layout_marginHorizontal="@dimen/spacing_16"
+        android:hint="Email"
+        app:layout_constraintBottom_toTopOf="@+id/passwordFieldParent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_chainStyle="packed"
-        />
+        >
 
-    <EditText
-        android:id="@+id/passwordField"
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/emailField"
+            style="@style/Widget.MaterialComponents.TextView"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textEmailAddress"
+            />
+
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/passwordFieldParent"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:inputType="textPassword"
+        android:layout_marginHorizontal="@dimen/spacing_16"
+        android:layout_marginTop="@dimen/spacing_16"
+        android:hint="Password"
         app:layout_constraintBottom_toTopOf="@+id/signInButton"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/emailField"
-        />
+        app:layout_constraintTop_toBottomOf="@+id/emailFieldParent"
+        >
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/passwordField"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:inputType="textPassword"
+
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
 
     <Button
         android:id="@+id/signInButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_16"
         android:text="Sign In"
+        android:textColor="@color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/passwordField"
+        app:layout_constraintTop_toBottomOf="@+id/passwordFieldParent"
         />
 
     <TextView
@@ -48,6 +74,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/spacing_32"
         android:text="Recover password"
+        android:visibility="gone"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/signInButton"
