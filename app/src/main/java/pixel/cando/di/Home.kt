@@ -27,16 +27,40 @@ fun setup(
         fragment.tabs = when (userRole) {
             UserRole.DOCTOR -> {
                 listOf(
-                    resourceProvider.getString(R.string.tab_title_chats) to { ChatListFragment() },
-                    resourceProvider.getString(R.string.tab_title_patients) to { PatientListFragment() },
-                    resourceProvider.getString(R.string.tab_title_profile) to { ProfileFragment() },
+                    HomeTab(
+                        title = R.string.tab_title_chats,
+                        icon = R.drawable.ic_chat,
+                        fragmentProvider = { ChatListFragment() },
+                    ),
+                    HomeTab(
+                        title = R.string.tab_title_patients,
+                        icon = R.drawable.ic_patients,
+                        fragmentProvider = { PatientListFragment() },
+                    ),
+                    HomeTab(
+                        title = R.string.tab_title_profile,
+                        icon = R.drawable.ic_user,
+                        fragmentProvider = { ProfileFragment() },
+                    ),
                 )
             }
             UserRole.PATIENT -> {
                 listOf(
-                    resourceProvider.getString(R.string.tab_title_chat) to { ChatFragment() },
-                    resourceProvider.getString(R.string.tab_title_photos) to { PhotoListFragment() },
-                    resourceProvider.getString(R.string.tab_title_profile) to { ProfileFragment() },
+                    HomeTab(
+                        title = R.string.tab_title_chat,
+                        icon = R.drawable.ic_chat,
+                        fragmentProvider = { ChatFragment() },
+                    ),
+                    HomeTab(
+                        title = R.string.tab_title_photos,
+                        icon = R.drawable.ic_photo_library,
+                        fragmentProvider = { PhotoListFragment() },
+                    ),
+                    HomeTab(
+                        title = R.string.tab_title_profile,
+                        icon = R.drawable.ic_user,
+                        fragmentProvider = { ProfileFragment() },
+                    ),
                 )
             }
         }

@@ -1,6 +1,8 @@
 package pixel.cando.ui.main.home
 
 import android.os.Bundle
+import androidx.annotation.DrawableRes
+import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import pixel.cando.databinding.FragmentHomeBinding
 import pixel.cando.ui._base.fragment.ViewBindingCreator
@@ -22,7 +24,7 @@ class HomeFragment : ViewBindingFragment<FragmentHomeBinding>(),
     override val viewBindingCreator: ViewBindingCreator<FragmentHomeBinding>
         get() = FragmentHomeBinding::inflate
 
-    var tabs: List<Pair<String, () -> Fragment>> = emptyList()
+    var tabs: List<HomeTab> = emptyList()
 
     override var eventSender: EventSender<HomeEvent>? = null
 
@@ -37,8 +39,10 @@ class HomeFragment : ViewBindingFragment<FragmentHomeBinding>(),
             savedInstanceState
         )
         for (index in tabs.indices) {
+            val tab = tabs[index]
             viewBinding.bottomNavigationView.menu
-                .add(0, index, 0, tabs[index].first)
+                .add(0, index, 0, tab.title)
+                .setIcon(tab.icon)
                 .setOnMenuItemClickListener {
                     eventSender?.sendEvent(
                         HomeEvent.SelectTab(index)
@@ -85,7 +89,7 @@ class HomeFragment : ViewBindingFragment<FragmentHomeBinding>(),
                     }
                     .commit()
             } else {
-                val fragmentToAdd = tabs[index].second.invoke()
+                val fragmentToAdd = tabs[index].fragmentProvider.invoke()
                 childFragmentManager
                     .beginTransaction()
                     .apply {
@@ -108,3 +112,9 @@ class HomeFragment : ViewBindingFragment<FragmentHomeBinding>(),
 
 private val Int.tag: String
     get() = "${HomeFragment::class.java.name}_Tab_$this"
+
+data class HomeTab(
+    @StringRes val title: Int,
+    @DrawableRes val icon: Int,
+    val fragmentProvider: () -> Fragment,
+)

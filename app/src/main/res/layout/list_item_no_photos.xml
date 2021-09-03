@@ -20,6 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/spacing_16"
         android:text="@string/upload"
+        android:textColor="@color/white"
         />
 
 </LinearLayout>
