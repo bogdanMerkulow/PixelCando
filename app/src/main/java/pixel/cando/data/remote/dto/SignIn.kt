@@ -11,7 +11,8 @@ data class SignInRequest(
 
 @JsonClass(generateAdapter = true)
 data class SignInResponse(
-    @Json(name = "customer") val customer: SignedInUserWrapperDto
+    @Json(name = "customer") val customer: SignedInUserWrapperDto?,
+    @Json(name = "patient") val patient: SignedInUserWrapperDto?,
 )
 
 @JsonClass(generateAdapter = true)

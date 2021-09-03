@@ -12,6 +12,9 @@
 
     <string name="something_went_wrong">Something went wrong</string>
 
+    <string name="list_placeholder_no_photos">No photos created yet\nPlease upload an image</string>
+    <string name="upload">Upload</string>
+
     <string name="cancel">Cancel</string>
 
     <!-- Camera -->

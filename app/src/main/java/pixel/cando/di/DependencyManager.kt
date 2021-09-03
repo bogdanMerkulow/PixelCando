@@ -21,6 +21,7 @@ import pixel.cando.ui.auth.sign_in.SignInFragment
 import pixel.cando.ui.createUnauthorizedResultEventSource
 import pixel.cando.ui.main.home.HomeFragment
 import pixel.cando.ui.main.patient_list.PatientListFragment
+import pixel.cando.ui.main.photo_list.PhotoListFragment
 import pixel.cando.utils.RealResourceProvider
 import pixel.cando.utils.ResourceProvider
 import java.lang.ref.WeakReference
@@ -151,6 +152,14 @@ class DependencyManager(
                                         userRoleStore = userRoleStore,
                                     )
                                 }
+                                is PasswordRecoveryFragment -> {
+                                    setup(
+                                        fragment = fragment,
+                                        authRepository = authRepository,
+                                        resourceProvider = resourceProvider,
+                                        flowRouter = fragment.findImplementationOrThrow(),
+                                    )
+                                }
                                 is HomeFragment -> {
                                     setup(
                                         fragment = fragment,
@@ -164,12 +173,9 @@ class DependencyManager(
                                         remoteRepository = remoteRepository,
                                     )
                                 }
-                                is PasswordRecoveryFragment -> {
+                                is PhotoListFragment -> {
                                     setup(
                                         fragment = fragment,
-                                        authRepository = authRepository,
-                                        resourceProvider = resourceProvider,
-                                        flowRouter = fragment.findImplementationOrThrow(),
                                     )
                                 }
                             }

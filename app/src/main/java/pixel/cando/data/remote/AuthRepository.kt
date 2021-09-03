@@ -41,18 +41,20 @@ class RealAuthRepository(
                 )
             )
             if (response.isSuccessful) {
-                response.body()!!.customer.user.let { user ->
-                    user.role.userRole?.let { userRole ->
+                val signInResponse = response.body()!!
+                val userWrapperDto = signInResponse.customer ?: signInResponse.patient
+                userWrapperDto?.user?.let { userDto ->
+                    userDto.role.userRole?.let { userRole ->
                         Either.Left(
                             SignInSuccess(
-                                accessToken = user.accessToken,
+                                accessToken = userDto.accessToken,
                                 userRole = userRole
                             )
                         )
-                    } ?: Either.Right(
-                        SignInFailure.UnsupportedUserRole
-                    )
-                }
+                    }
+                } ?: Either.Right(
+                    SignInFailure.UnsupportedUserRole
+                )
             } else {
                 Either.Right(
                     response.errorMessage?.let {

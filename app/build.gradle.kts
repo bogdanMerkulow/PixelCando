@@ -11,8 +11,8 @@ android {
 
     defaultConfig {
         applicationId = "pixel.cando"
-        minSdkVersion(21)
-        targetSdkVersion(30)
+        minSdk = 21
+        targetSdk = 30
         versionCode = 1
         versionName = "1.0"
         resConfigs(
