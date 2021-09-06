@@ -2,12 +2,14 @@ package pixel.cando.ui
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import pixel.cando.R
 import pixel.cando.databinding.ActivityRootBinding
 import pixel.cando.ui._base.fragment.OnBackPressedListener
 
 class RootActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        setTheme(R.style.Theme_Pixelcando)
         super.onCreate(savedInstanceState)
         val binding = ActivityRootBinding.inflate(layoutInflater)
         setContentView(binding.root)
