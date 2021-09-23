@@ -12,8 +12,6 @@ import pixel.cando.data.remote.AuthRepository
 import pixel.cando.data.remote.RealAuthRepository
 import pixel.cando.data.remote.RealRemoteRepository
 import pixel.cando.data.remote.RemoteRepository
-import pixel.cando.ui.RootEvent
-import pixel.cando.ui.RootFragment
 import pixel.cando.ui._base.fragment.RootRouter
 import pixel.cando.ui._base.fragment.findImplementationOrThrow
 import pixel.cando.ui.auth.password_recovery.PasswordRecoveryFragment
@@ -22,6 +20,8 @@ import pixel.cando.ui.createUnauthorizedResultEventSource
 import pixel.cando.ui.main.home.HomeFragment
 import pixel.cando.ui.main.patient_list.PatientListFragment
 import pixel.cando.ui.main.photo_list.PhotoListFragment
+import pixel.cando.ui.root.RootEvent
+import pixel.cando.ui.root.RootFragment
 import pixel.cando.utils.RealResourceProvider
 import pixel.cando.utils.ResourceProvider
 import java.lang.ref.WeakReference

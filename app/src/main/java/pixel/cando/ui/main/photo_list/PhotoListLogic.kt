@@ -21,7 +21,6 @@ object PhotoListLogic {
         return First.first(model)
     }
 
-
     fun update(
         model: PhotoListDataModel,
         event: PhotoListEvent

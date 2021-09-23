@@ -8,8 +8,14 @@ import pixel.cando.ui.auth.password_recovery.PasswordRecoveryFragment
 import pixel.cando.ui.auth.sign_in.SignInFragment
 import pixel.cando.ui.main.MainFlowFragment
 import pixel.cando.ui.main.home.HomeFragment
+import pixel.cando.ui.root.RootFragment
+import pixel.cando.ui.splash.SplashFragment
 
 object Screens {
+
+    fun root() = FragmentScreen { RootFragment() }
+
+    fun splash() = FragmentScreen { SplashFragment() }
 
     fun authFlow() = FragmentScreen { AuthFlowFragment() }
     fun signIn() = FragmentScreen { SignInFragment() }

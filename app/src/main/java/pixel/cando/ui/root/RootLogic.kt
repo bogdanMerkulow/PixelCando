@@ -1,4 +1,4 @@
-package pixel.cando.ui
+package pixel.cando.ui.root
 
 import android.os.Parcelable
 import com.spotify.mobius.Connectable
@@ -7,6 +7,7 @@ import com.spotify.mobius.Next
 import kotlinx.parcelize.Parcelize
 import pixel.cando.data.local.AuthStateChecker
 import pixel.cando.data.local.SessionWiper
+import pixel.cando.ui.Screens
 import pixel.cando.ui._base.fragment.RootRouter
 import pixel.cando.ui._base.tea.CoroutineScopeEffectHandler
 

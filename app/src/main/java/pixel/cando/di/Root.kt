@@ -6,10 +6,10 @@ import com.spotify.mobius.Update
 import com.spotify.mobius.android.AndroidLogger
 import pixel.cando.data.local.AuthStateChecker
 import pixel.cando.data.local.SessionWiper
-import pixel.cando.ui.*
 import pixel.cando.ui._base.fragment.RootRouter
 import pixel.cando.ui._base.tea.ControllerFragmentDelegate
 import pixel.cando.ui._base.tea.eventSources
+import pixel.cando.ui.root.*
 
 fun setup(
     fragment: RootFragment,
