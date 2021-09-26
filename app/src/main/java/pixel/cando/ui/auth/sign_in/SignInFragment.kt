@@ -75,9 +75,6 @@ class SignInFragment : ViewBindingFragment<FragmentSignInBinding>(),
         viewBinding.signInButton.setOnClickListener {
             eventSender?.sendEvent(SignInEvent.TapSignIn)
         }
-        viewBinding.recoverPassword.setOnClickListener {
-            eventSender?.sendEvent(SignInEvent.TapRecoverPassword)
-        }
     }
 
     override fun renderViewModel(

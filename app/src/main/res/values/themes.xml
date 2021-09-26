@@ -14,4 +14,12 @@
         <!-- Customize your theme here. -->
     </style>
 
+    <style name="SignInField">
+        <item name="android:textColorHint">@color/silver_chalice</item>
+        <item name="boxBackgroundColor">@color/gray_seashell</item>
+        <item name="boxCornerRadiusTopStart">@dimen/spacing_4</item>
+        <item name="boxCornerRadiusTopEnd">@dimen/spacing_4</item>
+    </style>
+
+
 </resources>

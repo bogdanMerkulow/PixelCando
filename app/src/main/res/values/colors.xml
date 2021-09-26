@@ -1,8 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="blue_boston">#3A76B5</color>
+    <color name="blue_boston">#3976B5</color>
     <color name="blue_malibu">#53A8DC</color>
+
     <color name="orange_tulip_tree">#E6A742</color>
+
+    <color name="gray_dove">#646464</color>
+    <color name="gray_seashell">#F1F1F1</color>
+    <color name="silver_chalice">#9E9E9E</color>
+
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>
 </resources>
