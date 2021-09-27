@@ -60,6 +60,13 @@ class PatientListFragment : ViewBindingFragment<FragmentPatientListBinding>(),
                 { it.folders },
                 into {
                     viewBinding.folderTabs.removeAllTabs()
+
+                    viewBinding.folderTabs.addTab(
+                        viewBinding.folderTabs.newTab().apply {
+                            text = viewBinding.context.getString(R.string.all)
+                        }
+                    )
+
                     it.forEach { folder ->
                         val tab = viewBinding.folderTabs.newTab()
                         tab.text = folder.title
@@ -119,7 +126,6 @@ class PatientListFragment : ViewBindingFragment<FragmentPatientListBinding>(),
             object : TabLayout.OnTabSelectedListener {
                 override fun onTabSelected(tab: TabLayout.Tab) {
                     val id = tab.tag as? Long
-                        ?: return
                     eventSender?.sendEvent(
                         PatientListEvent.PickFolder(id)
                     )

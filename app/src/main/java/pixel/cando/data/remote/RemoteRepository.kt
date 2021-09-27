@@ -4,8 +4,8 @@ import pixel.cando.data.models.Folder
 import pixel.cando.data.models.Gender
 import pixel.cando.data.models.PatientBriefInfo
 import pixel.cando.data.remote.dto.FolderListRequest
+import pixel.cando.data.remote.dto.PatientListFilterDto
 import pixel.cando.data.remote.dto.PatientListRequest
-import pixel.cando.data.remote.dto.QueryFilterDto
 import pixel.cando.data.remote.dto.UploadPhotoRequest
 import pixel.cando.utils.Either
 import pixel.cando.utils.mapOnlyLeft
@@ -15,6 +15,7 @@ import java.io.IOException
 interface RemoteRepository {
 
     suspend fun getPatients(
+        folderId: Long?,
         page: Int,
     ): Either<List<PatientBriefInfo>, Throwable>
 
@@ -35,6 +36,7 @@ class RealRemoteRepository(
     private val pageSize = 20
 
     override suspend fun getPatients(
+        folderId: Long?,
         page: Int,
     ): Either<List<PatientBriefInfo>, Throwable> {
         return callApi {
@@ -42,8 +44,9 @@ class RealRemoteRepository(
                 PatientListRequest(
                     offset = page * pageSize,
                     limit = pageSize,
-                    filter = QueryFilterDto(
-                        query = ""
+                    filter = PatientListFilterDto(
+                        query = "",
+                        folderId = folderId,
                     )
                 )
             )

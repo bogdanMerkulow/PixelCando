@@ -93,7 +93,15 @@ object PatientListLogic {
                 )
             }
             is PatientListEvent.PickFolder -> {
-                Next.noChange() // TODO
+                if (event.folderId == model.currentFolderId)
+                    return Next.noChange()
+                val newModel = model.copy(
+                    currentFolderId = event.folderId
+                )
+                listUpdater.update(
+                    newModel,
+                    event
+                )
             }
         }
     }
@@ -107,6 +115,7 @@ object PatientListLogic {
         eventMapper = {
             when (it) {
                 is PatientListEvent.RefreshRequest -> ListAction.Refresh()
+                is PatientListEvent.PickFolder -> ListAction.Restart()
                 is PatientListEvent.PatientListLoaded -> {
                     if (it.patients.isNotEmpty()) ListAction.PageLoaded(it.patients)
                     else ListAction.EmptyPageLoaded()
@@ -118,7 +127,12 @@ object PatientListLogic {
             }
         },
         modelUpdater = { copy(listState = it) },
-        loadPageEffectMapper = { PatientListEffect.LoadPage(it.page) },
+        loadPageEffectMapper = {
+            PatientListEffect.LoadPage(
+                folderId = currentFolderId,
+                page = it.page,
+            )
+        },
         emitErrorEffectMapper = {
             PatientListEffect.ShowError(
                 it.error.message ?: it.error.localizedMessage
@@ -136,7 +150,10 @@ object PatientListLogic {
                 is PatientListEffect.LoadPage -> {
                     loadNextPageJob.getAndSet(
                         launch {
-                            val result = remoteRepository.getPatients(effect.page)
+                            val result = remoteRepository.getPatients(
+                                folderId = effect.folderId,
+                                page = effect.page,
+                            )
                             result.onLeft {
                                 output.accept(
                                     PatientListEvent.PatientListLoaded(
@@ -174,6 +191,7 @@ object PatientListLogic {
 
     fun initialModel(
     ) = PatientListDataModel(
+        currentFolderId = null,
         folders = emptyList(),
         listState = ParcelableListState.NotInitialized()
     )
@@ -189,7 +207,7 @@ sealed class PatientListEvent {
     ) : PatientListEvent()
 
     data class PickFolder(
-        val folderId: Long,
+        val folderId: Long?,
     ) : PatientListEvent()
 
     // model
@@ -206,10 +224,15 @@ sealed class PatientListEvent {
     data class FolderListLoaded(
         val folders: List<FolderDataModel>
     ) : PatientListEvent()
+
 }
 
 sealed class PatientListEffect {
-    data class LoadPage(val page: Int) : PatientListEffect()
+    data class LoadPage(
+        val folderId: Long?,
+        val page: Int,
+    ) : PatientListEffect()
+
     object LoadFolders : PatientListEffect()
     data class ShowError(val message: String) : PatientListEffect()
 
@@ -236,6 +259,7 @@ data class FolderDataModel(
 
 @Parcelize
 data class PatientListDataModel(
+    val currentFolderId: Long?,
     val folders: List<FolderDataModel>,
     val listState: ParcelableListState<PatientDataModel>
 ) : Parcelable

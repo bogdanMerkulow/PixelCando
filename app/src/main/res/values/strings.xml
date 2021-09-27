@@ -27,6 +27,8 @@
     <string name="male">Male</string>
     <string name="female">Female</string>
 
+    <string name="all">All</string>
+
     <!-- Camera -->
     <string name="camera_move_devices_top_closer_to_you">Bring the top of device closer to you</string>
     <string name="camera_move_devices_top_away_from_you">Pull the top of device away from you</string>

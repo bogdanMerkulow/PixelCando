@@ -8,7 +8,7 @@ import java.time.LocalDate
 data class PatientListRequest(
     @Json(name = "offset") val offset: Int,
     @Json(name = "limit") val limit: Int,
-    @Json(name = "filters") val filter: QueryFilterDto
+    @Json(name = "filters") val filter: PatientListFilterDto
 )
 
 @JsonClass(generateAdapter = true)
