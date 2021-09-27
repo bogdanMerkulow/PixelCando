@@ -10,6 +10,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import pixel.cando.R
+import pixel.cando.data.models.Folder
 import pixel.cando.data.models.Gender
 import pixel.cando.data.models.PatientBriefInfo
 import pixel.cando.data.remote.RemoteRepository
@@ -29,10 +30,15 @@ object PatientListLogic {
     ): First<PatientListDataModel, PatientListEffect> {
         return when {
             model.listState is ParcelableListState.NotInitialized -> {
-                listUpdater.update(
+                val next = listUpdater.update(
                     model,
                     PatientListEvent.RefreshRequest
-                ).toFirst
+                )
+                First.first(
+                    next.modelUnsafe(),
+                    next.effects()
+                            + setOf(PatientListEffect.LoadFolders)
+                )
             }
             model.listState.isLoading -> {
                 listUpdater.update(
@@ -78,6 +84,16 @@ object PatientListLogic {
                 } else {
                     Next.noChange()
                 }
+            }
+            is PatientListEvent.FolderListLoaded -> {
+                Next.next(
+                    model.copy(
+                        folders = event.folders,
+                    )
+                )
+            }
+            is PatientListEvent.PickFolder -> {
+                Next.noChange() // TODO
             }
         }
     }
@@ -136,6 +152,16 @@ object PatientListLogic {
                         }
                     )?.cancel()
                 }
+                is PatientListEffect.LoadFolders -> {
+                    val result = remoteRepository.getFolders()
+                    result.onLeft {
+                        output.accept(
+                            PatientListEvent.FolderListLoaded(
+                                it.map { it.dataModel }
+                            )
+                        )
+                    }
+                }
                 is PatientListEffect.NavigateToPatient -> {
                     //TODO
                 }
@@ -148,6 +174,7 @@ object PatientListLogic {
 
     fun initialModel(
     ) = PatientListDataModel(
+        folders = emptyList(),
         listState = ParcelableListState.NotInitialized()
     )
 
@@ -158,17 +185,32 @@ sealed class PatientListEvent {
     object RefreshRequest : PatientListEvent()
     object LoadNextPage : PatientListEvent()
     data class PickPatient(
-        val patientId: Long
+        val patientId: Long,
+    ) : PatientListEvent()
+
+    data class PickFolder(
+        val folderId: Long,
     ) : PatientListEvent()
 
     // model
-    class PatientListLoaded(val patients: List<PatientDataModel>) : PatientListEvent()
-    class PatientListLoadFailed(val error: Throwable) : PatientListEvent()
+    class PatientListLoaded(
+        val patients: List<PatientDataModel>,
+    ) : PatientListEvent()
+
+    class PatientListLoadFailed(
+        val error: Throwable,
+    ) : PatientListEvent()
+
     object StopListLoading : PatientListEvent()
+
+    data class FolderListLoaded(
+        val folders: List<FolderDataModel>
+    ) : PatientListEvent()
 }
 
 sealed class PatientListEffect {
     data class LoadPage(val page: Int) : PatientListEffect()
+    object LoadFolders : PatientListEffect()
     data class ShowError(val message: String) : PatientListEffect()
 
     data class NavigateToPatient(
@@ -187,11 +229,19 @@ data class PatientDataModel(
 ) : Parcelable
 
 @Parcelize
+data class FolderDataModel(
+    val id: Long,
+    val title: String,
+) : Parcelable
+
+@Parcelize
 data class PatientListDataModel(
+    val folders: List<FolderDataModel>,
     val listState: ParcelableListState<PatientDataModel>
 ) : Parcelable
 
 data class PatientListViewModel(
+    val folders: List<FolderViewModel>,
     val listState: ListState<PatientViewModel>
 )
 
@@ -201,6 +251,11 @@ data class PatientViewModel(
     val info: String,
     val avatarText: String,
     @ColorInt val avatarBgColor: Int,
+)
+
+data class FolderViewModel(
+    val id: Long,
+    val title: String,
 )
 
 fun PatientDataModel.viewModel(
@@ -225,9 +280,18 @@ fun PatientDataModel.viewModel(
     }
 )
 
+private val FolderDataModel.viewModel: FolderViewModel
+    get() = FolderViewModel(
+        id = id,
+        title = title,
+    )
+
 fun PatientListDataModel.viewModel(
     resourceProvider: ResourceProvider
 ) = PatientListViewModel(
+    folders = folders.map {
+        it.viewModel
+    },
     listState = listState.plainState.map { patient, _, _ ->
         patient.viewModel(
             resourceProvider = resourceProvider
@@ -243,4 +307,10 @@ private val PatientBriefInfo.dataModel: PatientDataModel
         age = age,
         avatarText = avatarText,
         avatarBgColor = avatarBgColor,
+    )
+
+private val Folder.dataModel: FolderDataModel
+    get() = FolderDataModel(
+        id = id,
+        title = title,
     )

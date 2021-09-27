@@ -1,7 +1,9 @@
 package pixel.cando.data.remote
 
+import pixel.cando.data.models.Folder
 import pixel.cando.data.models.Gender
 import pixel.cando.data.models.PatientBriefInfo
+import pixel.cando.data.remote.dto.FolderListRequest
 import pixel.cando.data.remote.dto.PatientListRequest
 import pixel.cando.data.remote.dto.QueryFilterDto
 import pixel.cando.data.remote.dto.UploadPhotoRequest
@@ -15,6 +17,9 @@ interface RemoteRepository {
     suspend fun getPatients(
         page: Int,
     ): Either<List<PatientBriefInfo>, Throwable>
+
+    suspend fun getFolders(
+    ): Either<List<Folder>, Throwable>
 
     suspend fun uploadPhoto(
         photo: String
@@ -57,6 +62,25 @@ class RealRemoteRepository(
                     age = it.age,
                     avatarText = it.user.avatar.text,
                     avatarBgColor = it.user.avatar.color,
+                )
+            }
+        }
+    }
+
+    override suspend fun getFolders(
+    ): Either<List<Folder>, Throwable> {
+        return callApi {
+            restApi.getFolders(
+                FolderListRequest(
+                    offset = 0,
+                    limit = -1,
+                )
+            )
+        }.mapOnlyLeft {
+            it.folders.map {
+                Folder(
+                    id = it.id,
+                    title = it.title,
                 )
             }
         }

@@ -21,4 +21,20 @@
         <item name="boxCornerRadiusTopEnd">@dimen/spacing_4</item>
     </style>
 
+    <style name="TabsView">
+        <item name="tabMode">scrollable</item>
+        <item name="tabTextAppearance">@style/TabText</item>
+        <item name="tabTextColor">@color/gray_dove</item>
+        <item name="tabSelectedTextColor">@color/blue_boston</item>
+        <item name="android:clipToPadding">false</item>
+        <item name="android:paddingLeft">@dimen/spacing_16</item>
+        <item name="android:paddingRight">@dimen/spacing_16</item>
+    </style>
+
+    <style name="TabText">
+        <item name="android:textSize">14sp</item>
+        <item name="fontFamily">sans-serif-medium</item>
+        <item name="textAllCaps">true</item>
+    </style>
+
 </resources>

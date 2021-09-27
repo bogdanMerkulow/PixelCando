@@ -3,6 +3,7 @@ package pixel.cando.ui.main.patient_list
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
 import androidx.recyclerview.widget.DividerItemDecoration
+import com.google.android.material.tabs.TabLayout
 import pixel.cando.R
 import pixel.cando.databinding.FragmentPatientListBinding
 import pixel.cando.databinding.ListItemPatientBinding
@@ -56,6 +57,18 @@ class PatientListFragment : ViewBindingFragment<FragmentPatientListBinding>(),
                 into { viewBinding.swipeRefresh.isRefreshing = it }
             ),
             map(
+                { it.folders },
+                into {
+                    viewBinding.folderTabs.removeAllTabs()
+                    it.forEach { folder ->
+                        val tab = viewBinding.folderTabs.newTab()
+                        tab.text = folder.title
+                        tab.tag = folder.id
+                        viewBinding.folderTabs.addTab(tab)
+                    }
+                }
+            ),
+            map(
                 {
                     it.listState.toListItems(
                         noDataPlaceholderProvider = {
@@ -102,6 +115,20 @@ class PatientListFragment : ViewBindingFragment<FragmentPatientListBinding>(),
                 PatientListEvent.LoadNextPage
             )
         }
+        viewBinding.folderTabs.addOnTabSelectedListener(
+            object : TabLayout.OnTabSelectedListener {
+                override fun onTabSelected(tab: TabLayout.Tab) {
+                    val id = tab.tag as? Long
+                        ?: return
+                    eventSender?.sendEvent(
+                        PatientListEvent.PickFolder(id)
+                    )
+                }
+
+                override fun onTabUnselected(tab: TabLayout.Tab) {}
+                override fun onTabReselected(tab: TabLayout.Tab) {}
+            }
+        )
     }
 
     override fun renderViewModel(
