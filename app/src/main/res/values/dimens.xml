@@ -13,4 +13,7 @@
     <dimen name="spacing_6">6dp</dimen>
     <dimen name="spacing_4">4dp</dimen>
     <dimen name="spacing_2">2dp</dimen>
+
+    <dimen name="user_icon">40dp</dimen>
+
 </resources>

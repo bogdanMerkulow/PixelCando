@@ -6,8 +6,11 @@
     <color name="orange_tulip_tree">#E6A742</color>
 
     <color name="gray_dove">#646464</color>
+    <color name="gray_boulder">#757575</color>
     <color name="gray_seashell">#F1F1F1</color>
     <color name="silver_chalice">#9E9E9E</color>
+
+    <color name="black_mine_shaft">#212121</color>
 
     <color name="black">#000000</color>
     <color name="white">#FFFFFF</color>

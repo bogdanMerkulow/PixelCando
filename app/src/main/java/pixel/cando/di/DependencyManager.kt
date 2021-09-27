@@ -171,6 +171,7 @@ class DependencyManager(
                                     setup(
                                         fragment = fragment,
                                         remoteRepository = remoteRepository,
+                                        resourceProvider = resourceProvider,
                                     )
                                 }
                                 is PhotoListFragment -> {

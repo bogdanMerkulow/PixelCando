@@ -1,5 +1,6 @@
 package pixel.cando.data.remote
 
+import pixel.cando.data.models.Gender
 import pixel.cando.data.models.PatientBriefInfo
 import pixel.cando.data.remote.dto.PatientListRequest
 import pixel.cando.data.remote.dto.QueryFilterDto
@@ -46,6 +47,16 @@ class RealRemoteRepository(
                 PatientBriefInfo(
                     id = it.userId,
                     fullName = it.user.fullName,
+                    gender = it.gender.let {
+                        when (it) {
+                            "male" -> Gender.MALE
+                            "female" -> Gender.FEMALE
+                            else -> Gender.MALE
+                        }
+                    },
+                    age = it.age,
+                    avatarText = it.user.avatar.text,
+                    avatarBgColor = it.user.avatar.color,
                 )
             }
         }

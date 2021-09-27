@@ -1,6 +1,8 @@
 package pixel.cando.ui.main.patient_list
 
+import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import androidx.recyclerview.widget.DividerItemDecoration
 import pixel.cando.R
 import pixel.cando.databinding.FragmentPatientListBinding
 import pixel.cando.databinding.ListItemPatientBinding
@@ -58,7 +60,8 @@ class PatientListFragment : ViewBindingFragment<FragmentPatientListBinding>(),
                     it.listState.toListItems(
                         noDataPlaceholderProvider = {
                             PatientListItem.NoDataPlaceholder(
-                                viewBinding.context.getString(R.string.no_patients)
+                                title = viewBinding.context.getString(R.string.no_patients_title),
+                                description = viewBinding.context.getString(R.string.no_patients_description),
                             )
                         },
                         initialLoaderProvider = {
@@ -83,6 +86,12 @@ class PatientListFragment : ViewBindingFragment<FragmentPatientListBinding>(),
     ) {
         super.onViewBindingCreated(viewBinding, savedInstanceState)
         viewBinding.list.adapter = adapter
+        viewBinding.list.addItemDecoration(
+            DividerItemDecoration(
+                requireContext(),
+                DividerItemDecoration.VERTICAL
+            )
+        )
         viewBinding.swipeRefresh.setOnRefreshListener {
             eventSender?.sendEvent(
                 PatientListEvent.RefreshRequest
@@ -110,7 +119,8 @@ private sealed class PatientListItem : ListItem {
         ListMoreLoader
 
     data class NoDataPlaceholder(
-        override val text: String
+        override val title: String,
+        override val description: String,
     ) : PatientListItem(),
         NoDataListPlaceholder
 
@@ -131,7 +141,13 @@ private fun patientAdapterDelegate(
             clickListener.invoke(item.patient.id)
         }
         bind {
-            binding.title.text = item.patient.fullName
+            binding.fullNameLabel.text = item.patient.fullName
+            binding.infoLabel.text = item.patient.info
+            binding.avatarLabel.text = item.patient.avatarText
+            binding.avatarLabel.background = GradientDrawable().apply {
+                shape = GradientDrawable.OVAL
+                setColor(item.patient.avatarBgColor)
+            }
         }
     },
     areItemsTheSame = { oldItem, newItem ->

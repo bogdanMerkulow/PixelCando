@@ -6,12 +6,14 @@ import com.spotify.mobius.android.AndroidLogger
 import pixel.cando.data.remote.RemoteRepository
 import pixel.cando.ui._base.tea.ControllerFragmentDelegate
 import pixel.cando.ui.main.patient_list.*
+import pixel.cando.utils.ResourceProvider
 import pixel.cando.utils.diffuser.DiffuserFragmentDelegate
 import pixel.cando.utils.messageDisplayer
 
 fun setup(
     fragment: PatientListFragment,
     remoteRepository: RemoteRepository,
+    resourceProvider: ResourceProvider,
 ) {
     if (fragment.delegates.isNotEmpty()) {
         return
@@ -41,7 +43,9 @@ fun setup(
             PatientListLogic.initialModel()
         },
         modelMapper = {
-            it.viewModel
+            it.viewModel(
+                resourceProvider = resourceProvider,
+            )
         },
         render = fragment
     )

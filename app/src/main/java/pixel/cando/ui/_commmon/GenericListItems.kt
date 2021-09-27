@@ -9,7 +9,8 @@ import pixel.cando.ui._base.list.createDifferAdapterDelegateInterfaceRestricted
 import pixel.cando.ui._base.list.loadedItems
 
 interface NoDataListPlaceholder : ListItem {
-    val text: String
+    val title: String
+    val description: String
 }
 
 interface ListInitialLoader : ListItem
@@ -25,7 +26,8 @@ internal inline fun <reified C : NoDataListPlaceholder, reified P : ListItem> no
     viewBindingCreator = ListItemNoDataBinding::inflate,
     viewHolderBinding = {
         bind {
-            binding.text.text = item.text
+            binding.titleLabel.text = item.title
+            binding.descriptionLabel.text = item.description
         }
     },
     areItemsTheSame = { _, _ -> true },

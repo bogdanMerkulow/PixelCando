@@ -9,7 +9,7 @@ import retrofit2.http.POST
 
 interface RestApi {
 
-    @POST("customer/patients/list")
+    @POST("doctor/patients/list")
     suspend fun getPatients(
         @Body request: PatientListRequest
     ): Response<PatientListResponse>

@@ -23,12 +23,20 @@ data class PatientDto(
     @Json(name = "gender") val gender: String,
     @Json(name = "height") val height: Float,
     @Json(name = "weight") val weight: Float,
+    @Json(name = "age") val age: Int,
     @Json(name = "user") val user: PatientUserDto,
 )
 
 @JsonClass(generateAdapter = true)
 data class PatientUserDto(
     @Json(name = "fullName") val fullName: String,
-    @Json(name = "contactEmail") val contactEmail: String,
-    @Json(name = "contactPhone") val contactPhone: String,
+    @Json(name = "contactEmail") val contactEmail: String?,
+    @Json(name = "contactPhone") val contactPhone: String?,
+    @Json(name = "avatar") val avatar: PatientUserAvatarDto,
+)
+
+@JsonClass(generateAdapter = true)
+data class PatientUserAvatarDto(
+    @Json(name = "color") val color: String,
+    @Json(name = "abbr") val text: String,
 )

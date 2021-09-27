@@ -1,18 +1,23 @@
 package pixel.cando.ui.main.patient_list
 
 import android.os.Parcelable
+import androidx.annotation.ColorInt
+import androidx.core.graphics.toColorInt
 import com.spotify.mobius.Connectable
 import com.spotify.mobius.First
 import com.spotify.mobius.Next
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import pixel.cando.R
+import pixel.cando.data.models.Gender
 import pixel.cando.data.models.PatientBriefInfo
 import pixel.cando.data.remote.RemoteRepository
 import pixel.cando.ui._base.list.*
 import pixel.cando.ui._base.tea.CoroutineScopeEffectHandler
 import pixel.cando.ui._base.tea.toFirst
 import pixel.cando.utils.MessageDisplayer
+import pixel.cando.utils.ResourceProvider
 import pixel.cando.utils.onLeft
 import pixel.cando.utils.onRight
 import java.util.concurrent.atomic.AtomicReference
@@ -175,6 +180,10 @@ sealed class PatientListEffect {
 data class PatientDataModel(
     val id: Long,
     val fullName: String,
+    val gender: Gender,
+    val age: Int,
+    val avatarText: String,
+    val avatarBgColor: String,
 ) : Parcelable
 
 @Parcelize
@@ -189,23 +198,49 @@ data class PatientListViewModel(
 data class PatientViewModel(
     val id: Long,
     val fullName: String,
+    val info: String,
+    val avatarText: String,
+    @ColorInt val avatarBgColor: Int,
 )
 
-val PatientDataModel.viewModel: PatientViewModel
-    get() = PatientViewModel(
-        id = id,
-        fullName = fullName
-    )
+fun PatientDataModel.viewModel(
+    resourceProvider: ResourceProvider
+) = PatientViewModel(
+    id = id,
+    fullName = fullName,
+    info = listOf(
+        resourceProvider.getString(
+            when (gender) {
+                Gender.MALE -> R.string.male
+                Gender.FEMALE -> R.string.female
+            }
+        ),
+        age.toString()
+    ).joinToString(),
+    avatarText = avatarText,
+    avatarBgColor = try {
+        avatarBgColor.toColorInt()
+    } catch (ex: IllegalArgumentException) {
+        resourceProvider.getColor(R.color.blue_boston)
+    }
+)
 
-val PatientListDataModel.viewModel: PatientListViewModel
-    get() = PatientListViewModel(
-        listState = listState.plainState.map { patient, _, _ ->
-            patient.viewModel
-        }
-    )
+fun PatientListDataModel.viewModel(
+    resourceProvider: ResourceProvider
+) = PatientListViewModel(
+    listState = listState.plainState.map { patient, _, _ ->
+        patient.viewModel(
+            resourceProvider = resourceProvider
+        )
+    }
+)
 
 private val PatientBriefInfo.dataModel: PatientDataModel
     get() = PatientDataModel(
         id = id,
-        fullName = fullName
+        fullName = fullName,
+        gender = gender,
+        age = age,
+        avatarText = avatarText,
+        avatarBgColor = avatarBgColor,
     )

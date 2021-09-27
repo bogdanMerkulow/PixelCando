@@ -1,10 +1,31 @@
 <?xml version="1.0" encoding="utf-8"?>
-<TextView
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/text"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:gravity="center"
-    tools:text="Nothing"
-    />
+    android:orientation="vertical"
+    android:paddingHorizontal="@dimen/spacing_16"
+    android:paddingTop="@dimen/spacing_32"
+    >
+
+    <TextView
+        android:id="@+id/titleLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black_mine_shaft"
+        android:textSize="20sp"
+        tools:text="Title"
+        />
+
+    <TextView
+        android:id="@+id/descriptionLabel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_8"
+        android:textColor="@color/gray_dove"
+        android:textSize="14sp"
+        tools:text="Description"
+        />
+
+</LinearLayout>

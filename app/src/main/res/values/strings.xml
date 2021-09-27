@@ -14,7 +14,8 @@
     <string name="tab_title_profile">Profile</string>
 
     <string name="screen_title_patients">Patients</string>
-    <string name="no_patients">No Patients</string>
+    <string name="no_patients_title">No patients yet</string>
+    <string name="no_patients_description">There is no patient in this folder. Please add one by clicking the Plus floating button below</string>
 
     <string name="something_went_wrong">Something went wrong</string>
 
@@ -22,6 +23,9 @@
     <string name="upload">Upload</string>
 
     <string name="cancel">Cancel</string>
+
+    <string name="male">Male</string>
+    <string name="female">Female</string>
 
     <!-- Camera -->
     <string name="camera_move_devices_top_closer_to_you">Bring the top of device closer to you</string>
