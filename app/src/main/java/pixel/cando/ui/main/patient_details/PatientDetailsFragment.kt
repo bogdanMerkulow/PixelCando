@@ -1,5 +1,6 @@
 package pixel.cando.ui.main.patient_details
 
+import android.graphics.Bitmap
 import android.os.Bundle
 import pixel.cando.databinding.FragmentPatientDetailsBinding
 import pixel.cando.ui._base.fragment.ViewBindingCreator
@@ -7,6 +8,7 @@ import pixel.cando.ui._base.fragment.ViewBindingFragment
 import pixel.cando.ui._base.tea.EventSender
 import pixel.cando.ui._base.tea.EventSenderNeeder
 import pixel.cando.ui._base.tea.ViewModelRender
+import pixel.cando.ui.main.camera.CameraFragment
 import pixel.cando.utils.diffuser.*
 import pixel.cando.utils.diffuser.ViewDiffusers.intoEnabled
 import pixel.cando.utils.diffuser.ViewDiffusers.intoVisibleOrGone
@@ -15,7 +17,8 @@ class PatientDetailsFragment : ViewBindingFragment<FragmentPatientDetailsBinding
     ViewModelRender<PatientDetailsViewModel>,
     EventSenderNeeder<PatientDetailsEvent>,
     DiffuserCreator<PatientDetailsViewModel, FragmentPatientDetailsBinding>,
-    DiffuserProviderNeeder<PatientDetailsViewModel> {
+    DiffuserProviderNeeder<PatientDetailsViewModel>,
+    CameraFragment.Callback {
 
     override val viewBindingCreator: ViewBindingCreator<FragmentPatientDetailsBinding>
         get() = FragmentPatientDetailsBinding::inflate
@@ -67,4 +70,18 @@ class PatientDetailsFragment : ViewBindingFragment<FragmentPatientDetailsBinding
     ) {
         diffuserProvider?.invoke()?.run(viewModel)
     }
+
+    override fun onCameraResult(
+        bitmap: Bitmap
+    ) {
+        eventSender?.sendEvent(
+            PatientDetailsEvent.PhotoTaken(
+                bitmap = bitmap
+            )
+        )
+    }
+
+    override fun onCameraCancel() {
+    }
+
 }

@@ -4,11 +4,9 @@ import com.squareup.moshi.Moshi
 import pixel.cando.data.models.SignInFailure
 import pixel.cando.data.models.SignInSuccess
 import pixel.cando.data.models.UserRole
-import pixel.cando.data.remote.dto.FailureResponse
 import pixel.cando.data.remote.dto.PasswordRecoveryRequest
 import pixel.cando.data.remote.dto.SignInRequest
 import pixel.cando.utils.Either
-import pixel.cando.utils.objectFromJson
 import retrofit2.Response
 
 interface AuthRepository {
@@ -57,7 +55,7 @@ class RealAuthRepository(
                 )
             } else {
                 Either.Right(
-                    response.errorMessage?.let {
+                    response.errorMessage(moshi)?.let {
                         SignInFailure.CustomMessage(it)
                     } ?: SignInFailure.UnknownError(
                         IllegalStateException("Can not handle")
@@ -101,17 +99,6 @@ class RealAuthRepository(
             Either.Right(ex)
         }
     }
-
-    private val <R> Response<R>.errorMessage: String?
-        get() {
-            if (isSuccessful.not()) {
-                val failureResponse: FailureResponse? = moshi.objectFromJson(
-                    errorBody()!!.string()
-                )
-                return failureResponse?.exception?.message
-            }
-            return null
-        }
 
 }
 

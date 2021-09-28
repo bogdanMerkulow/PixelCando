@@ -17,9 +17,9 @@ interface RestApi {
         @Body request: FolderListRequest
     ): Response<FolderListResponse>
 
-    @POST("patient/photos/upload")
+    @POST("doctor/photos/upload")
     suspend fun uploadPhoto(
-        @Body request: UploadPhotoRequest
+        @Body request: UploadPhotoForPatientRequest
     ): Response<Unit>
 
 }

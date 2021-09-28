@@ -97,6 +97,7 @@ object PhotoListLogic {
                     val base64 = effect.bitmap.base64ForSending
                     if (base64 != null) {
                         val result = remoteRepository.uploadPhoto(
+                            patientId = 666, // FIXME
                             photo = base64
                         )
                         result.onLeft {
@@ -105,7 +106,7 @@ object PhotoListLogic {
                             )
                         }
                         result.onRight {
-                            logError(it)
+                            //logError(it)
                             output.accept(
                                 PhotoListEvent.PhotoUploadFailure
                             )

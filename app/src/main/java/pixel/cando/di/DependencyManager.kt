@@ -12,6 +12,8 @@ import pixel.cando.data.remote.AuthRepository
 import pixel.cando.data.remote.RealAuthRepository
 import pixel.cando.data.remote.RealRemoteRepository
 import pixel.cando.data.remote.RemoteRepository
+import pixel.cando.ui._base.fragment.DelegatingFragment
+import pixel.cando.ui._base.fragment.FragmentDelegate
 import pixel.cando.ui._base.fragment.RootRouter
 import pixel.cando.ui._base.fragment.findImplementationOrThrow
 import pixel.cando.ui.auth.password_recovery.PasswordRecoveryFragment
@@ -21,6 +23,7 @@ import pixel.cando.ui.main.home.HomeFragment
 import pixel.cando.ui.main.patient_details.PatientDetailsFragment
 import pixel.cando.ui.main.patient_list.PatientListFragment
 import pixel.cando.ui.main.photo_list.PhotoListFragment
+import pixel.cando.ui.main.photo_preview.PhotoPreviewFragment
 import pixel.cando.ui.root.RootEvent
 import pixel.cando.ui.root.RootFragment
 import pixel.cando.utils.RealResourceProvider
@@ -94,6 +97,7 @@ class DependencyManager(
     private val remoteRepository: RemoteRepository by lazy {
         RealRemoteRepository(
             restApi = restApi,
+            moshi = moshi,
             unauthorizedHandler = {
                 unauthorizedResultEventSource.emit(
                     RootEvent.UserAuthorizationGotInvalid
@@ -193,6 +197,9 @@ class DependencyManager(
                                         context = app,
                                     )
                                 }
+                                is PhotoPreviewFragment -> {
+                                    fragment.setup()
+                                }
                             }
                         }
                     },
@@ -212,4 +219,21 @@ class DependencyManager(
     ) {
     }
 
+}
+
+inline fun <reified D : FragmentDelegate> Fragment.findDelegateOrThrow(): D {
+    return findDelegate(D::class.java)
+        ?: throw IllegalStateException("Delegate with class ${D::class.java.name} was not found")
+}
+
+fun <D : FragmentDelegate> Fragment.findDelegate(klass: Class<D>): D? {
+    if (this is DelegatingFragment) {
+        val delegate = delegates.firstOrNull {
+            klass.isInstance(it)
+        } as? D
+        if (delegate != null) {
+            return delegate
+        }
+    }
+    return parentFragment?.findDelegate(klass)
 }

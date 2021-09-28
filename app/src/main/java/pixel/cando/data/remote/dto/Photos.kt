@@ -4,6 +4,7 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class UploadPhotoRequest(
+data class UploadPhotoForPatientRequest(
+    @Json(name = "patientId") val patientId: Long,
     @Json(name = "file") val photo: String,
 )

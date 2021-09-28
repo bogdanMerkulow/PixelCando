@@ -8,6 +8,7 @@ import com.spotify.mobius.First
 import com.spotify.mobius.Next
 import kotlinx.parcelize.Parcelize
 import pixel.cando.R
+import pixel.cando.data.models.UploadPhotoFailure
 import pixel.cando.data.remote.RemoteRepository
 import pixel.cando.ui._base.fragment.FlowRouter
 import pixel.cando.ui._base.tea.CoroutineScopeEffectHandler
@@ -35,16 +36,29 @@ object PatientDetailsLogic {
                 )
             }
             is PatientDetailsEvent.PhotoTaken -> {
+                Next.dispatch(
+                    setOf(
+                        PatientDetailsEffect.AskToConfirmPhoto(
+                            bitmap = event.bitmap
+                        )
+                    )
+                )
+            }
+            is PatientDetailsEvent.PhotoAccepted -> {
                 Next.next(
                     model.copy(
                         isLoading = true,
                     ),
                     setOf(
                         PatientDetailsEffect.UploadPhoto(
+                            patientId = model.patientId,
                             bitmap = event.bitmap
                         )
                     )
                 )
+            }
+            is PatientDetailsEvent.PhotoDeclined -> {
+                Next.noChange()
             }
             is PatientDetailsEvent.ExitTap -> {
                 Next.dispatch(
@@ -67,7 +81,8 @@ object PatientDetailsLogic {
                         isLoading = false,
                     ),
                     setOf(
-                        PatientDetailsEffect.ShowUnexpectedError
+                        if (event.message.isNullOrBlank()) PatientDetailsEffect.ShowUnexpectedError
+                        else PatientDetailsEffect.ShowErrorMessage(event.message)
                     )
                 )
             }
@@ -90,6 +105,7 @@ object PatientDetailsLogic {
 
     fun effectHandler(
         photoTakerOpener: () -> Unit,
+        photoConfirmationAsker: (Bitmap) -> Unit,
         remoteRepository: RemoteRepository,
         messageDisplayer: MessageDisplayer,
         resourceProvider: ResourceProvider,
@@ -105,6 +121,7 @@ object PatientDetailsLogic {
                     val base64 = effect.bitmap.base64ForSending
                     if (base64 != null) {
                         val result = remoteRepository.uploadPhoto(
+                            patientId = effect.patientId,
                             photo = base64
                         )
                         result.onLeft {
@@ -113,14 +130,25 @@ object PatientDetailsLogic {
                             )
                         }
                         result.onRight {
-                            logError(it)
-                            output.accept(
-                                PatientDetailsEvent.PhotoUploadFailure
-                            )
+                            when (it) {
+                                is UploadPhotoFailure.ErrorMessage -> {
+                                    output.accept(
+                                        PatientDetailsEvent.PhotoUploadFailure(
+                                            message = it.message
+                                        )
+                                    )
+                                }
+                                is UploadPhotoFailure.UnknownError -> {
+                                    logError(it.throwable)
+                                    output.accept(
+                                        PatientDetailsEvent.PhotoUploadFailure()
+                                    )
+                                }
+                            }
                         }
                     } else {
                         output.accept(
-                            PatientDetailsEvent.PhotoUploadFailure
+                            PatientDetailsEvent.PhotoUploadFailure()
                         )
                     }
                 }
@@ -134,9 +162,17 @@ object PatientDetailsLogic {
                         permissionChecker.requestPermission(permission)
                     }
                 }
+                is PatientDetailsEffect.AskToConfirmPhoto -> {
+                    photoConfirmationAsker.invoke(effect.bitmap)
+                }
                 is PatientDetailsEffect.ShowUnexpectedError -> {
                     messageDisplayer.showMessage(
                         resourceProvider.getString(R.string.something_went_wrong)
+                    )
+                }
+                is PatientDetailsEffect.ShowErrorMessage -> {
+                    messageDisplayer.showMessage(
+                        effect.message
                     )
                 }
                 is PatientDetailsEffect.Exit -> {
@@ -163,9 +199,18 @@ sealed class PatientDetailsEvent {
 
     object ExitTap : PatientDetailsEvent()
 
+    data class PhotoAccepted(
+        val bitmap: Bitmap
+    ) : PatientDetailsEvent()
+
+    object PhotoDeclined : PatientDetailsEvent()
+
     // model
+
     object PhotoUploadSuccess : PatientDetailsEvent()
-    object PhotoUploadFailure : PatientDetailsEvent()
+    data class PhotoUploadFailure(
+        val message: String? = null,
+    ) : PatientDetailsEvent()
 
     object CameraPermissionGranted : PatientDetailsEvent()
     object CameraPermissionDenied : PatientDetailsEvent()
@@ -173,11 +218,20 @@ sealed class PatientDetailsEvent {
 
 sealed class PatientDetailsEffect {
     object OpenPhotoTaker : PatientDetailsEffect()
+
     data class UploadPhoto(
+        val patientId: Long,
+        val bitmap: Bitmap
+    ) : PatientDetailsEffect()
+
+    data class AskToConfirmPhoto(
         val bitmap: Bitmap
     ) : PatientDetailsEffect()
 
     object ShowUnexpectedError : PatientDetailsEffect()
+    data class ShowErrorMessage(
+        val message: String,
+    ) : PatientDetailsEffect()
 
     object CheckCameraPermission : PatientDetailsEffect()
 

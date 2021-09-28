@@ -6,10 +6,14 @@ import com.spotify.mobius.Update
 import com.spotify.mobius.android.AndroidLogger
 import pixel.cando.data.remote.RemoteRepository
 import pixel.cando.ui._base.fragment.FlowRouter
+import pixel.cando.ui._base.fragment.SimpleFragmentDelegate
 import pixel.cando.ui._base.fragment.getArgument
 import pixel.cando.ui._base.tea.ControllerFragmentDelegate
+import pixel.cando.ui._base.tea.ResultEventSource
 import pixel.cando.ui.main.camera.CameraFragment
 import pixel.cando.ui.main.patient_details.*
+import pixel.cando.ui.main.photo_preview.PhotoPreviewFragment
+import pixel.cando.ui.main.photo_preview.PhotoPreviewResult
 import pixel.cando.utils.*
 import pixel.cando.utils.diffuser.DiffuserFragmentDelegate
 
@@ -34,6 +38,16 @@ fun setup(
         context = context,
         resultEmitter = permissionResultEventSource
     )
+
+    val photoPreviewDependencies = PhotoPreviewForPatientDetailsDependencies(
+        resultEmitter = ResultEventSource {
+            when (it) {
+                is PhotoPreviewResult.Accepted -> PatientDetailsEvent.PhotoAccepted(it.bitmap)
+                is PhotoPreviewResult.Declined -> PatientDetailsEvent.PhotoDeclined
+            }
+        }
+    )
+
     val controllerFragmentDelegate = ControllerFragmentDelegate<
             PatientDetailsViewModel,
             PatientDetailsDataModel,
@@ -54,6 +68,14 @@ fun setup(
                         )
                     }
                 },
+                photoConfirmationAsker = {
+                    doOnGlobalMain {
+                        PhotoPreviewFragment.show(
+                            photo = it,
+                            fragmentManager = fragment.childFragmentManager,
+                        )
+                    }
+                },
                 remoteRepository = remoteRepository,
                 messageDisplayer = fragment.messageDisplayer,
                 resourceProvider = resourceProvider,
@@ -62,7 +84,8 @@ fun setup(
             )
         )
             .eventSources(
-                permissionResultEventSource
+                permissionResultEventSource,
+                photoPreviewDependencies.resultEmitter,
             )
             .logger(AndroidLogger.tag("PatientDetails")),
         initialState = {
@@ -89,5 +112,11 @@ fun setup(
         diffuserFragmentDelegate,
         controllerFragmentDelegate,
         permissionChecker,
+        photoPreviewDependencies,
     )
 }
+
+class PhotoPreviewForPatientDetailsDependencies(
+    override val resultEmitter: ResultEventSource<PhotoPreviewResult, PatientDetailsEvent>
+) : SimpleFragmentDelegate(),
+    PhotoPreviewDependencies
