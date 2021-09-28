@@ -8,7 +8,7 @@ import pixel.cando.data.local.UserRoleStore
 import pixel.cando.data.models.UserRole
 import pixel.cando.ui._base.tea.ControllerFragmentDelegate
 import pixel.cando.ui.main.home.*
-import pixel.cando.ui.main.patient_list.PatientListFragment
+import pixel.cando.ui.main.patient_flow.PatientFlowFragment
 import pixel.cando.ui.main.photo_list.PhotoListFragment
 import pixel.cando.ui.main.profile.ProfileFragment
 import pixel.cando.utils.ResourceProvider
@@ -28,7 +28,7 @@ fun setup(
                     HomeTab(
                         title = R.string.tab_title_patients,
                         icon = R.drawable.ic_patients,
-                        fragmentProvider = { PatientListFragment() },
+                        fragmentProvider = { PatientFlowFragment() },
                     ),
                     HomeTab(
                         title = R.string.tab_title_profile,

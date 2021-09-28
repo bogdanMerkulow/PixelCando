@@ -8,6 +8,8 @@ import pixel.cando.ui.auth.password_recovery.PasswordRecoveryFragment
 import pixel.cando.ui.auth.sign_in.SignInFragment
 import pixel.cando.ui.main.MainFlowFragment
 import pixel.cando.ui.main.home.HomeFragment
+import pixel.cando.ui.main.patient_details.PatientDetailsFragment
+import pixel.cando.ui.main.patient_list.PatientListFragment
 import pixel.cando.ui.root.RootFragment
 import pixel.cando.ui.splash.SplashFragment
 
@@ -22,11 +24,20 @@ object Screens {
     fun passwordRecovery(
         email: String
     ) = FragmentScreen {
-        PasswordRecoveryFragment().withArgumentSet(email)
+        PasswordRecoveryFragment()
+            .withArgumentSet(email)
     }
 
     fun mainFlow() = FragmentScreen { MainFlowFragment() }
     fun home() = FragmentScreen { HomeFragment() }
+
+    fun patients() = FragmentScreen { PatientListFragment() }
+    fun patientDetails(
+        patientId: Long,
+    ) = FragmentScreen {
+        PatientDetailsFragment()
+            .withArgumentSet(patientId)
+    }
 
     fun empty() = FragmentScreen { Fragment() } //only for development
 

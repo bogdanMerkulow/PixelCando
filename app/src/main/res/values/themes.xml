@@ -3,12 +3,12 @@
     <style name="Theme.Pixelcando" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">@color/blue_boston</item>
-        <item name="colorPrimaryVariant">@color/blue_malibu</item>
-        <item name="colorOnPrimary">@color/blue_boston</item>
+        <item name="colorPrimaryVariant">@color/blue_boston</item>
+        <item name="colorOnPrimary">@color/blue_malibu</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/orange_tulip_tree</item>
-        <item name="colorSecondaryVariant">@color/orange_tulip_tree</item>
-        <item name="colorOnSecondary">@color/black</item>
+        <item name="colorSecondary">@color/blue_boston</item>
+        <item name="colorSecondaryVariant">@color/blue_boston</item>
+        <item name="colorOnSecondary">@color/white</item>
         <!-- Status bar color. -->
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!-- Customize your theme here. -->

@@ -18,6 +18,7 @@ import pixel.cando.ui.auth.password_recovery.PasswordRecoveryFragment
 import pixel.cando.ui.auth.sign_in.SignInFragment
 import pixel.cando.ui.createUnauthorizedResultEventSource
 import pixel.cando.ui.main.home.HomeFragment
+import pixel.cando.ui.main.patient_details.PatientDetailsFragment
 import pixel.cando.ui.main.patient_list.PatientListFragment
 import pixel.cando.ui.main.photo_list.PhotoListFragment
 import pixel.cando.ui.root.RootEvent
@@ -172,6 +173,16 @@ class DependencyManager(
                                         fragment = fragment,
                                         remoteRepository = remoteRepository,
                                         resourceProvider = resourceProvider,
+                                        flowRouter = fragment.findImplementationOrThrow(),
+                                    )
+                                }
+                                is PatientDetailsFragment -> {
+                                    setup(
+                                        fragment = fragment,
+                                        remoteRepository = remoteRepository,
+                                        resourceProvider = resourceProvider,
+                                        context = app,
+                                        flowRouter = fragment.findImplementationOrThrow(),
                                     )
                                 }
                                 is PhotoListFragment -> {

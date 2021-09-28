@@ -14,6 +14,8 @@ import pixel.cando.data.models.Folder
 import pixel.cando.data.models.Gender
 import pixel.cando.data.models.PatientBriefInfo
 import pixel.cando.data.remote.RemoteRepository
+import pixel.cando.ui.Screens
+import pixel.cando.ui._base.fragment.FlowRouter
 import pixel.cando.ui._base.list.*
 import pixel.cando.ui._base.tea.CoroutineScopeEffectHandler
 import pixel.cando.ui._base.tea.toFirst
@@ -143,6 +145,7 @@ object PatientListLogic {
     fun effectHandler(
         messageDisplayer: MessageDisplayer,
         remoteRepository: RemoteRepository,
+        flowRouter: FlowRouter,
     ): Connectable<PatientListEffect, PatientListEvent> {
         val loadNextPageJob = AtomicReference<Job>()
         return CoroutineScopeEffectHandler { effect, output ->
@@ -180,7 +183,11 @@ object PatientListLogic {
                     }
                 }
                 is PatientListEffect.NavigateToPatient -> {
-                    //TODO
+                    flowRouter.navigateTo(
+                        Screens.patientDetails(
+                            patientId = effect.patientId,
+                        )
+                    )
                 }
                 is PatientListEffect.ShowError -> {
                     messageDisplayer.showMessage(effect.message)

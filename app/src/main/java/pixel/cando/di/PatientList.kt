@@ -4,6 +4,7 @@ import com.spotify.mobius.Mobius
 import com.spotify.mobius.Update
 import com.spotify.mobius.android.AndroidLogger
 import pixel.cando.data.remote.RemoteRepository
+import pixel.cando.ui._base.fragment.FlowRouter
 import pixel.cando.ui._base.tea.ControllerFragmentDelegate
 import pixel.cando.ui.main.patient_list.*
 import pixel.cando.utils.ResourceProvider
@@ -14,6 +15,7 @@ fun setup(
     fragment: PatientListFragment,
     remoteRepository: RemoteRepository,
     resourceProvider: ResourceProvider,
+    flowRouter: FlowRouter,
 ) {
     if (fragment.delegates.isNotEmpty()) {
         return
@@ -33,6 +35,7 @@ fun setup(
             PatientListLogic.effectHandler(
                 remoteRepository = remoteRepository,
                 messageDisplayer = fragment.messageDisplayer,
+                flowRouter = flowRouter,
             )
         )
             .logger(AndroidLogger.tag("PatientList")),
