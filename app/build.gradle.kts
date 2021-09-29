@@ -10,7 +10,7 @@ android {
     buildToolsVersion("30.0.3")
 
     defaultConfig {
-        applicationId = "pixel.cando"
+        applicationId = "com.pixelcando.fityouroutfit"
         minSdk = 21
         targetSdk = 30
         versionCode = 1
