@@ -12,7 +12,7 @@ import kotlinx.parcelize.Parcelize
 import pixel.cando.R
 import pixel.cando.data.models.Folder
 import pixel.cando.data.models.Gender
-import pixel.cando.data.models.PatientBriefInfo
+import pixel.cando.data.models.PatientListItemInfo
 import pixel.cando.data.remote.RemoteRepository
 import pixel.cando.ui.Screens
 import pixel.cando.ui._base.fragment.FlowRouter
@@ -330,7 +330,7 @@ fun PatientListDataModel.viewModel(
     }
 )
 
-private val PatientBriefInfo.dataModel: PatientDataModel
+private val PatientListItemInfo.dataModel: PatientDataModel
     get() = PatientDataModel(
         id = id,
         fullName = fullName,

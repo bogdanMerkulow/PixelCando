@@ -1,14 +1,8 @@
 package pixel.cando.data.remote
 
 import com.squareup.moshi.Moshi
-import pixel.cando.data.models.Folder
-import pixel.cando.data.models.Gender
-import pixel.cando.data.models.PatientBriefInfo
-import pixel.cando.data.models.UploadPhotoFailure
-import pixel.cando.data.remote.dto.FolderListRequest
-import pixel.cando.data.remote.dto.PatientListFilterDto
-import pixel.cando.data.remote.dto.PatientListRequest
-import pixel.cando.data.remote.dto.UploadPhotoForPatientRequest
+import pixel.cando.data.models.*
+import pixel.cando.data.remote.dto.*
 import pixel.cando.utils.Either
 import pixel.cando.utils.mapOnlyLeft
 import retrofit2.Response
@@ -19,7 +13,11 @@ interface RemoteRepository {
     suspend fun getPatients(
         folderId: Long?,
         page: Int,
-    ): Either<List<PatientBriefInfo>, Throwable>
+    ): Either<List<PatientListItemInfo>, Throwable>
+
+    suspend fun getPatient(
+        patientId: Long,
+    ): Either<PatientSingleItemInfo, Throwable>
 
     suspend fun getFolders(
     ): Either<List<Folder>, Throwable>
@@ -42,7 +40,7 @@ class RealRemoteRepository(
     override suspend fun getPatients(
         folderId: Long?,
         page: Int,
-    ): Either<List<PatientBriefInfo>, Throwable> {
+    ): Either<List<PatientListItemInfo>, Throwable> {
         return callApi {
             getPatients(
                 PatientListRequest(
@@ -56,7 +54,7 @@ class RealRemoteRepository(
             )
         }.mapOnlyLeft {
             it.results.map {
-                PatientBriefInfo(
+                PatientListItemInfo(
                     id = it.userId,
                     fullName = it.user.fullName,
                     gender = it.gender.let {
@@ -71,6 +69,23 @@ class RealRemoteRepository(
                     avatarBgColor = it.user.avatar.color,
                 )
             }
+        }
+    }
+
+    override suspend fun getPatient(
+        patientId: Long
+    ): Either<PatientSingleItemInfo, Throwable> {
+        return callApi {
+            getPatient(
+                PatientGetRequest(
+                    id = patientId
+                )
+            )
+        }.mapOnlyLeft {
+            PatientSingleItemInfo(
+                id = it.patient.userId,
+                fullName = it.patient.user.fullName,
+            )
         }
     }
 

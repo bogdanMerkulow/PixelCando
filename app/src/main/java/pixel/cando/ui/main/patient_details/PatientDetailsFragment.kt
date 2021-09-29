@@ -9,6 +9,7 @@ import pixel.cando.ui._base.tea.EventSenderNeeder
 import pixel.cando.ui._base.tea.ViewModelRender
 import pixel.cando.ui.main.camera.CameraFragment
 import pixel.cando.utils.diffuser.*
+import pixel.cando.utils.diffuser.Diffuser.into
 import pixel.cando.utils.diffuser.ViewDiffusers.intoEnabled
 import pixel.cando.utils.diffuser.ViewDiffusers.intoVisibleOrGone
 
@@ -28,6 +29,12 @@ class PatientDetailsFragment : ViewBindingFragment<FragmentPatientDetailsBinding
         viewBinding: FragmentPatientDetailsBinding
     ): Diffuser<PatientDetailsViewModel> {
         return Diffuser(
+            map(
+                { it.title },
+                into {
+                    viewBinding.toolbar.title = it
+                }
+            ),
             map(
                 { it.isLoaderVisible },
                 intoVisibleOrGone(

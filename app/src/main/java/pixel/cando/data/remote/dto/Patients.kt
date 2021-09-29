@@ -17,6 +17,16 @@ data class PatientListResponse(
 )
 
 @JsonClass(generateAdapter = true)
+data class PatientGetRequest(
+    @Json(name = "id") val id: Long,
+)
+
+@JsonClass(generateAdapter = true)
+data class PatientGetResponse(
+    @Json(name = "patient") val patient: PatientDto,
+)
+
+@JsonClass(generateAdapter = true)
 data class PatientDto(
     @Json(name = "userId") val userId: Long,
     @Json(name = "dateOfBirth") val dateOfBirth: LocalDate,

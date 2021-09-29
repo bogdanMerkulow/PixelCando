@@ -12,6 +12,11 @@ interface RestApi {
         @Body request: PatientListRequest
     ): Response<PatientListResponse>
 
+    @POST("doctor/patients/get")
+    suspend fun getPatient(
+        @Body request: PatientGetRequest
+    ): Response<PatientGetResponse>
+
     @POST("doctor/folders/list")
     suspend fun getFolders(
         @Body request: FolderListRequest

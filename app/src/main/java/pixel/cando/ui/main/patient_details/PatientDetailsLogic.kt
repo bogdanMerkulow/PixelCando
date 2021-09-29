@@ -19,7 +19,14 @@ object PatientDetailsLogic {
     fun init(
         model: PatientDetailsDataModel
     ): First<PatientDetailsDataModel, PatientDetailsEffect> {
-        return First.first(model)
+        return First.first(
+            model,
+            setOf(
+                PatientDetailsEffect.LoadPatientInfo(
+                    patientId = model.patientId,
+                )
+            )
+        )
     }
 
     fun update(
@@ -68,6 +75,13 @@ object PatientDetailsLogic {
                 )
             }
             // model
+            is PatientDetailsEvent.LoadPatientInfoSuccess -> {
+                Next.next(
+                    model.copy(
+                        patientFullName = event.patientFullName,
+                    )
+                )
+            }
             is PatientDetailsEvent.PhotoUploadSuccess -> {
                 Next.next(
                     model.copy(
@@ -114,6 +128,18 @@ object PatientDetailsLogic {
     ): Connectable<PatientDetailsEffect, PatientDetailsEvent> =
         CoroutineScopeEffectHandler { effect, output ->
             when (effect) {
+                is PatientDetailsEffect.LoadPatientInfo -> {
+                    val result = remoteRepository.getPatient(
+                        patientId = effect.patientId
+                    )
+                    result.onLeft {
+                        output.accept(
+                            PatientDetailsEvent.LoadPatientInfoSuccess(
+                                patientFullName = it.fullName,
+                            )
+                        )
+                    }
+                }
                 is PatientDetailsEffect.OpenPhotoTaker -> {
                     photoTakerOpener.invoke()
                 }
@@ -185,6 +211,7 @@ object PatientDetailsLogic {
         patientId: Long,
     ) = PatientDetailsDataModel(
         patientId = patientId,
+        patientFullName = null,
         isLoading = false,
     )
 
@@ -207,6 +234,10 @@ sealed class PatientDetailsEvent {
 
     // model
 
+    data class LoadPatientInfoSuccess(
+        val patientFullName: String,
+    ) : PatientDetailsEvent()
+
     object PhotoUploadSuccess : PatientDetailsEvent()
     data class PhotoUploadFailure(
         val message: String? = null,
@@ -217,6 +248,11 @@ sealed class PatientDetailsEvent {
 }
 
 sealed class PatientDetailsEffect {
+
+    data class LoadPatientInfo(
+        val patientId: Long
+    ) : PatientDetailsEffect()
+
     object OpenPhotoTaker : PatientDetailsEffect()
 
     data class UploadPhoto(
@@ -241,16 +277,19 @@ sealed class PatientDetailsEffect {
 @Parcelize
 data class PatientDetailsDataModel(
     val patientId: Long,
+    val patientFullName: String?,
     val isLoading: Boolean,
 ) : Parcelable
 
 data class PatientDetailsViewModel(
+    val title: String,
     val isLoaderVisible: Boolean,
     val isTakePhotoButtonEnabled: Boolean,
 )
 
 fun PatientDetailsDataModel.viewModel(
 ) = PatientDetailsViewModel(
+    title = patientFullName ?: "",
     isLoaderVisible = isLoading,
     isTakePhotoButtonEnabled = isLoading.not(),
 )
