@@ -6,8 +6,8 @@ plugins {
 }
 
 android {
-    compileSdkVersion(30)
-    buildToolsVersion("30.0.3")
+    compileSdk = 30
+    buildToolsVersion = "30.0.3"
 
     defaultConfig {
         applicationId = "com.pixelcando.fityouroutfit"
@@ -15,10 +15,8 @@ android {
         targetSdk = 30
         versionCode = 1
         versionName = "1.0"
-        resConfigs(
-            "en",
-            "it"
-        )
+        resourceConfigurations.add("en")
+        resourceConfigurations.add("it")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     signingConfigs {
@@ -40,7 +38,7 @@ android {
             signingConfig = signingConfigs.getByName("release")
         }
     }
-    flavorDimensions("default")
+    flavorDimensions.add("default")
     productFlavors {
         create("develop") {
             dimension = "default"
