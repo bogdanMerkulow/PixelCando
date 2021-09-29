@@ -5,6 +5,7 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import pixel.cando.databinding.FragmentHomeBinding
+import pixel.cando.ui._base.fragment.OnBackPressedListener
 import pixel.cando.ui._base.fragment.ViewBindingFragment
 import pixel.cando.ui._base.tea.EventSender
 import pixel.cando.ui._base.tea.EventSenderNeeder
@@ -19,7 +20,8 @@ class HomeFragment : ViewBindingFragment<FragmentHomeBinding>(
 ), ViewModelRender<HomeViewModel>,
     EventSenderNeeder<HomeEvent>,
     DiffuserCreator<HomeViewModel, FragmentHomeBinding>,
-    DiffuserProviderNeeder<HomeViewModel> {
+    DiffuserProviderNeeder<HomeViewModel>,
+    OnBackPressedListener {
 
     var tabs: List<HomeTab> = emptyList()
 
@@ -105,6 +107,10 @@ class HomeFragment : ViewBindingFragment<FragmentHomeBinding>(
         }
     }
 
+    override fun onBackPressed() {
+        val fragment = childFragmentManager.fragments.lastOrNull()
+        (fragment as? OnBackPressedListener)?.onBackPressed()
+    }
 }
 
 private val Int.tag: String

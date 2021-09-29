@@ -10,6 +10,7 @@ import pixel.cando.ui.main.MainFlowFragment
 import pixel.cando.ui.main.home.HomeFragment
 import pixel.cando.ui.main.patient_details.PatientDetailsFragment
 import pixel.cando.ui.main.patient_list.PatientListFragment
+import pixel.cando.ui.main.profile.ProfileFragment
 import pixel.cando.ui.root.RootFragment
 import pixel.cando.ui.splash.SplashFragment
 
@@ -37,6 +38,10 @@ object Screens {
     ) = FragmentScreen {
         PatientDetailsFragment()
             .withArgumentSet(patientId)
+    }
+
+    fun profile() = FragmentScreen {
+        ProfileFragment()
     }
 
     fun empty() = FragmentScreen { Fragment() } //only for development

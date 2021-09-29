@@ -167,10 +167,8 @@ class DependencyManager(
                                     )
                                 }
                                 is HomeFragment -> {
-                                    setup(
-                                        fragment = fragment,
+                                    fragment.setup(
                                         userRoleStore = userRoleStore,
-                                        resourceProvider = resourceProvider,
                                     )
                                 }
                                 is PatientListFragment -> {

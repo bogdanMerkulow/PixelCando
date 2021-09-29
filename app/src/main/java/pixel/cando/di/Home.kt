@@ -10,19 +10,15 @@ import pixel.cando.ui._base.tea.ControllerFragmentDelegate
 import pixel.cando.ui.main.home.*
 import pixel.cando.ui.main.patient_flow.PatientFlowFragment
 import pixel.cando.ui.main.photo_list.PhotoListFragment
-import pixel.cando.ui.main.profile.ProfileFragment
-import pixel.cando.utils.ResourceProvider
 import pixel.cando.utils.diffuser.DiffuserFragmentDelegate
 
-fun setup(
-    fragment: HomeFragment,
+fun HomeFragment.setup(
     userRoleStore: UserRoleStore,
-    resourceProvider: ResourceProvider,
 ) {
     val userRole = userRoleStore.userRole
         ?: return
-    if (fragment.tabs.isEmpty()) {
-        fragment.tabs = when (userRole) {
+    if (tabs.isEmpty()) {
+        tabs = when (userRole) {
             UserRole.DOCTOR -> {
                 listOf(
                     HomeTab(
@@ -33,7 +29,7 @@ fun setup(
                     HomeTab(
                         title = R.string.tab_title_profile,
                         icon = R.drawable.ic_user,
-                        fragmentProvider = { ProfileFragment() },
+                        fragmentProvider = { PatientFlowFragment() },
                     ),
                 )
             }
@@ -47,13 +43,13 @@ fun setup(
                     HomeTab(
                         title = R.string.tab_title_profile,
                         icon = R.drawable.ic_user,
-                        fragmentProvider = { ProfileFragment() },
+                        fragmentProvider = { PatientFlowFragment() },
                     ),
                 )
             }
         }
     }
-    if (fragment.delegates.isEmpty()) {
+    if (delegates.isEmpty()) {
         val controllerFragmentDelegate = ControllerFragmentDelegate<
                 HomeViewModel,
                 HomeDataModel,
@@ -78,16 +74,16 @@ fun setup(
             modelMapper = {
                 it.viewModel
             },
-            render = fragment
+            render = this
         )
 
         val diffuserFragmentDelegate = DiffuserFragmentDelegate(
-            fragment
+            this
         )
 
-        fragment.eventSender = controllerFragmentDelegate
-        fragment.diffuserProvider = { diffuserFragmentDelegate.diffuser }
-        fragment.delegates = setOf(
+        eventSender = controllerFragmentDelegate
+        diffuserProvider = { diffuserFragmentDelegate.diffuser }
+        delegates = setOf(
             diffuserFragmentDelegate,
             controllerFragmentDelegate,
         )
