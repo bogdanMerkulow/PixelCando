@@ -17,6 +17,9 @@
     <string name="no_patients_title">No patients yet</string>
     <string name="no_patients_description">There is no patient in this folder. Please add one by clicking the Plus floating button below</string>
 
+    <string name="profile_title">Profile</string>
+    <string name="profile_logout_btn_title">Log Out</string>
+
     <string name="something_went_wrong">Something went wrong</string>
 
     <string name="list_placeholder_no_photos">No photos created yet\nPlease upload an image</string>

@@ -24,6 +24,7 @@ import pixel.cando.ui.main.patient_details.PatientDetailsFragment
 import pixel.cando.ui.main.patient_list.PatientListFragment
 import pixel.cando.ui.main.photo_list.PhotoListFragment
 import pixel.cando.ui.main.photo_preview.PhotoPreviewFragment
+import pixel.cando.ui.main.profile.ProfileFragment
 import pixel.cando.ui.root.RootEvent
 import pixel.cando.ui.root.RootFragment
 import pixel.cando.utils.RealResourceProvider
@@ -199,6 +200,12 @@ class DependencyManager(
                                 }
                                 is PhotoPreviewFragment -> {
                                     fragment.setup()
+                                }
+                                is ProfileFragment -> {
+                                    fragment.setup(
+                                        sessionWiper = sessionWiper,
+                                        rootRouter = fragment.findImplementationOrThrow(),
+                                    )
                                 }
                             }
                         }
