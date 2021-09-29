@@ -17,9 +17,9 @@ abstract class RootRouterFragment : RouterFragment(),
 abstract class FlowRouterFragment : RouterFragment(),
     FlowRouter
 
-abstract class RouterFragment :
-    ViewBindingFragment<FragmentContainerBinding>(),
-    Router,
+abstract class RouterFragment : ViewBindingFragment<FragmentContainerBinding>(
+    FragmentContainerBinding::inflate
+), Router,
     OnBackPressedListener {
 
     private val cicerone = Cicerone.create(
@@ -28,9 +28,6 @@ abstract class RouterFragment :
     private val router get() = cicerone.router
     private val navigatorHolder get() = cicerone.getNavigatorHolder()
     private var navigator: Navigator? = null
-
-    override val viewBindingCreator: ViewBindingCreator<FragmentContainerBinding>
-        get() = FragmentContainerBinding::inflate
 
     abstract val initialScreen: Screen
 

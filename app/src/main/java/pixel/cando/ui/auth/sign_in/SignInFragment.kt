@@ -2,7 +2,6 @@ package pixel.cando.ui.auth.sign_in
 
 import android.os.Bundle
 import pixel.cando.databinding.FragmentSignInBinding
-import pixel.cando.ui._base.fragment.ViewBindingCreator
 import pixel.cando.ui._base.fragment.ViewBindingFragment
 import pixel.cando.ui._base.tea.EventSender
 import pixel.cando.ui._base.tea.EventSenderNeeder
@@ -13,14 +12,12 @@ import pixel.cando.utils.diffuser.ViewDiffusers.intoEnabled
 import pixel.cando.utils.diffuser.ViewDiffusers.intoVisibleOrGone
 import pixel.cando.utils.doAfterTextChanged
 
-class SignInFragment : ViewBindingFragment<FragmentSignInBinding>(),
-    ViewModelRender<SignInViewModel>,
+class SignInFragment : ViewBindingFragment<FragmentSignInBinding>(
+    FragmentSignInBinding::inflate
+), ViewModelRender<SignInViewModel>,
     EventSenderNeeder<SignInEvent>,
     DiffuserCreator<SignInViewModel, FragmentSignInBinding>,
     DiffuserProviderNeeder<SignInViewModel> {
-
-    override val viewBindingCreator: ViewBindingCreator<FragmentSignInBinding>
-        get() = FragmentSignInBinding::inflate
 
     override var eventSender: EventSender<SignInEvent>? = null
 

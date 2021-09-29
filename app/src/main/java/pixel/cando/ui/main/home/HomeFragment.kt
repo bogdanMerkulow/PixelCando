@@ -5,7 +5,6 @@ import androidx.annotation.DrawableRes
 import androidx.annotation.StringRes
 import androidx.fragment.app.Fragment
 import pixel.cando.databinding.FragmentHomeBinding
-import pixel.cando.ui._base.fragment.ViewBindingCreator
 import pixel.cando.ui._base.fragment.ViewBindingFragment
 import pixel.cando.ui._base.tea.EventSender
 import pixel.cando.ui._base.tea.EventSenderNeeder
@@ -15,14 +14,12 @@ import pixel.cando.utils.diffuser.DiffuserCreator
 import pixel.cando.utils.diffuser.DiffuserProvider
 import pixel.cando.utils.diffuser.DiffuserProviderNeeder
 
-class HomeFragment : ViewBindingFragment<FragmentHomeBinding>(),
-    ViewModelRender<HomeViewModel>,
+class HomeFragment : ViewBindingFragment<FragmentHomeBinding>(
+    FragmentHomeBinding::inflate
+), ViewModelRender<HomeViewModel>,
     EventSenderNeeder<HomeEvent>,
     DiffuserCreator<HomeViewModel, FragmentHomeBinding>,
     DiffuserProviderNeeder<HomeViewModel> {
-
-    override val viewBindingCreator: ViewBindingCreator<FragmentHomeBinding>
-        get() = FragmentHomeBinding::inflate
 
     var tabs: List<HomeTab> = emptyList()
 

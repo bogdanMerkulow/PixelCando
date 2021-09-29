@@ -3,7 +3,6 @@ package pixel.cando.ui.main.patient_details
 import android.graphics.Bitmap
 import android.os.Bundle
 import pixel.cando.databinding.FragmentPatientDetailsBinding
-import pixel.cando.ui._base.fragment.ViewBindingCreator
 import pixel.cando.ui._base.fragment.ViewBindingFragment
 import pixel.cando.ui._base.tea.EventSender
 import pixel.cando.ui._base.tea.EventSenderNeeder
@@ -13,15 +12,13 @@ import pixel.cando.utils.diffuser.*
 import pixel.cando.utils.diffuser.ViewDiffusers.intoEnabled
 import pixel.cando.utils.diffuser.ViewDiffusers.intoVisibleOrGone
 
-class PatientDetailsFragment : ViewBindingFragment<FragmentPatientDetailsBinding>(),
-    ViewModelRender<PatientDetailsViewModel>,
+class PatientDetailsFragment : ViewBindingFragment<FragmentPatientDetailsBinding>(
+    FragmentPatientDetailsBinding::inflate
+), ViewModelRender<PatientDetailsViewModel>,
     EventSenderNeeder<PatientDetailsEvent>,
     DiffuserCreator<PatientDetailsViewModel, FragmentPatientDetailsBinding>,
     DiffuserProviderNeeder<PatientDetailsViewModel>,
     CameraFragment.Callback {
-
-    override val viewBindingCreator: ViewBindingCreator<FragmentPatientDetailsBinding>
-        get() = FragmentPatientDetailsBinding::inflate
 
     override var eventSender: EventSender<PatientDetailsEvent>? = null
 

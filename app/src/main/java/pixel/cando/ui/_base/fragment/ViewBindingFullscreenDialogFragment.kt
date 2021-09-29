@@ -12,9 +12,9 @@ import androidx.fragment.app.DialogFragment
 import androidx.viewbinding.ViewBinding
 
 
-abstract class ViewBindingFullscreenDialogFragment<VB : ViewBinding> : DialogFragment() {
-
-    protected abstract val viewBindingCreator: ViewBindingCreator<VB>
+abstract class ViewBindingFullscreenDialogFragment<VB : ViewBinding>(
+    private val viewBindingCreator: ViewBindingCreator<VB>
+) : DialogFragment() {
 
     private val viewBindingStore by lazy {
         ViewBindingStore(viewBindingCreator)

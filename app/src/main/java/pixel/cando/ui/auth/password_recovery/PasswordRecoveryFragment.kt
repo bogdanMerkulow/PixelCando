@@ -2,7 +2,6 @@ package pixel.cando.ui.auth.password_recovery
 
 import android.os.Bundle
 import pixel.cando.databinding.FragmentPasswordRecoveryBinding
-import pixel.cando.ui._base.fragment.ViewBindingCreator
 import pixel.cando.ui._base.fragment.ViewBindingFragment
 import pixel.cando.ui._base.tea.EventSender
 import pixel.cando.ui._base.tea.EventSenderNeeder
@@ -13,14 +12,12 @@ import pixel.cando.utils.diffuser.ViewDiffusers.intoEnabled
 import pixel.cando.utils.diffuser.ViewDiffusers.intoVisibleOrGone
 import pixel.cando.utils.doAfterTextChanged
 
-class PasswordRecoveryFragment : ViewBindingFragment<FragmentPasswordRecoveryBinding>(),
-    ViewModelRender<PasswordRecoveryViewModel>,
+class PasswordRecoveryFragment : ViewBindingFragment<FragmentPasswordRecoveryBinding>(
+    FragmentPasswordRecoveryBinding::inflate
+), ViewModelRender<PasswordRecoveryViewModel>,
     EventSenderNeeder<PasswordRecoveryEvent>,
     DiffuserCreator<PasswordRecoveryViewModel, FragmentPasswordRecoveryBinding>,
     DiffuserProviderNeeder<PasswordRecoveryViewModel> {
-
-    override val viewBindingCreator: ViewBindingCreator<FragmentPasswordRecoveryBinding>
-        get() = FragmentPasswordRecoveryBinding::inflate
 
     override var eventSender: EventSender<PasswordRecoveryEvent>? = null
 

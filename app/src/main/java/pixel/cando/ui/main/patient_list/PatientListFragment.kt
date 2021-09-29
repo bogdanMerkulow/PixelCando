@@ -7,7 +7,6 @@ import com.google.android.material.tabs.TabLayout
 import pixel.cando.R
 import pixel.cando.databinding.FragmentPatientListBinding
 import pixel.cando.databinding.ListItemPatientBinding
-import pixel.cando.ui._base.fragment.ViewBindingCreator
 import pixel.cando.ui._base.fragment.ViewBindingFragment
 import pixel.cando.ui._base.list.ListItem
 import pixel.cando.ui._base.list.createDifferAdapter
@@ -22,14 +21,12 @@ import pixel.cando.utils.context
 import pixel.cando.utils.diffuser.*
 import pixel.cando.utils.diffuser.Diffuser.into
 
-class PatientListFragment : ViewBindingFragment<FragmentPatientListBinding>(),
-    ViewModelRender<PatientListViewModel>,
+class PatientListFragment : ViewBindingFragment<FragmentPatientListBinding>(
+    FragmentPatientListBinding::inflate
+), ViewModelRender<PatientListViewModel>,
     EventSenderNeeder<PatientListEvent>,
     DiffuserCreator<PatientListViewModel, FragmentPatientListBinding>,
     DiffuserProviderNeeder<PatientListViewModel> {
-
-    override val viewBindingCreator: ViewBindingCreator<FragmentPatientListBinding>
-        get() = FragmentPatientListBinding::inflate
 
     override var eventSender: EventSender<PatientListEvent>? = null
 

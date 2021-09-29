@@ -26,7 +26,6 @@ import androidx.exifinterface.media.ExifInterface
 import androidx.fragment.app.FragmentManager
 import pixel.cando.R
 import pixel.cando.databinding.FragmentCameraBinding
-import pixel.cando.ui._base.fragment.ViewBindingCreator
 import pixel.cando.ui._base.fragment.ViewBindingFullscreenDialogFragment
 import pixel.cando.ui._base.fragment.findImplementation
 import pixel.cando.utils.context
@@ -36,7 +35,9 @@ import java.io.File
 import java.io.IOException
 import java.util.*
 
-class CameraFragment : ViewBindingFullscreenDialogFragment<FragmentCameraBinding>() {
+class CameraFragment : ViewBindingFullscreenDialogFragment<FragmentCameraBinding>(
+    FragmentCameraBinding::inflate
+) {
 
     companion object {
         fun show(
@@ -47,9 +48,6 @@ class CameraFragment : ViewBindingFullscreenDialogFragment<FragmentCameraBinding
             )
         }
     }
-
-    override val viewBindingCreator: ViewBindingCreator<FragmentCameraBinding>
-        get() = FragmentCameraBinding::inflate
 
     private val deviceRotationChecker by lazy {
         DeviceRotationChecker(

@@ -4,7 +4,6 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import pixel.cando.databinding.FragmentPhotoListBinding
 import pixel.cando.databinding.ListItemNoPhotosBinding
-import pixel.cando.ui._base.fragment.ViewBindingCreator
 import pixel.cando.ui._base.fragment.ViewBindingFragment
 import pixel.cando.ui._base.list.createDifferAdapter
 import pixel.cando.ui._base.list.createDifferAdapterDelegate
@@ -15,15 +14,13 @@ import pixel.cando.ui.main.camera.CameraFragment
 import pixel.cando.utils.diffuser.*
 import pixel.cando.utils.diffuser.ViewDiffusers.intoVisibleOrGone
 
-class PhotoListFragment : ViewBindingFragment<FragmentPhotoListBinding>(),
-    ViewModelRender<PhotoListViewModel>,
+class PhotoListFragment : ViewBindingFragment<FragmentPhotoListBinding>(
+    FragmentPhotoListBinding::inflate
+), ViewModelRender<PhotoListViewModel>,
     EventSenderNeeder<PhotoListEvent>,
     DiffuserCreator<PhotoListViewModel, FragmentPhotoListBinding>,
     DiffuserProviderNeeder<PhotoListViewModel>,
     CameraFragment.Callback {
-
-    override val viewBindingCreator: ViewBindingCreator<FragmentPhotoListBinding>
-        get() = FragmentPhotoListBinding::inflate
 
     override var eventSender: EventSender<PhotoListEvent>? = null
 

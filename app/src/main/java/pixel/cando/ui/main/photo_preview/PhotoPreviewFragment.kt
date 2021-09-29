@@ -7,11 +7,12 @@ import androidx.appcompat.content.res.AppCompatResources.getDrawable
 import androidx.fragment.app.FragmentManager
 import pixel.cando.R
 import pixel.cando.databinding.FragmentPhotoPreviewBinding
-import pixel.cando.ui._base.fragment.ViewBindingCreator
 import pixel.cando.ui._base.fragment.ViewBindingFullscreenDialogFragment
 import pixel.cando.ui._base.tea.ResultEmitter
 
-class PhotoPreviewFragment : ViewBindingFullscreenDialogFragment<FragmentPhotoPreviewBinding>() {
+class PhotoPreviewFragment : ViewBindingFullscreenDialogFragment<FragmentPhotoPreviewBinding>(
+    FragmentPhotoPreviewBinding::inflate
+) {
 
     companion object {
         fun show(
@@ -24,9 +25,6 @@ class PhotoPreviewFragment : ViewBindingFullscreenDialogFragment<FragmentPhotoPr
             }
         }
     }
-
-    override val viewBindingCreator: ViewBindingCreator<FragmentPhotoPreviewBinding>
-        get() = FragmentPhotoPreviewBinding::inflate
 
     var photo: Bitmap? = null
 

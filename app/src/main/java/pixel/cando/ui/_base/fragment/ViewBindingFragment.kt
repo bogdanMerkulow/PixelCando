@@ -34,11 +34,11 @@ class ViewBindingStore<VB : ViewBinding>(
 
 }
 
-abstract class ViewBindingFragment<VB : ViewBinding> : DelegatingFragment() {
+abstract class ViewBindingFragment<VB : ViewBinding>(
+    private val viewBindingCreator: ViewBindingCreator<VB>
+) : DelegatingFragment() {
 
-    protected abstract val viewBindingCreator: ViewBindingCreator<VB>
-
-    private val viewBindingStore by lazy {
+    private val viewBindingStore by lazy(LazyThreadSafetyMode.NONE) {
         ViewBindingStore(viewBindingCreator)
     }
 
