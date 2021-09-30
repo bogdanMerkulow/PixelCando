@@ -7,9 +7,17 @@ import pixel.cando.R
 import pixel.cando.data.local.UserRoleStore
 import pixel.cando.data.models.UserRole
 import pixel.cando.ui._base.tea.ControllerFragmentDelegate
-import pixel.cando.ui.main.home.*
+import pixel.cando.ui.main.home.HomeDataModel
+import pixel.cando.ui.main.home.HomeEffect
+import pixel.cando.ui.main.home.HomeEvent
+import pixel.cando.ui.main.home.HomeFragment
+import pixel.cando.ui.main.home.HomeLogic
+import pixel.cando.ui.main.home.HomeTab
+import pixel.cando.ui.main.home.HomeViewModel
+import pixel.cando.ui.main.home.viewModel
 import pixel.cando.ui.main.patient_flow.PatientFlowFragment
 import pixel.cando.ui.main.photo_list.PhotoListFragment
+import pixel.cando.ui.main.profile.ProfileFlowFragment
 import pixel.cando.utils.diffuser.DiffuserFragmentDelegate
 
 fun HomeFragment.setup(
@@ -29,7 +37,7 @@ fun HomeFragment.setup(
                     HomeTab(
                         title = R.string.tab_title_profile,
                         icon = R.drawable.ic_user,
-                        fragmentProvider = { PatientFlowFragment() },
+                        fragmentProvider = { ProfileFlowFragment() },
                     ),
                 )
             }
@@ -43,7 +51,7 @@ fun HomeFragment.setup(
                     HomeTab(
                         title = R.string.tab_title_profile,
                         icon = R.drawable.ic_user,
-                        fragmentProvider = { PatientFlowFragment() },
+                        fragmentProvider = { ProfileFlowFragment() },
                     ),
                 )
             }
