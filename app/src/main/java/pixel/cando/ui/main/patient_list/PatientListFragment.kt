@@ -189,6 +189,7 @@ private fun patientAdapterDelegate(
                 shape = GradientDrawable.OVAL
                 setColor(item.patient.avatarBgColor)
             }
+            binding.dateLabel.text = item.patient.date
         }
     },
     areItemsTheSame = { oldItem, newItem ->

@@ -9,6 +9,7 @@ import com.spotify.mobius.Next
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import org.ocpsoft.prettytime.PrettyTime
 import pixel.cando.R
 import pixel.cando.data.models.Folder
 import pixel.cando.data.models.Gender
@@ -16,13 +17,21 @@ import pixel.cando.data.models.PatientListItemInfo
 import pixel.cando.data.remote.RemoteRepository
 import pixel.cando.ui.Screens
 import pixel.cando.ui._base.fragment.FlowRouter
-import pixel.cando.ui._base.list.*
+import pixel.cando.ui._base.list.ListAction
+import pixel.cando.ui._base.list.ListState
+import pixel.cando.ui._base.list.ParcelableListState
+import pixel.cando.ui._base.list.isLoading
+import pixel.cando.ui._base.list.listStateUpdater
+import pixel.cando.ui._base.list.loadedItems
+import pixel.cando.ui._base.list.map
+import pixel.cando.ui._base.list.plainState
 import pixel.cando.ui._base.tea.CoroutineScopeEffectHandler
 import pixel.cando.ui._base.tea.toFirst
 import pixel.cando.utils.MessageDisplayer
 import pixel.cando.utils.ResourceProvider
 import pixel.cando.utils.onLeft
 import pixel.cando.utils.onRight
+import java.time.LocalDateTime
 import java.util.concurrent.atomic.AtomicReference
 
 object PatientListLogic {
@@ -256,6 +265,7 @@ data class PatientDataModel(
     val age: Int,
     val avatarText: String,
     val avatarBgColor: String,
+    val lastExamAt: LocalDateTime?,
 ) : Parcelable
 
 @Parcelize
@@ -282,6 +292,7 @@ data class PatientViewModel(
     val info: String,
     val avatarText: String,
     @ColorInt val avatarBgColor: Int,
+    val date: String?,
 )
 
 data class FolderViewModel(
@@ -290,7 +301,8 @@ data class FolderViewModel(
 )
 
 fun PatientDataModel.viewModel(
-    resourceProvider: ResourceProvider
+    resourceProvider: ResourceProvider,
+    prettyTime: PrettyTime,
 ) = PatientViewModel(
     id = id,
     fullName = fullName,
@@ -308,7 +320,8 @@ fun PatientDataModel.viewModel(
         avatarBgColor.toColorInt()
     } catch (ex: IllegalArgumentException) {
         resourceProvider.getColor(R.color.blue_boston)
-    }
+    },
+    date = lastExamAt?.let { prettyTime.format(it) }
 )
 
 private val FolderDataModel.viewModel: FolderViewModel
@@ -324,8 +337,10 @@ fun PatientListDataModel.viewModel(
         it.viewModel
     },
     listState = listState.plainState.map { patient, _, _ ->
+        val prettyTime = PrettyTime()
         patient.viewModel(
-            resourceProvider = resourceProvider
+            resourceProvider = resourceProvider,
+            prettyTime = prettyTime,
         )
     }
 )
@@ -338,6 +353,7 @@ private val PatientListItemInfo.dataModel: PatientDataModel
         age = age,
         avatarText = avatarText,
         avatarBgColor = avatarBgColor,
+        lastExamAt = lastExamAt,
     )
 
 private val Folder.dataModel: FolderDataModel

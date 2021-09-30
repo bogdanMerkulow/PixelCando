@@ -82,6 +82,7 @@ class RealRemoteRepository(
                     age = it.age,
                     avatarText = it.user.avatar.text,
                     avatarBgColor = it.user.avatar.color,
+                    lastExamAt = it.lastExamAt,
                 )
             }
         }

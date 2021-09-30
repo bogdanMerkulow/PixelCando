@@ -3,6 +3,7 @@ package pixel.cando.data.remote.dto
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 @JsonClass(generateAdapter = true)
 data class PatientListRequest(
@@ -35,6 +36,7 @@ data class PatientDto(
     @Json(name = "weight") val weight: Float,
     @Json(name = "age") val age: Int,
     @Json(name = "user") val user: PatientUserDto,
+    @Json(name = "lastExamAt") val lastExamAt: LocalDateTime?,
 )
 
 @JsonClass(generateAdapter = true)

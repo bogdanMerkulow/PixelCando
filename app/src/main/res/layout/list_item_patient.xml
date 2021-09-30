@@ -18,7 +18,7 @@
         android:textColor="@color/white"
         android:textSize="14sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="CJ"
         />
@@ -28,13 +28,14 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/spacing_16"
+        android:layout_marginEnd="@dimen/spacing_8"
         android:ellipsize="end"
         android:fontFamily="sans-serif-medium"
         android:maxLines="1"
         android:textColor="@color/black_mine_shaft"
         android:textSize="14sp"
-        app:layout_constraintLeft_toRightOf="@id/avatarLabel"
-        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/dateLabel"
+        app:layout_constraintStart_toEndOf="@id/avatarLabel"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="Carl Johnson"
         />
@@ -48,9 +49,20 @@
         android:textColor="@color/gray_boulder"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="@id/fullNameLabel"
-        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@id/fullNameLabel"
         tools:text="Carl Johnson"
+        />
+
+    <TextView
+        android:id="@+id/dateLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textColor="@color/gray_silver"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="1 month ago"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
