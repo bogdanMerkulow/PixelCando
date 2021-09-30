@@ -1,5 +1,4 @@
 <resources>
-    <string name="app_name">Pixelcando</string>
 
     <string name="sign_in_email_placeholder">Email Address</string>
     <string name="sign_in_password_placeholder">Password</string>

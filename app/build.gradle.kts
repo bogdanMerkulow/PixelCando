@@ -43,6 +43,7 @@ android {
         create("develop") {
             dimension = "default"
             applicationIdSuffix = ".develop"
+            versionNameSuffix = "-dev"
         }
         create("production") {
             dimension = "default"
