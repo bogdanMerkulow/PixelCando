@@ -1,6 +1,14 @@
 package pixel.cando.data.remote
 
-import pixel.cando.data.remote.dto.*
+import pixel.cando.data.remote.dto.ExamListRequest
+import pixel.cando.data.remote.dto.ExamListResponse
+import pixel.cando.data.remote.dto.FolderListRequest
+import pixel.cando.data.remote.dto.FolderListResponse
+import pixel.cando.data.remote.dto.PatientGetRequest
+import pixel.cando.data.remote.dto.PatientGetResponse
+import pixel.cando.data.remote.dto.PatientListRequest
+import pixel.cando.data.remote.dto.PatientListResponse
+import pixel.cando.data.remote.dto.UploadPhotoForPatientRequest
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST
@@ -21,6 +29,11 @@ interface RestApi {
     suspend fun getFolders(
         @Body request: FolderListRequest
     ): Response<FolderListResponse>
+
+    @POST("doctor/exams/list")
+    suspend fun getExams(
+        @Body request: ExamListRequest
+    ): Response<ExamListResponse>
 
     @POST("doctor/photos/upload")
     suspend fun uploadPhoto(

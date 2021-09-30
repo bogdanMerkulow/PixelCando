@@ -6,8 +6,10 @@ import android.text.TextWatcher
 import android.util.TypedValue
 import android.view.View
 import android.widget.EditText
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
+import pixel.cando.R
 
 fun EditText.doAfterTextChanged(
     action: (String) -> Unit
@@ -129,4 +131,28 @@ fun View.dpToPx(
         dps,
         resources.displayMetrics
     )
+}
+
+fun View.setListRoundedBg(
+    isFirst: Boolean,
+    isLast: Boolean
+) {
+    background = when {
+        isFirst && isLast -> ContextCompat.getDrawable(
+            context,
+            R.drawable.bg_rounded_list_item
+        )
+        isFirst -> ContextCompat.getDrawable(
+            context,
+            R.drawable.bg_rounded_list_top_item
+        )
+        isLast -> ContextCompat.getDrawable(
+            context,
+            R.drawable.bg_rounded_list_bottom_item
+        )
+        else -> ContextCompat.getDrawable(
+            context,
+            R.drawable.bg_rounded_list_indeterminate_item
+        )
+    }
 }

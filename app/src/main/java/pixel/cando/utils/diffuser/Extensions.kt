@@ -2,6 +2,7 @@ package pixel.cando.utils.diffuser
 
 import android.os.Bundle
 import androidx.fragment.app.Fragment
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import androidx.viewbinding.ViewBinding
 import com.hannesdorfmann.adapterdelegates4.AsyncListDifferDelegationAdapter
 import pixel.cando.ui._base.fragment.SimpleViewBindingFragmentDelegate
@@ -21,6 +22,14 @@ fun <T> intoListDifferAdapter(
 ): Diffuser<List<T>?> {
     return Diffuser.intoAlways { list: List<T>? ->
         listAdapter.items = list
+    }
+}
+
+fun intoSwipeRefresh(
+    swipeRefresh: SwipeRefreshLayout
+): Diffuser<Boolean> {
+    return Diffuser.intoAlways {
+        swipeRefresh.isRefreshing = it
     }
 }
 

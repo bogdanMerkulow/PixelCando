@@ -15,11 +15,22 @@ import pixel.cando.ui._base.list.isRefreshing
 import pixel.cando.ui._base.tea.EventSender
 import pixel.cando.ui._base.tea.EventSenderNeeder
 import pixel.cando.ui._base.tea.ViewModelRender
-import pixel.cando.ui._commmon.*
+import pixel.cando.ui._commmon.ListInitialLoader
+import pixel.cando.ui._commmon.ListMoreLoader
+import pixel.cando.ui._commmon.NoDataListPlaceholder
+import pixel.cando.ui._commmon.listInitialLoader
+import pixel.cando.ui._commmon.listMoreLoader
+import pixel.cando.ui._commmon.noDataListPlaceholder
+import pixel.cando.ui._commmon.toListItems
 import pixel.cando.utils.addLoadMoreListener
 import pixel.cando.utils.context
-import pixel.cando.utils.diffuser.*
+import pixel.cando.utils.diffuser.Diffuser
 import pixel.cando.utils.diffuser.Diffuser.into
+import pixel.cando.utils.diffuser.DiffuserCreator
+import pixel.cando.utils.diffuser.DiffuserProvider
+import pixel.cando.utils.diffuser.DiffuserProviderNeeder
+import pixel.cando.utils.diffuser.intoListDifferAdapter
+import pixel.cando.utils.diffuser.map
 
 class PatientListFragment : ViewBindingFragment<FragmentPatientListBinding>(
     FragmentPatientListBinding::inflate
@@ -88,7 +99,7 @@ class PatientListFragment : ViewBindingFragment<FragmentPatientListBinding>(
                             PatientListItem.MoreLoader
                         },
                         itemMapper = {
-                            PatientListItem.Patient(it)
+                            map { PatientListItem.Patient(it) }
                         }
                     )
                 },

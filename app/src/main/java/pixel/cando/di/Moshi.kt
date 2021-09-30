@@ -36,7 +36,7 @@ private class LocalDateTimeAdapter {
         .appendPattern("yyyy-MM-dd HH:mm:ss")
         .appendOffset(
             "+HH",
-            "Z"
+            ""
         )
         .toFormatter()
 

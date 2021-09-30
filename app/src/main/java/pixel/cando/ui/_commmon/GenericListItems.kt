@@ -62,7 +62,7 @@ fun <T, R> ListState<T>.toListItems(
     noDataPlaceholderProvider: () -> R,
     initialLoaderProvider: () -> R,
     moreLoaderProvider: () -> R,
-    itemMapper: (T) -> R,
+    itemMapper: List<T>.() -> List<R>,
 ): List<R> = when (this) {
     is ListState.NotInitialized,
     is ListState.EmptyError -> emptyList()
@@ -73,9 +73,9 @@ fun <T, R> ListState<T>.toListItems(
         initialLoaderProvider.invoke()
     )
     else -> {
-        val items: List<R> = loadedItems().map {
-            itemMapper.invoke(it)
-        }
+        val items: List<R> = itemMapper.invoke(
+            loadedItems()
+        )
         if (this is ListState.NextPageLoading) {
             items.plus(moreLoaderProvider.invoke())
         } else {

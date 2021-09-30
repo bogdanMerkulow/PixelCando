@@ -11,11 +11,22 @@ import pixel.cando.ui._base.fragment.getArgument
 import pixel.cando.ui._base.tea.ControllerFragmentDelegate
 import pixel.cando.ui._base.tea.ResultEventSource
 import pixel.cando.ui.main.camera.CameraFragment
-import pixel.cando.ui.main.patient_details.*
+import pixel.cando.ui.main.patient_details.PatientDetailsDataModel
+import pixel.cando.ui.main.patient_details.PatientDetailsEffect
+import pixel.cando.ui.main.patient_details.PatientDetailsEvent
+import pixel.cando.ui.main.patient_details.PatientDetailsFragment
+import pixel.cando.ui.main.patient_details.PatientDetailsLogic
+import pixel.cando.ui.main.patient_details.PatientDetailsViewModel
+import pixel.cando.ui.main.patient_details.viewModel
 import pixel.cando.ui.main.photo_preview.PhotoPreviewFragment
 import pixel.cando.ui.main.photo_preview.PhotoPreviewResult
-import pixel.cando.utils.*
+import pixel.cando.utils.PermissionCheckerResult
+import pixel.cando.utils.RealPermissionChecker
+import pixel.cando.utils.ResourceProvider
+import pixel.cando.utils.createPermissionCheckerResultEventSource
 import pixel.cando.utils.diffuser.DiffuserFragmentDelegate
+import pixel.cando.utils.doOnGlobalMain
+import pixel.cando.utils.messageDisplayer
 
 fun setup(
     fragment: PatientDetailsFragment,
@@ -97,7 +108,9 @@ fun setup(
             )
         },
         modelMapper = {
-            it.viewModel()
+            it.viewModel(
+                resourceProvider = resourceProvider,
+            )
         },
         render = fragment
     )

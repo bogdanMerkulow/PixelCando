@@ -1,8 +1,18 @@
 package pixel.cando.data.remote
 
 import com.squareup.moshi.Moshi
-import pixel.cando.data.models.*
-import pixel.cando.data.remote.dto.*
+import pixel.cando.data.models.Exam
+import pixel.cando.data.models.Folder
+import pixel.cando.data.models.Gender
+import pixel.cando.data.models.PatientListItemInfo
+import pixel.cando.data.models.PatientSingleItemInfo
+import pixel.cando.data.models.UploadPhotoFailure
+import pixel.cando.data.remote.dto.ExamListRequest
+import pixel.cando.data.remote.dto.FolderListRequest
+import pixel.cando.data.remote.dto.PatientGetRequest
+import pixel.cando.data.remote.dto.PatientListFilterDto
+import pixel.cando.data.remote.dto.PatientListRequest
+import pixel.cando.data.remote.dto.UploadPhotoForPatientRequest
 import pixel.cando.utils.Either
 import pixel.cando.utils.mapOnlyLeft
 import retrofit2.Response
@@ -21,6 +31,11 @@ interface RemoteRepository {
 
     suspend fun getFolders(
     ): Either<List<Folder>, Throwable>
+
+    suspend fun getExams(
+        patientId: Long,
+        page: Int,
+    ): Either<List<Exam>, Throwable>
 
     suspend fun uploadPhoto(
         patientId: Long,
@@ -103,6 +118,30 @@ class RealRemoteRepository(
                 Folder(
                     id = it.id,
                     title = it.title,
+                )
+            }
+        }
+    }
+
+    override suspend fun getExams(
+        patientId: Long,
+        page: Int
+    ): Either<List<Exam>, Throwable> {
+        return callApi {
+            getExams(
+                ExamListRequest(
+                    patientId = patientId,
+                    offset = page * pageSize,
+                    limit = pageSize,
+                )
+            )
+        }.mapOnlyLeft {
+            it.results.map {
+                Exam(
+                    id = it.id,
+                    createdAt = it.createdAt,
+                    number = it.no,
+                    bmi = it.bmi,
                 )
             }
         }
