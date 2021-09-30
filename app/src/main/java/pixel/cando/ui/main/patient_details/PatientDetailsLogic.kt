@@ -9,6 +9,7 @@ import com.spotify.mobius.Next
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
+import org.ocpsoft.prettytime.PrettyTime
 import pixel.cando.R
 import pixel.cando.data.models.Exam
 import pixel.cando.data.models.UploadPhotoFailure
@@ -31,7 +32,6 @@ import pixel.cando.utils.logError
 import pixel.cando.utils.onLeft
 import pixel.cando.utils.onRight
 import java.time.LocalDateTime
-import java.time.temporal.ChronoUnit
 import java.util.concurrent.atomic.AtomicReference
 
 object PatientDetailsLogic {
@@ -411,7 +411,7 @@ data class PatientDetailsDataModel(
 @Parcelize
 data class ExamDataModel(
     val id: Long,
-    val creationDate: LocalDateTime,
+    val createdAt: LocalDateTime,
     val number: Int,
     val bmi: Float,
 ) : Parcelable
@@ -440,8 +440,10 @@ fun PatientDetailsDataModel.viewModel(
     isLoaderVisible = isLoading,
     isTakePhotoButtonEnabled = isLoading.not(),
     listState = listState.plainState.map { exam, index, list ->
+        val prettyTime = PrettyTime()
         exam.viewModel(
             resourceProvider = resourceProvider,
+            prettyTime = prettyTime,
             isFirst = index == 0,
             isLast = index == list.size - 1
         )
@@ -450,15 +452,13 @@ fun PatientDetailsDataModel.viewModel(
 
 private fun ExamDataModel.viewModel(
     resourceProvider: ResourceProvider,
+    prettyTime: PrettyTime,
     isFirst: Boolean,
     isLast: Boolean,
 ) = ExamViewModel(
     id = id,
     value = resourceProvider.getString(R.string.exam_bmi_value, bmi),
-    date = resourceProvider.getQuantityString(
-        R.plurals.days_ago,
-        creationDate.until(LocalDateTime.now(), ChronoUnit.DAYS).toInt(),
-    ),
+    date = prettyTime.format(createdAt),
     number = number.toString(),
     isStarMarked = number == 1,
     isFirst = isFirst,
@@ -468,7 +468,7 @@ private fun ExamDataModel.viewModel(
 private fun Exam.dataModel(
 ) = ExamDataModel(
     id = id,
-    creationDate = createdAt,
+    createdAt = createdAt,
     number = number,
     bmi = bmi,
 )
