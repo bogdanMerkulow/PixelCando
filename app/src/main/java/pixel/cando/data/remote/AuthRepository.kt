@@ -103,17 +103,9 @@ class RealAuthRepository(
 }
 
 private const val doctorRoleServerValue = "customer"
-private const val patientRoleServerValue = "patient"
 
 private val String.userRole: UserRole?
     get() = when (this) {
         doctorRoleServerValue -> UserRole.DOCTOR
-        patientRoleServerValue -> UserRole.PATIENT
         else -> null
-    }
-
-private val UserRole.serverValue: String
-    get() = when (this) {
-        UserRole.DOCTOR -> doctorRoleServerValue
-        UserRole.PATIENT -> patientRoleServerValue
     }
