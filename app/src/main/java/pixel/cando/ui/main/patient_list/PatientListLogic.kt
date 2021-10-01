@@ -9,7 +9,6 @@ import com.spotify.mobius.Next
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
-import org.ocpsoft.prettytime.PrettyTime
 import pixel.cando.R
 import pixel.cando.data.models.Folder
 import pixel.cando.data.models.Gender
@@ -29,6 +28,7 @@ import pixel.cando.ui._base.tea.CoroutineScopeEffectHandler
 import pixel.cando.ui._base.tea.toFirst
 import pixel.cando.utils.MessageDisplayer
 import pixel.cando.utils.ResourceProvider
+import pixel.cando.utils.TimeAgoFormatter
 import pixel.cando.utils.onLeft
 import pixel.cando.utils.onRight
 import java.time.LocalDateTime
@@ -302,7 +302,7 @@ data class FolderViewModel(
 
 fun PatientDataModel.viewModel(
     resourceProvider: ResourceProvider,
-    prettyTime: PrettyTime,
+    timeAgoFormatter: TimeAgoFormatter,
 ) = PatientViewModel(
     id = id,
     fullName = fullName,
@@ -321,7 +321,7 @@ fun PatientDataModel.viewModel(
     } catch (ex: IllegalArgumentException) {
         resourceProvider.getColor(R.color.blue_boston)
     },
-    date = lastExamAt?.let { prettyTime.format(it) }
+    date = lastExamAt?.let { timeAgoFormatter.format(it) }
 )
 
 private val FolderDataModel.viewModel: FolderViewModel
@@ -337,10 +337,10 @@ fun PatientListDataModel.viewModel(
         it.viewModel
     },
     listState = listState.plainState.map { patient, _, _ ->
-        val prettyTime = PrettyTime()
+        val timeAgoFormatter = TimeAgoFormatter()
         patient.viewModel(
             resourceProvider = resourceProvider,
-            prettyTime = prettyTime,
+            timeAgoFormatter = timeAgoFormatter,
         )
     }
 )
