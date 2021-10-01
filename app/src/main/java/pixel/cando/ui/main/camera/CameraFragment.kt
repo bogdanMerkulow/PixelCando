@@ -383,24 +383,26 @@ class CameraFragment : ViewBindingFullscreenDialogFragment<FragmentCameraBinding
 
 private class CameraOverlapView : View {
 
-    private val paintForOval by lazy {
+    private val redPaint by lazy(LazyThreadSafetyMode.NONE) {
         val paint = Paint()
-        paint.color = Color.argb((255 * 0.95).toInt(), 0, 255, 0)
+        paint.color = Color.argb((255 * 0.95).toInt(), 255, 0, 0)
         paint.style = Paint.Style.STROKE
-        paint.strokeWidth = dpToPx(2f)
+        paint.strokeWidth = lineWidth
         paint
     }
 
-    private val paintForLine by lazy {
+    private val whitePaint by lazy(LazyThreadSafetyMode.NONE) {
         val paint = Paint()
-        paint.color = Color.argb((255 * 0.95).toInt(), 255, (255 * 0.83).toInt(), 0)
+        paint.color = Color.WHITE
         paint.style = Paint.Style.STROKE
-        paint.strokeWidth = dpToPx(2f)
+        paint.strokeWidth = lineWidth
         paint
     }
 
-    private val ovalPadding = dpToPx(40f)
-    private val linePadding = dpToPx(20f)
+    private val lineWidth = dpToPx(4f)
+    private val verticalPadding = dpToPx(30f)
+    private val horizontalPadding = dpToPx(20f)
+    private val shadowOffset = dpToPx(2f)
 
     constructor(context: Context) : super(context)
     constructor(context: Context, attrs: AttributeSet) : super(context, attrs)
@@ -413,26 +415,49 @@ private class CameraOverlapView : View {
     override fun onDraw(
         canvas: Canvas
     ) {
+        // white lines
         canvas.drawLine(
-            width / 2f,
-            linePadding,
-            width / 2f,
-            height - linePadding,
-            paintForLine
+            horizontalPadding + shadowOffset,
+            verticalPadding + lineWidth / 2f,
+            width - horizontalPadding + shadowOffset,
+            verticalPadding + lineWidth / 2f,
+            whitePaint
         )
         canvas.drawLine(
-            linePadding,
-            height / 2f,
-            width - linePadding,
-            height / 2f,
-            paintForLine
+            width / 2f + lineWidth / 2f,
+            verticalPadding,
+            width / 2f + lineWidth / 2f,
+            height - verticalPadding,
+            whitePaint
         )
-        canvas.drawOval(
-            ovalPadding,
-            ovalPadding,
-            width - ovalPadding,
-            height - ovalPadding,
-            paintForOval
+        canvas.drawLine(
+            horizontalPadding + shadowOffset,
+            height - verticalPadding + lineWidth / 2f,
+            width - horizontalPadding + shadowOffset,
+            height - verticalPadding + lineWidth / 2f,
+            whitePaint
+        )
+        // red lines
+        canvas.drawLine(
+            horizontalPadding,
+            verticalPadding,
+            width - horizontalPadding,
+            verticalPadding,
+            redPaint
+        )
+        canvas.drawLine(
+            width / 2f,
+            verticalPadding,
+            width / 2f,
+            height - verticalPadding,
+            redPaint
+        )
+        canvas.drawLine(
+            horizontalPadding,
+            height - verticalPadding,
+            width - horizontalPadding,
+            height - verticalPadding,
+            redPaint
         )
     }
 
