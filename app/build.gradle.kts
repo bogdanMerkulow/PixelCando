@@ -95,7 +95,7 @@ dependencies {
     implementation("com.squareup.moshi:moshi-kotlin:$moshiVersion")
     kapt("com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion")
 
-    val cameraVersion = "1.0.1"
+    val cameraVersion = "1.0.2"
     implementation("androidx.camera:camera-camera2:$cameraVersion")
     implementation("androidx.camera:camera-lifecycle:$cameraVersion")
     implementation("androidx.camera:camera-view:1.0.0-alpha28")

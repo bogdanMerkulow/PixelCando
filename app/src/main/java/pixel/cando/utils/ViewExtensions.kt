@@ -11,6 +11,18 @@ import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import pixel.cando.R
 
+fun View.visible() {
+    visibility = View.VISIBLE
+}
+
+fun View.gone() {
+    visibility = View.GONE
+}
+
+fun View.visibleOrGone(visible: Boolean) {
+    visibility = if (visible) View.VISIBLE else View.GONE
+}
+
 fun EditText.doAfterTextChanged(
     action: (String) -> Unit
 ) = addTextChangedWatcher(

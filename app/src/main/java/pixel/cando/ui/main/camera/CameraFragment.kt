@@ -3,7 +3,12 @@ package pixel.cando.ui.main.camera
 import android.app.AlertDialog
 import android.content.Context
 import android.content.Context.SENSOR_SERVICE
-import android.graphics.*
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Color
+import android.graphics.ImageDecoder
+import android.graphics.Matrix
+import android.graphics.Paint
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -17,8 +22,11 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.Toast
-import androidx.camera.core.*
 import androidx.camera.core.Camera
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageCapture
+import androidx.camera.core.ImageCaptureException
+import androidx.camera.core.Preview
 import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
@@ -30,10 +38,12 @@ import pixel.cando.ui._base.fragment.ViewBindingFullscreenDialogFragment
 import pixel.cando.ui._base.fragment.findImplementation
 import pixel.cando.utils.context
 import pixel.cando.utils.dpToPx
+import pixel.cando.utils.gone
 import pixel.cando.utils.logError
+import pixel.cando.utils.visibleOrGone
 import java.io.File
 import java.io.IOException
-import java.util.*
+import java.util.UUID
 
 class CameraFragment : ViewBindingFullscreenDialogFragment<FragmentCameraBinding>(
     FragmentCameraBinding::inflate
@@ -67,6 +77,7 @@ class CameraFragment : ViewBindingFullscreenDialogFragment<FragmentCameraBinding
     private var isTimerActive = false
     private var rotationCheckResult = DeviceRotationChecker.Result.OK
 
+    private var lensFacing = CameraSelector.LENS_FACING_BACK
     private var flashMode: Int = ImageCapture.FLASH_MODE_OFF
     private var isTimerEnabled = false
     private var imageCapture: ImageCapture? = null
@@ -98,6 +109,8 @@ class CameraFragment : ViewBindingFullscreenDialogFragment<FragmentCameraBinding
     private fun initViews(
         viewBinding: FragmentCameraBinding
     ) {
+        viewBinding.cameraSwitcher.gone()
+
         val cameraOverlap = CameraOverlapView(requireContext())
         viewBinding.cameraContainerView.addView(
             cameraOverlap,
@@ -122,6 +135,15 @@ class CameraFragment : ViewBindingFullscreenDialogFragment<FragmentCameraBinding
                     viewBinding.flashSwitcher.setImageResource(R.drawable.ic_flash_off)
                 }
             }
+        }
+
+        viewBinding.cameraSwitcher.setOnClickListener {
+            lensFacing = when (lensFacing) {
+                CameraSelector.LENS_FACING_FRONT -> CameraSelector.LENS_FACING_BACK
+                CameraSelector.LENS_FACING_BACK -> CameraSelector.LENS_FACING_FRONT
+                else -> throw IllegalStateException("Illegal lensFacing value")
+            }
+            startCamera(viewBinding)
         }
 
         viewBinding.timerSwitcher.setOnClickListener {
@@ -157,13 +179,18 @@ class CameraFragment : ViewBindingFullscreenDialogFragment<FragmentCameraBinding
             {
                 val cameraProvider: ProcessCameraProvider = cameraProviderFuture.get()
 
+                viewBinding.cameraSwitcher.visibleOrGone(
+                    cameraProvider.hasCamera(CameraSelector.DEFAULT_BACK_CAMERA)
+                            && cameraProvider.hasCamera(CameraSelector.DEFAULT_FRONT_CAMERA)
+                )
+
                 val preview = Preview.Builder()
                     .build()
                     .also {
                         it.setSurfaceProvider(viewBinding.cameraView.surfaceProvider)
                     }
 
-                val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+                val cameraSelector = CameraSelector.Builder().requireLensFacing(lensFacing).build()
 
                 try {
                     cameraProvider.unbindAll()

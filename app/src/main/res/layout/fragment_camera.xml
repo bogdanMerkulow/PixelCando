@@ -40,6 +40,14 @@
             />
 
         <ImageView
+            android:id="@+id/cameraSwitcher"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_margin="@dimen/spacing_8"
+            android:src="@drawable/ic_switch_camera"
+            />
+
+        <ImageView
             android:id="@+id/flashSwitcher"
             android:layout_width="32dp"
             android:layout_height="32dp"
