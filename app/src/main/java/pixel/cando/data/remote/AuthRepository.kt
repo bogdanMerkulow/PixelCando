@@ -40,7 +40,7 @@ class RealAuthRepository(
             )
             if (response.isSuccessful) {
                 val signInResponse = response.body()!!
-                val userWrapperDto = signInResponse.customer ?: signInResponse.patient
+                val userWrapperDto = signInResponse.doctor ?: signInResponse.patient
                 userWrapperDto?.user?.let { userDto ->
                     userDto.role.userRole?.let { userRole ->
                         Either.Left(
@@ -102,7 +102,7 @@ class RealAuthRepository(
 
 }
 
-private const val doctorRoleServerValue = "customer"
+private const val doctorRoleServerValue = "doctor"
 
 private val String.userRole: UserRole?
     get() = when (this) {
