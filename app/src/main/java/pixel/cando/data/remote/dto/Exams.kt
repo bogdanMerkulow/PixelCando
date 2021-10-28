@@ -21,5 +21,10 @@ data class ExamDto(
     @Json(name = "id") val id: Long,
     @Json(name = "createdAt") val createdAt: LocalDateTime,
     @Json(name = "no") val no: Int,
+    @Json(name = "params") val params: ExamParamsDto,
+)
+
+@JsonClass(generateAdapter = true)
+data class ExamParamsDto(
     @Json(name = "bmi") val bmi: Float,
 )

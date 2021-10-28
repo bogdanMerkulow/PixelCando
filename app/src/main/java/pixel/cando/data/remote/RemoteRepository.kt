@@ -147,7 +147,7 @@ class RealRemoteRepository(
                     id = it.id,
                     createdAt = it.createdAt,
                     number = it.no,
-                    bmi = it.bmi,
+                    bmi = it.params.bmi,
                 )
             }
         }
