@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <dimen name="spacing_44">44dp</dimen>
+    <dimen name="spacing_40">40dp</dimen>
     <dimen name="spacing_32">32dp</dimen>
     <dimen name="spacing_24">24dp</dimen>
     <dimen name="spacing_20">20dp</dimen>

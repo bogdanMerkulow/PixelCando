@@ -1,7 +1,7 @@
 package pixel.cando.ui.main.patient_details
 
-import android.graphics.Bitmap
 import android.graphics.drawable.GradientDrawable
+import android.net.Uri
 import android.os.Bundle
 import pixel.cando.R
 import pixel.cando.databinding.FragmentPatientDetailsBinding
@@ -151,11 +151,11 @@ class PatientDetailsFragment : ViewBindingFragment<FragmentPatientDetailsBinding
     }
 
     override fun onCameraResult(
-        bitmap: Bitmap
+        uri: Uri
     ) {
         eventSender?.sendEvent(
             PatientDetailsEvent.PhotoTaken(
-                bitmap = bitmap
+                uri = uri
             )
         )
     }

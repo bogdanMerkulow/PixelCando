@@ -6,13 +6,12 @@ plugins {
 }
 
 android {
-    compileSdk = 30
-    buildToolsVersion = "30.0.3"
+    compileSdk = 31
 
     defaultConfig {
         applicationId = "com.pixelcando.fityouroutfit"
         minSdk = 21
-        targetSdk = 30
+        targetSdk = 31
         versionCode = 4
         versionName = "1.0"
         resourceConfigurations.add("en")
@@ -72,8 +71,9 @@ dependencies {
     implementation("androidx.core:core-ktx:1.6.0")
     implementation("androidx.appcompat:appcompat:1.3.1")
     implementation("com.google.android.material:material:1.4.0")
-    implementation("androidx.constraintlayout:constraintlayout:2.1.0")
+    implementation("androidx.constraintlayout:constraintlayout:2.1.1")
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
+    implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.4.0-rc01")
 
     val mobiusVersion = "1.5.3"
     implementation("com.spotify.mobius:mobius-core:$mobiusVersion")
@@ -102,7 +102,7 @@ dependencies {
     val cameraVersion = "1.0.2"
     implementation("androidx.camera:camera-camera2:$cameraVersion")
     implementation("androidx.camera:camera-lifecycle:$cameraVersion")
-    implementation("androidx.camera:camera-view:1.0.0-alpha28")
+    implementation("androidx.camera:camera-view:1.0.0-alpha30")
     implementation("androidx.exifinterface:exifinterface:1.3.3")
 
     implementation("com.elvishew:xlog:1.10.1")

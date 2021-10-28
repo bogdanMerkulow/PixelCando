@@ -1,6 +1,6 @@
 package pixel.cando.ui.main.photo_list
 
-import android.graphics.Bitmap
+import android.net.Uri
 import android.os.Bundle
 import pixel.cando.databinding.FragmentPhotoListBinding
 import pixel.cando.databinding.ListItemNoPhotosBinding
@@ -11,8 +11,13 @@ import pixel.cando.ui._base.tea.EventSender
 import pixel.cando.ui._base.tea.EventSenderNeeder
 import pixel.cando.ui._base.tea.ViewModelRender
 import pixel.cando.ui.main.camera.CameraFragment
-import pixel.cando.utils.diffuser.*
+import pixel.cando.utils.diffuser.Diffuser
+import pixel.cando.utils.diffuser.DiffuserCreator
+import pixel.cando.utils.diffuser.DiffuserProvider
+import pixel.cando.utils.diffuser.DiffuserProviderNeeder
 import pixel.cando.utils.diffuser.ViewDiffusers.intoVisibleOrGone
+import pixel.cando.utils.diffuser.intoListDifferAdapter
+import pixel.cando.utils.diffuser.map
 
 class PhotoListFragment : ViewBindingFragment<FragmentPhotoListBinding>(
     FragmentPhotoListBinding::inflate
@@ -67,13 +72,13 @@ class PhotoListFragment : ViewBindingFragment<FragmentPhotoListBinding>(
     }
 
     override fun onCameraResult(
-        bitmap: Bitmap
+        uri: Uri
     ) {
-        eventSender?.sendEvent(
-            PhotoListEvent.PhotoTaken(
-                bitmap = bitmap
-            )
-        )
+//        eventSender?.sendEvent(
+//            PhotoListEvent.PhotoTaken(
+//                bitmap = bitmap
+//            )
+//        )
     }
 
     override fun onCameraCancel() {

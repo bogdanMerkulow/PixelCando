@@ -1,6 +1,7 @@
 package pixel.cando.ui.main.camera
 
 import android.app.AlertDialog
+import android.content.ContentValues
 import android.content.Context
 import android.content.Context.SENSOR_SERVICE
 import android.graphics.Bitmap
@@ -14,6 +15,7 @@ import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
@@ -22,6 +24,7 @@ import android.util.AttributeSet
 import android.view.View
 import android.widget.FrameLayout
 import android.widget.Toast
+import androidx.annotation.WorkerThread
 import androidx.camera.core.Camera
 import androidx.camera.core.CameraSelector
 import androidx.camera.core.ImageCapture
@@ -32,6 +35,10 @@ import androidx.core.content.ContextCompat
 import androidx.core.net.toUri
 import androidx.exifinterface.media.ExifInterface
 import androidx.fragment.app.FragmentManager
+import androidx.lifecycle.lifecycleScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import pixel.cando.R
 import pixel.cando.databinding.FragmentCameraBinding
 import pixel.cando.ui._base.fragment.ViewBindingFullscreenDialogFragment
@@ -42,6 +49,7 @@ import pixel.cando.utils.gone
 import pixel.cando.utils.logError
 import pixel.cando.utils.visibleOrGone
 import java.io.File
+import java.io.FileOutputStream
 import java.io.IOException
 import java.util.UUID
 
@@ -278,24 +286,34 @@ class CameraFragment : ViewBindingFullscreenDialogFragment<FragmentCameraBinding
     private fun takePhoto() {
         setTakeButtonEnabled(false)
 
+        val context = requireContext()
         imageCapture?.let { imageCapture ->
             imageCapture.flashMode = flashMode
 
-            val photoFile = File(
-                requireContext().cacheDir.absolutePath,
-                "${UUID.randomUUID()}.jpeg"
-            )
-
-            val outputOptions = ImageCapture.OutputFileOptions.Builder(photoFile).build()
+            val outputOptions = ImageCapture.OutputFileOptions.Builder(
+                context.contentResolver,
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+                    MediaStore.Audio.Media.getContentUri(
+                        MediaStore.VOLUME_EXTERNAL_PRIMARY
+                    )
+                } else {
+                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+                },
+                ContentValues()
+//                    .apply {
+//                    put(MediaStore.Audio.Media.DISPLAY_NAME, "${UUID.randomUUID()}.jpeg")
+//                    put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
+//                }
+            ).build()
 
             imageCapture.takePicture(
                 outputOptions,
-                ContextCompat.getMainExecutor(requireContext()),
+                ContextCompat.getMainExecutor(context),
                 object : ImageCapture.OnImageSavedCallback {
                     override fun onError(exception: ImageCaptureException) {
                         logError(exception)
                         Toast.makeText(
-                            requireContext(),
+                            context,
                             getString(R.string.something_went_wrong),
                             Toast.LENGTH_LONG
                         ).show()
@@ -304,13 +322,16 @@ class CameraFragment : ViewBindingFullscreenDialogFragment<FragmentCameraBinding
                     }
 
                     override fun onImageSaved(outputFileResults: ImageCapture.OutputFileResults) {
-                        val bitmap = getPortraitBitmap(
-                            requireContext(),
-                            photoFile.toUri()
-                        )
-                        photoFile.delete()
-                        dismiss()
-                        findImplementation<Callback>()?.onCameraResult(bitmap)
+                        lifecycleScope.launch(Dispatchers.Default) {
+                            val uri = getPortraitBitmap(
+                                context,
+                                outputFileResults.savedUri!!
+                            )
+                            withContext(Dispatchers.Main) {
+                                dismiss()
+                                findImplementation<Callback>()?.onCameraResult(uri)
+                            }
+                        }
                     }
                 })
         }
@@ -402,7 +423,7 @@ class CameraFragment : ViewBindingFullscreenDialogFragment<FragmentCameraBinding
     }
 
     interface Callback {
-        fun onCameraResult(bitmap: Bitmap)
+        fun onCameraResult(uri: Uri)
         fun onCameraCancel()
     }
 
@@ -571,22 +592,26 @@ private class DeviceRotationChecker(
 
 }
 
+@WorkerThread
 private fun getPortraitBitmap(
     context: Context,
     uri: Uri
-): Bitmap {
-
-    val bitmap = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
-        ImageDecoder.decodeBitmap(
-            ImageDecoder.createSource(context.contentResolver, uri)
-        )
-    } else {
-        MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
-    }
+): Uri {
 
     return try {
 
-        val stream = context.contentResolver.openInputStream(uri) ?: return bitmap
+        val bitmapGetter = {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                ImageDecoder.decodeBitmap(
+                    ImageDecoder.createSource(context.contentResolver, uri)
+                )
+            } else {
+                MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
+            }
+        }
+
+        val stream = context.contentResolver.openInputStream(uri)
+            ?: return uri
 
         val orientation = ExifInterface(
             stream
@@ -595,20 +620,40 @@ private fun getPortraitBitmap(
             ExifInterface.ORIENTATION_UNDEFINED
         )
 
-        when (orientation) {
+        val rotatedBitmap = when (orientation) {
             ExifInterface.ORIENTATION_ROTATE_90 -> {
+                val bitmap = bitmapGetter.invoke()
                 if (bitmap.width > bitmap.height) rotate(bitmap, 90) else bitmap
             }
-            ExifInterface.ORIENTATION_ROTATE_180 -> rotate(bitmap, 180)
+            ExifInterface.ORIENTATION_ROTATE_180 -> {
+                val bitmap = bitmapGetter.invoke()
+                rotate(bitmap, 180)
+            }
             ExifInterface.ORIENTATION_ROTATE_270 -> {
+                val bitmap = bitmapGetter.invoke()
                 if (bitmap.width > bitmap.height) rotate(bitmap, 270) else bitmap
             }
-            else -> bitmap
+            else -> return uri
         }
+
+        val photoFile = File(
+            context.cacheDir.absolutePath,
+            "${UUID.randomUUID()}.jpeg"
+        )
+
+        FileOutputStream(photoFile).use {
+            rotatedBitmap.compress(
+                Bitmap.CompressFormat.JPEG,
+                100,
+                it
+            )
+        }
+
+        photoFile.toUri()
 
     } catch (ex: IOException) {
         logError(ex)
-        bitmap
+        uri
     }
 }
 

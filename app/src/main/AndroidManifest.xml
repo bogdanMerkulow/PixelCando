@@ -20,7 +20,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Pixelcando"
         >
-        <activity android:name=".ui.RootActivity">
+        <activity
+            android:name=".ui.RootActivity"
+            android:exported="true"
+            >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

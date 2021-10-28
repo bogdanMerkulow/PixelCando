@@ -51,4 +51,9 @@
         <item name="textAllCaps">true</item>
     </style>
 
+    <style name="PositiveTextButton" parent="Widget.MaterialComponents.Button.TextButton" />
+
+    <style name="NeutralTextButton" parent="Widget.MaterialComponents.Button.TextButton">
+        <item name="android:textColor">@color/gray_dove</item>
+    </style>
 </resources>

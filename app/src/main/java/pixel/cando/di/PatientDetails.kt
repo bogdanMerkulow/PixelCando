@@ -1,13 +1,16 @@
 package pixel.cando.di
 
 import android.content.Context
+import androidx.lifecycle.lifecycleScope
 import com.spotify.mobius.Mobius
 import com.spotify.mobius.Update
 import com.spotify.mobius.android.AndroidLogger
+import kotlinx.coroutines.launch
 import pixel.cando.data.remote.RemoteRepository
 import pixel.cando.ui._base.fragment.FlowRouter
 import pixel.cando.ui._base.fragment.SimpleFragmentDelegate
 import pixel.cando.ui._base.fragment.getArgument
+import pixel.cando.ui._base.fragment.withArgumentSet
 import pixel.cando.ui._base.tea.ControllerFragmentDelegate
 import pixel.cando.ui._base.tea.ResultEventSource
 import pixel.cando.ui.main.camera.CameraFragment
@@ -25,7 +28,6 @@ import pixel.cando.utils.RealPermissionChecker
 import pixel.cando.utils.ResourceProvider
 import pixel.cando.utils.createPermissionCheckerResultEventSource
 import pixel.cando.utils.diffuser.DiffuserFragmentDelegate
-import pixel.cando.utils.doOnGlobalMain
 import pixel.cando.utils.messageDisplayer
 
 fun setup(
@@ -52,10 +54,11 @@ fun setup(
 
     val photoPreviewDependencies = PhotoPreviewForPatientDetailsDependencies(
         resultEmitter = ResultEventSource {
-            when (it) {
-                is PhotoPreviewResult.Accepted -> PatientDetailsEvent.PhotoAccepted(it.bitmap)
-                is PhotoPreviewResult.Declined -> PatientDetailsEvent.PhotoDeclined
-            }
+            PatientDetailsEvent.PhotoAccepted(
+                uri = it.uri,
+                weight = it.weight,
+                height = it.height,
+            )
         }
     )
 
@@ -73,18 +76,26 @@ fun setup(
             },
             PatientDetailsLogic.effectHandler(
                 photoTakerOpener = {
-                    doOnGlobalMain {
+                    fragment.lifecycleScope.launch {
                         CameraFragment.show(
                             fragment.childFragmentManager
                         )
                     }
                 },
                 photoConfirmationAsker = {
-                    doOnGlobalMain {
-                        PhotoPreviewFragment.show(
-                            photo = it,
-                            fragmentManager = fragment.childFragmentManager,
-                        )
+                    fragment.lifecycleScope.launch {
+                        PhotoPreviewFragment()
+                            .withArgumentSet(
+                                PhotoPreviewArguments(
+                                    uri = it.uri,
+                                    weight = it.weight,
+                                    height = it.height,
+                                )
+                            )
+                            .show(
+                                fragment.childFragmentManager,
+                                ""
+                            )
                     }
                 },
                 remoteRepository = remoteRepository,
@@ -92,6 +103,7 @@ fun setup(
                 resourceProvider = resourceProvider,
                 permissionChecker = permissionChecker,
                 flowRouter = flowRouter,
+                context = context,
             )
         )
             .eventSources(

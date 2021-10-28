@@ -1,81 +1,98 @@
 package pixel.cando.ui.main.photo_preview
 
-import android.graphics.Bitmap
 import android.os.Bundle
-import android.view.MenuItem
-import androidx.appcompat.content.res.AppCompatResources.getDrawable
-import androidx.fragment.app.FragmentManager
-import pixel.cando.R
 import pixel.cando.databinding.FragmentPhotoPreviewBinding
+import pixel.cando.ui._base.fragment.OnBackPressedListener
 import pixel.cando.ui._base.fragment.ViewBindingFullscreenDialogFragment
-import pixel.cando.ui._base.tea.ResultEmitter
+import pixel.cando.ui._base.tea.EventSender
+import pixel.cando.ui._base.tea.EventSenderNeeder
+import pixel.cando.ui._base.tea.ViewModelRender
+import pixel.cando.utils.diffuser.Diffuser
+import pixel.cando.utils.diffuser.Diffuser.intoOnce
+import pixel.cando.utils.diffuser.DiffuserCreator
+import pixel.cando.utils.diffuser.DiffuserProvider
+import pixel.cando.utils.diffuser.DiffuserProviderNeeder
+import pixel.cando.utils.diffuser.map
+import pixel.cando.utils.doAfterTextChanged
 
 class PhotoPreviewFragment : ViewBindingFullscreenDialogFragment<FragmentPhotoPreviewBinding>(
     FragmentPhotoPreviewBinding::inflate
-) {
+), ViewModelRender<PhotoPreviewViewModel>,
+    EventSenderNeeder<PhotoPreviewEvent>,
+    DiffuserCreator<PhotoPreviewViewModel, FragmentPhotoPreviewBinding>,
+    DiffuserProviderNeeder<PhotoPreviewViewModel>,
+    OnBackPressedListener {
 
-    companion object {
-        fun show(
-            photo: Bitmap,
-            fragmentManager: FragmentManager
-        ) {
-            PhotoPreviewFragment().apply {
-                this.photo = photo
-                show(fragmentManager, "")
-            }
-        }
+    override var eventSender: EventSender<PhotoPreviewEvent>? = null
+
+    override var diffuserProvider: DiffuserProvider<PhotoPreviewViewModel>? = null
+
+    override fun createDiffuser(
+        viewBinding: FragmentPhotoPreviewBinding
+    ): Diffuser<PhotoPreviewViewModel> {
+        return Diffuser(
+            map(
+                { it.uri },
+                intoOnce {
+                    viewBinding.photoImageView.setImageURI(it)
+                }
+            ),
+            map(
+                { it.weight },
+                intoOnce {
+                    viewBinding.weightField.setText(it)
+                }
+            ),
+            map(
+                { it.height },
+                intoOnce {
+                    viewBinding.heightField.setText(it)
+                }
+            )
+        )
     }
-
-    var photo: Bitmap? = null
-
-    var resultEmitter: ResultEmitter<PhotoPreviewResult>? = null
 
     override fun onViewBindingCreated(
         viewBinding: FragmentPhotoPreviewBinding,
         savedInstanceState: Bundle?
     ) {
         super.onViewBindingCreated(viewBinding, savedInstanceState)
-        val photo = this.photo
-        if (photo == null) {
-            dismiss()
-            return
-        }
-        viewBinding.photoImageView.setImageBitmap(photo)
         viewBinding.toolbar.setNavigationOnClickListener {
-            dismiss()
+            eventSender?.sendEvent(
+                PhotoPreviewEvent.BackTap
+            )
         }
-        viewBinding.toolbar.menu.add("").apply {
-            icon = getDrawable(requireContext(), R.drawable.ic_check_white)
-            setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS)
-            setOnMenuItemClickListener {
-                dismiss()
-                resultEmitter?.emit(
-                    PhotoPreviewResult.Accepted(
-                        bitmap = photo,
-                    )
-                )
-                true
-            }
+        viewBinding.confirmButton.setOnClickListener {
+            eventSender?.sendEvent(
+                PhotoPreviewEvent.ConfirmTap
+            )
         }
-        viewBinding.toolbar.menu.add("").apply {
-            icon = getDrawable(requireContext(), R.drawable.ic_cross_white)
-            setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS)
-            setOnMenuItemClickListener {
-                dismiss()
-                resultEmitter?.emit(
-                    PhotoPreviewResult.Declined
-                )
-                true
-            }
+        viewBinding.cancelButton.setOnClickListener {
+            eventSender?.sendEvent(
+                PhotoPreviewEvent.CancelTap
+            )
+        }
+        viewBinding.weightField.doAfterTextChanged {
+            eventSender?.sendEvent(
+                PhotoPreviewEvent.WeightChanged(it)
+            )
+        }
+        viewBinding.heightField.doAfterTextChanged {
+            eventSender?.sendEvent(
+                PhotoPreviewEvent.HeightChanged(it)
+            )
         }
     }
 
-}
+    override fun renderViewModel(
+        viewModel: PhotoPreviewViewModel
+    ) {
+        diffuserProvider?.invoke()?.run(viewModel)
+    }
 
-sealed class PhotoPreviewResult {
-    data class Accepted(
-        val bitmap: Bitmap,
-    ) : PhotoPreviewResult()
-
-    object Declined : PhotoPreviewResult()
+    override fun onBackPressed() {
+        eventSender?.sendEvent(
+            PhotoPreviewEvent.BackTap
+        )
+    }
 }

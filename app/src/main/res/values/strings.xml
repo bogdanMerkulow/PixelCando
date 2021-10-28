@@ -36,6 +36,11 @@
 
     <string name="all">All</string>
 
+    <string name="photo_preview_title">Enter height and weight</string>
+    <string name="photo_preview_subtitle">Height and weight params are required for proper calculations</string>
+    <string name="photo_preview_weight_field_hint">Weight, kg</string>
+    <string name="photo_preview_height_field_hint">Height, cm</string>
+
     <!-- Camera -->
     <string name="camera_move_devices_top_closer_to_you">Tilt the top of device backward</string>
     <string name="camera_move_devices_top_away_from_you">Tilt the top of device forward</string>

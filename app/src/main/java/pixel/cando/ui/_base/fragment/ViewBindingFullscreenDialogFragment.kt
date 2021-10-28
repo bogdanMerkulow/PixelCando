@@ -8,13 +8,13 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.Window
-import androidx.fragment.app.DialogFragment
 import androidx.viewbinding.ViewBinding
+import javax.annotation.OverridingMethodsMustInvokeSuper
 
 
 abstract class ViewBindingFullscreenDialogFragment<VB : ViewBinding>(
     private val viewBindingCreator: ViewBindingCreator<VB>
-) : DialogFragment() {
+) : DelegatingDialogFragment() {
 
     private val viewBindingStore by lazy {
         ViewBindingStore(viewBindingCreator)
@@ -29,6 +29,14 @@ abstract class ViewBindingFullscreenDialogFragment<VB : ViewBinding>(
                 it.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
                 it.window?.requestFeature(Window.FEATURE_NO_TITLE)
             }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        dialog?.window?.setLayout(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT
+        )
     }
 
     override fun onCreateView(
@@ -50,15 +58,42 @@ abstract class ViewBindingFullscreenDialogFragment<VB : ViewBinding>(
         super.onViewCreated(view, savedInstanceState)
     }
 
+    @OverridingMethodsMustInvokeSuper
     open fun onViewBindingCreated(
         viewBinding: VB,
         savedInstanceState: Bundle?
     ) {
+        delegates
+            .mapNotNull {
+                it as? ViewBindingFragmentDelegate<VB>
+            }
+            .forEach {
+                it.onFragmentViewBindingCreated(
+                    this,
+                    viewBinding,
+                    savedInstanceState
+                )
+            }
     }
 
+    @OverridingMethodsMustInvokeSuper
     override fun onDestroyView() {
         super.onDestroyView()
         viewBindingStore.destroyViewBinding()
+        onViewBindingDestroyed()
+    }
+
+    @OverridingMethodsMustInvokeSuper
+    open fun onViewBindingDestroyed() {
+        delegates
+            .mapNotNull {
+                it as? ViewBindingFragmentDelegate<VB>
+            }
+            .forEach {
+                it.onFragmentViewBindingDestroyed(
+                    this
+                )
+            }
     }
 
 }

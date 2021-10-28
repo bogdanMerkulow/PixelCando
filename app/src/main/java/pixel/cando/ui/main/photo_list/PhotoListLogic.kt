@@ -11,7 +11,10 @@ import pixel.cando.R
 import pixel.cando.data.remote.RemoteRepository
 import pixel.cando.ui._base.list.ListItem
 import pixel.cando.ui._base.tea.CoroutineScopeEffectHandler
-import pixel.cando.utils.*
+import pixel.cando.utils.MessageDisplayer
+import pixel.cando.utils.PermissionChecker
+import pixel.cando.utils.ResourceProvider
+import pixel.cando.utils.base64ForSending
 
 object PhotoListLogic {
 
@@ -96,21 +99,21 @@ object PhotoListLogic {
                 is PhotoListEffect.UploadPhoto -> {
                     val base64 = effect.bitmap.base64ForSending
                     if (base64 != null) {
-                        val result = remoteRepository.uploadPhoto(
-                            patientId = 666, // FIXME
-                            photo = base64
-                        )
-                        result.onLeft {
-                            output.accept(
-                                PhotoListEvent.PhotoUploadSuccess
-                            )
-                        }
-                        result.onRight {
-                            //logError(it)
-                            output.accept(
-                                PhotoListEvent.PhotoUploadFailure
-                            )
-                        }
+//                        val result = remoteRepository.uploadPhoto(
+//                            patientId = 666, // FIXME
+//                            photo = base64
+//                        )
+//                        result.onLeft {
+//                            output.accept(
+//                                PhotoListEvent.PhotoUploadSuccess
+//                            )
+//                        }
+//                        result.onRight {
+//                            //logError(it)
+//                            output.accept(
+//                                PhotoListEvent.PhotoUploadFailure
+//                            )
+//                        }
                     } else {
                         output.accept(
                             PhotoListEvent.PhotoUploadFailure

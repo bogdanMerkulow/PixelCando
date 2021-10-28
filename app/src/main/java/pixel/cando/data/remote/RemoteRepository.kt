@@ -13,6 +13,7 @@ import pixel.cando.data.remote.dto.PatientGetRequest
 import pixel.cando.data.remote.dto.PatientListFilterDto
 import pixel.cando.data.remote.dto.PatientListRequest
 import pixel.cando.data.remote.dto.UploadPhotoForPatientRequest
+import pixel.cando.data.remote.dto.UploadPhotoForPatientWeightHeightDto
 import pixel.cando.utils.Either
 import pixel.cando.utils.mapOnlyLeft
 import retrofit2.Response
@@ -39,6 +40,8 @@ interface RemoteRepository {
 
     suspend fun uploadPhoto(
         patientId: Long,
+        weight: Float,
+        height: Float,
         photo: String
     ): Either<Unit, UploadPhotoFailure>
 
@@ -101,6 +104,8 @@ class RealRemoteRepository(
             PatientSingleItemInfo(
                 id = it.patient.userId,
                 fullName = it.patient.user.fullName,
+                weight = it.patient.weight,
+                height = it.patient.height,
             )
         }
     }
@@ -150,6 +155,8 @@ class RealRemoteRepository(
 
     override suspend fun uploadPhoto(
         patientId: Long,
+        weight: Float,
+        height: Float,
         photo: String,
     ): Either<Unit, UploadPhotoFailure> {
         return callApi(
@@ -157,6 +164,10 @@ class RealRemoteRepository(
                 uploadPhoto(
                     UploadPhotoForPatientRequest(
                         patientId = patientId,
+                        weightHeight = UploadPhotoForPatientWeightHeightDto(
+                            weight = weight,
+                            height = height,
+                        ),
                         photo = photo,
                     )
                 )

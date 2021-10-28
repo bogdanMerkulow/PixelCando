@@ -1,8 +1,12 @@
 package pixel.cando.ui.main.patient_details
 
 import android.Manifest
-import android.graphics.Bitmap
+import android.content.Context
+import android.graphics.ImageDecoder
+import android.net.Uri
+import android.os.Build
 import android.os.Parcelable
+import android.provider.MediaStore
 import com.spotify.mobius.Connectable
 import com.spotify.mobius.First
 import com.spotify.mobius.Next
@@ -13,6 +17,7 @@ import pixel.cando.R
 import pixel.cando.data.models.Exam
 import pixel.cando.data.models.UploadPhotoFailure
 import pixel.cando.data.remote.RemoteRepository
+import pixel.cando.di.PhotoPreviewArguments
 import pixel.cando.ui._base.fragment.FlowRouter
 import pixel.cando.ui._base.list.ListAction
 import pixel.cando.ui._base.list.ListState
@@ -93,13 +98,21 @@ object PatientDetailsLogic {
                 )
             }
             is PatientDetailsEvent.PhotoTaken -> {
-                Next.dispatch(
-                    setOf(
-                        PatientDetailsEffect.AskToConfirmPhoto(
-                            bitmap = event.bitmap
+                val weight = model.patientWeight
+                val height = model.patientHeight
+                if (weight != null
+                    && height != null
+                ) {
+                    Next.dispatch(
+                        setOf(
+                            PatientDetailsEffect.AskToConfirmPhoto(
+                                uri = event.uri,
+                                weight = weight,
+                                height = height,
+                            )
                         )
                     )
-                )
+                } else Next.noChange()
             }
             is PatientDetailsEvent.PhotoAccepted -> {
                 Next.next(
@@ -109,13 +122,12 @@ object PatientDetailsLogic {
                     setOf(
                         PatientDetailsEffect.UploadPhoto(
                             patientId = model.patientId,
-                            bitmap = event.bitmap
+                            uri = event.uri,
+                            weight = event.weight,
+                            height = event.height,
                         )
                     )
                 )
-            }
-            is PatientDetailsEvent.PhotoDeclined -> {
-                Next.noChange()
             }
             is PatientDetailsEvent.ExitTap -> {
                 Next.dispatch(
@@ -129,6 +141,8 @@ object PatientDetailsLogic {
                 Next.next(
                     model.copy(
                         patientFullName = event.patientFullName,
+                        patientWeight = event.patientWeight,
+                        patientHeight = event.patientHeight,
                     )
                 )
             }
@@ -202,12 +216,13 @@ object PatientDetailsLogic {
 
     fun effectHandler(
         photoTakerOpener: () -> Unit,
-        photoConfirmationAsker: (Bitmap) -> Unit,
+        photoConfirmationAsker: (PhotoPreviewArguments) -> Unit,
         remoteRepository: RemoteRepository,
         messageDisplayer: MessageDisplayer,
         resourceProvider: ResourceProvider,
         permissionChecker: PermissionChecker,
         flowRouter: FlowRouter,
+        context: Context,
     ): Connectable<PatientDetailsEffect, PatientDetailsEvent> {
         val loadExamPageJob = AtomicReference<Job>()
         return CoroutineScopeEffectHandler { effect, output ->
@@ -220,6 +235,8 @@ object PatientDetailsLogic {
                         output.accept(
                             PatientDetailsEvent.LoadPatientInfoSuccess(
                                 patientFullName = it.fullName,
+                                patientWeight = it.weight,
+                                patientHeight = it.height,
                             )
                         )
                     }
@@ -250,10 +267,19 @@ object PatientDetailsLogic {
                     photoTakerOpener.invoke()
                 }
                 is PatientDetailsEffect.UploadPhoto -> {
-                    val base64 = effect.bitmap.base64ForSending
+                    val bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                        ImageDecoder.decodeBitmap(
+                            ImageDecoder.createSource(context.contentResolver, effect.uri)
+                        )
+                    } else {
+                        MediaStore.Images.Media.getBitmap(context.contentResolver, effect.uri)
+                    }
+                    val base64 = bitmap.base64ForSending
                     if (base64 != null) {
                         val result = remoteRepository.uploadPhoto(
                             patientId = effect.patientId,
+                            weight = effect.weight,
+                            height = effect.height,
                             photo = base64
                         )
                         result.onLeft {
@@ -295,7 +321,13 @@ object PatientDetailsLogic {
                     }
                 }
                 is PatientDetailsEffect.AskToConfirmPhoto -> {
-                    photoConfirmationAsker.invoke(effect.bitmap)
+                    photoConfirmationAsker.invoke(
+                        PhotoPreviewArguments(
+                            uri = effect.uri,
+                            weight = effect.weight,
+                            height = effect.height,
+                        )
+                    )
                 }
                 is PatientDetailsEffect.ShowUnexpectedError -> {
                     messageDisplayer.showMessage(
@@ -319,6 +351,8 @@ object PatientDetailsLogic {
     ) = PatientDetailsDataModel(
         patientId = patientId,
         patientFullName = null,
+        patientWeight = null,
+        patientHeight = null,
         isLoading = false,
         listState = ParcelableListState.NotInitialized(),
     )
@@ -332,16 +366,16 @@ sealed class PatientDetailsEvent {
 
     object TakePhotoTap : PatientDetailsEvent()
     data class PhotoTaken(
-        val bitmap: Bitmap
+        val uri: Uri
     ) : PatientDetailsEvent()
 
     object ExitTap : PatientDetailsEvent()
 
     data class PhotoAccepted(
-        val bitmap: Bitmap
+        val uri: Uri,
+        val weight: Float,
+        val height: Float,
     ) : PatientDetailsEvent()
-
-    object PhotoDeclined : PatientDetailsEvent()
 
     // model
 
@@ -357,6 +391,8 @@ sealed class PatientDetailsEvent {
 
     data class LoadPatientInfoSuccess(
         val patientFullName: String,
+        val patientWeight: Float,
+        val patientHeight: Float,
     ) : PatientDetailsEvent()
 
     object PhotoUploadSuccess : PatientDetailsEvent()
@@ -383,11 +419,15 @@ sealed class PatientDetailsEffect {
 
     data class UploadPhoto(
         val patientId: Long,
-        val bitmap: Bitmap
+        val uri: Uri,
+        val weight: Float,
+        val height: Float,
     ) : PatientDetailsEffect()
 
     data class AskToConfirmPhoto(
-        val bitmap: Bitmap
+        val uri: Uri,
+        val weight: Float,
+        val height: Float,
     ) : PatientDetailsEffect()
 
     object ShowUnexpectedError : PatientDetailsEffect()
@@ -404,6 +444,8 @@ sealed class PatientDetailsEffect {
 data class PatientDetailsDataModel(
     val patientId: Long,
     val patientFullName: String?,
+    val patientWeight: Float?,
+    val patientHeight: Float?,
     val isLoading: Boolean,
     val listState: ParcelableListState<ExamDataModel>,
 ) : Parcelable

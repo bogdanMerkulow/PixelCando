@@ -3,8 +3,15 @@ package pixel.cando.ui._base.tea
 import com.spotify.mobius.Connectable
 import com.spotify.mobius.Connection
 import com.spotify.mobius.functions.Consumer
-import kotlinx.coroutines.*
+import kotlinx.coroutines.CoroutineExceptionHandler
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.cancelChildren
+import kotlinx.coroutines.job
+import kotlinx.coroutines.launch
 import pixel.cando.utils.logError
+import java.util.concurrent.atomic.AtomicBoolean
 import kotlin.coroutines.CoroutineContext
 
 class CoroutineScopeEffectHandler<F, E>(
@@ -17,9 +24,14 @@ class CoroutineScopeEffectHandler<F, E>(
             logError(throwable)
         }
 
+    private val isConnected = AtomicBoolean(false)
+
     override fun connect(
         output: Consumer<E>
     ): Connection<F> {
+
+        isConnected.set(true)
+
         return object : Connection<F> {
 
             override fun accept(value: F) {
@@ -27,12 +39,17 @@ class CoroutineScopeEffectHandler<F, E>(
                     handler.invoke(
                         this,
                         value,
-                        output
+                        {
+                            if (isConnected.get()) {
+                                output.accept(it)
+                            }
+                        }
                     )
                 }
             }
 
             override fun dispose() {
+                isConnected.set(false)
                 coroutineContext.job.cancelChildren()
             }
         }
