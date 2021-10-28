@@ -1,5 +1,7 @@
 package pixel.cando.di
 
+import android.content.Context
+import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.squareup.moshi.Moshi
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -19,23 +21,26 @@ import pixel.cando.utils.ResourceProvider
 import pixel.cando.utils.logError
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
-import java.util.*
+import java.util.Locale
+import java.util.TimeZone
 import java.util.concurrent.TimeUnit
 
 fun assembleRestApi(
     resourceProvider: ResourceProvider,
     accessTokenProvider: AccessTokenProvider,
     moshi: Moshi,
+    context: Context,
 ): RestApi {
 
     return Retrofit.Builder()
         .client(
             assembleOkHttpClient(
-                NotAuthorizedHandlerInterceptor(),
                 ContentTypeHeaderInterceptor(),
                 BodyInterceptor(
                     accessTokenProvider = accessTokenProvider
-                )
+                ),
+                ChuckerInterceptor.Builder(context).build(),
+                NotAuthorizedHandlerInterceptor(),
             )
         )
         .baseUrl(resourceProvider.getString(R.string.base_url))
@@ -49,12 +54,14 @@ fun assembleRestApi(
 fun assembleAuthApi(
     resourceProvider: ResourceProvider,
     moshi: Moshi,
+    context: Context,
 ): AuthApi {
     return Retrofit.Builder()
         .client(
             assembleOkHttpClient(
                 ContentTypeHeaderInterceptor(),
-                BodyInterceptor()
+                BodyInterceptor(),
+                ChuckerInterceptor.Builder(context).build(),
             )
         )
         .baseUrl(resourceProvider.getString(R.string.base_url))
@@ -82,17 +89,17 @@ private fun assembleOkHttpClient(
             timeout,
             TimeUnit.SECONDS
         )
+        .apply {
+            interceptors.forEach {
+                addInterceptor(it)
+            }
+        }
         .addNetworkInterceptor(
             HttpLoggingInterceptor().apply {
                 level = if (BuildConfig.DEBUG) HttpLoggingInterceptor.Level.BODY
                 else HttpLoggingInterceptor.Level.NONE
             }
         )
-        .apply {
-            interceptors.forEach {
-                addInterceptor(it)
-            }
-        }
         .build()
 }
 

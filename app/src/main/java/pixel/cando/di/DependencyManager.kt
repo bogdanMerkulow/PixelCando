@@ -7,7 +7,14 @@ import android.os.Bundle
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
-import pixel.cando.data.local.*
+import pixel.cando.data.local.AccessTokenStore
+import pixel.cando.data.local.AuthStateChecker
+import pixel.cando.data.local.RealAccessTokenStore
+import pixel.cando.data.local.RealAuthStateChecker
+import pixel.cando.data.local.RealSessionWiper
+import pixel.cando.data.local.RealUserRoleStore
+import pixel.cando.data.local.SessionWiper
+import pixel.cando.data.local.UserRoleStore
 import pixel.cando.data.remote.AuthRepository
 import pixel.cando.data.remote.RealAuthRepository
 import pixel.cando.data.remote.RealRemoteRepository
@@ -85,6 +92,7 @@ class DependencyManager(
             resourceProvider = resourceProvider,
             accessTokenProvider = accessTokenStore,
             moshi = moshi,
+            context = app,
         )
     }
 
@@ -92,6 +100,7 @@ class DependencyManager(
         assembleAuthApi(
             resourceProvider = resourceProvider,
             moshi = moshi,
+            context = app,
         )
     }
 

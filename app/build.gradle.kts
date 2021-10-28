@@ -95,6 +95,10 @@ dependencies {
     implementation("com.squareup.moshi:moshi-kotlin:$moshiVersion")
     kapt("com.squareup.moshi:moshi-kotlin-codegen:$moshiVersion")
 
+    val chuckerVersion = "3.5.2"
+    debugImplementation("com.github.chuckerteam.chucker:library:$chuckerVersion")
+    releaseImplementation("com.github.chuckerteam.chucker:library-no-op:$chuckerVersion")
+
     val cameraVersion = "1.0.2"
     implementation("androidx.camera:camera-camera2:$cameraVersion")
     implementation("androidx.camera:camera-lifecycle:$cameraVersion")
