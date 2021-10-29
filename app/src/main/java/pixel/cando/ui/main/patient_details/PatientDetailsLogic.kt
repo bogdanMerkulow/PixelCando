@@ -14,10 +14,11 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import pixel.cando.R
-import pixel.cando.data.models.Exam
+import pixel.cando.data.models.ExamListItemInfo
 import pixel.cando.data.models.UploadPhotoFailure
 import pixel.cando.data.remote.RemoteRepository
 import pixel.cando.di.PhotoPreviewArguments
+import pixel.cando.ui.Screens
 import pixel.cando.ui._base.fragment.FlowRouter
 import pixel.cando.ui._base.list.ListAction
 import pixel.cando.ui._base.list.ListState
@@ -133,6 +134,16 @@ object PatientDetailsLogic {
                 Next.dispatch(
                     setOf(
                         PatientDetailsEffect.Exit
+                    )
+                )
+            }
+            is PatientDetailsEvent.ExamTap -> {
+                Next.dispatch(
+                    setOf(
+                        PatientDetailsEffect.NavigateToExamDetails(
+                            examId = event.id,
+                            patientId = model.patientId,
+                        )
                     )
                 )
             }
@@ -329,6 +340,14 @@ object PatientDetailsLogic {
                         )
                     )
                 }
+                is PatientDetailsEffect.NavigateToExamDetails -> {
+                    flowRouter.navigateTo(
+                        Screens.examDetails(
+                            examId = effect.examId,
+                            patientId = effect.patientId,
+                        )
+                    )
+                }
                 is PatientDetailsEffect.ShowUnexpectedError -> {
                     messageDisplayer.showMessage(
                         resourceProvider.getString(R.string.something_went_wrong)
@@ -377,6 +396,10 @@ sealed class PatientDetailsEvent {
         val height: Float,
     ) : PatientDetailsEvent()
 
+    data class ExamTap(
+        val id: Long
+    ) : PatientDetailsEvent()
+
     // model
 
     class ExamListLoadSuccess(
@@ -413,6 +436,11 @@ sealed class PatientDetailsEffect {
     data class LoadExamPage(
         val patientId: Long,
         val page: Int,
+    ) : PatientDetailsEffect()
+
+    data class NavigateToExamDetails(
+        val examId: Long,
+        val patientId: Long,
     ) : PatientDetailsEffect()
 
     object OpenPhotoTaker : PatientDetailsEffect()
@@ -507,7 +535,7 @@ private fun ExamDataModel.viewModel(
     isLast = isLast,
 )
 
-private fun Exam.dataModel(
+private fun ExamListItemInfo.dataModel(
 ) = ExamDataModel(
     id = id,
     createdAt = createdAt,

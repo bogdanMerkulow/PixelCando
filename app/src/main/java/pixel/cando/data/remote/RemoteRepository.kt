@@ -1,7 +1,8 @@
 package pixel.cando.data.remote
 
 import com.squareup.moshi.Moshi
-import pixel.cando.data.models.Exam
+import pixel.cando.data.models.ExamListItemInfo
+import pixel.cando.data.models.ExamSingleItemInfo
 import pixel.cando.data.models.Folder
 import pixel.cando.data.models.Gender
 import pixel.cando.data.models.PatientListItemInfo
@@ -9,6 +10,7 @@ import pixel.cando.data.models.PatientSingleItemInfo
 import pixel.cando.data.models.UploadPhotoFailure
 import pixel.cando.data.remote.dto.ExamListRequest
 import pixel.cando.data.remote.dto.FolderListRequest
+import pixel.cando.data.remote.dto.GetExamRequest
 import pixel.cando.data.remote.dto.PatientGetRequest
 import pixel.cando.data.remote.dto.PatientListFilterDto
 import pixel.cando.data.remote.dto.PatientListRequest
@@ -36,7 +38,11 @@ interface RemoteRepository {
     suspend fun getExams(
         patientId: Long,
         page: Int,
-    ): Either<List<Exam>, Throwable>
+    ): Either<List<ExamListItemInfo>, Throwable>
+
+    suspend fun getExam(
+        id: Long
+    ): Either<ExamSingleItemInfo, Throwable>
 
     suspend fun uploadPhoto(
         patientId: Long,
@@ -132,7 +138,7 @@ class RealRemoteRepository(
     override suspend fun getExams(
         patientId: Long,
         page: Int
-    ): Either<List<Exam>, Throwable> {
+    ): Either<List<ExamListItemInfo>, Throwable> {
         return callApi {
             getExams(
                 ExamListRequest(
@@ -143,11 +149,39 @@ class RealRemoteRepository(
             )
         }.mapOnlyLeft {
             it.results.map {
-                Exam(
+                ExamListItemInfo(
                     id = it.id,
                     createdAt = it.createdAt,
                     number = it.no,
                     bmi = it.params.bmi,
+                )
+            }
+        }
+    }
+
+    override suspend fun getExam(
+        id: Long
+    ): Either<ExamSingleItemInfo, Throwable> {
+        return callApi {
+            getExam(
+                GetExamRequest(id)
+            )
+        }.mapOnlyLeft {
+            it.exam.let {
+                ExamSingleItemInfo(
+                    id = it.id,
+                    createdAt = it.createdAt,
+                    number = it.no,
+                    bmi = it.params.bmi,
+                    bmr = it.params.bmr,
+                    fm = it.params.fm,
+                    ffm = it.params.ffm,
+                    abdominalFatMass = it.params.abdominalFm,
+                    tbw = it.params.tbw,
+                    hip = it.params.hip,
+                    belly = it.params.belly,
+                    waistToHeight = it.params.waistToHeight,
+                    silhouetteUrl = it.silhouette,
                 )
             }
         }

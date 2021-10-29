@@ -41,6 +41,30 @@
     <string name="photo_preview_weight_field_hint">Weight, kg</string>
     <string name="photo_preview_height_field_hint">Height, cm</string>
 
+    <string name="exam_details_screen_title">%s, Exam #%d</string>
+    <string name="exam_details_tab_details">Details</string>
+    <string name="exam_details_tab_silhouette">Silhouette</string>
+
+    <string name="exam_details_measurement_values_section_params">Params</string>
+    <string name="exam_details_measurement_values_section_circumferences">Circumferences</string>
+
+    <string name="created_at">Created At</string>
+    <string name="bmi">Body Mass Index (BMI)</string>
+    <string name="bmr">Basal Metabolic Rate (BMR)</string>
+    <string name="fm">Fat Mass (FM)</string>
+    <string name="ffm">Fat Free Mass (FFM)</string>
+    <string name="abdominal_fat_mass">Abdominal Fat Mass</string>
+    <string name="tbw">Total Body Water (TBW)</string>
+    <string name="hip">Hip</string>
+    <string name="belly">Belly</string>
+    <string name="waist_to_height">Waist to Height Ratio</string>
+
+    <string name="kg_m2">kg/m2</string>
+    <string name="kg">kg</string>
+    <string name="kcal">kcal</string>
+    <string name="cm">cm</string>
+    <string name="percent" formatted="false">%</string>
+
     <!-- Camera -->
     <string name="camera_move_devices_top_closer_to_you">Tilt the top of device backward</string>
     <string name="camera_move_devices_top_away_from_you">Tilt the top of device forward</string>

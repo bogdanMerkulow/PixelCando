@@ -107,6 +107,8 @@ dependencies {
 
     implementation("com.elvishew:xlog:1.10.1")
 
+    implementation("io.coil-kt:coil:1.4.0")
+
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
 
     implementation("org.ocpsoft.prettytime:prettytime:5.0.2.Final")

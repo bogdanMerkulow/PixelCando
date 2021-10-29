@@ -4,6 +4,8 @@ import pixel.cando.data.remote.dto.ExamListRequest
 import pixel.cando.data.remote.dto.ExamListResponse
 import pixel.cando.data.remote.dto.FolderListRequest
 import pixel.cando.data.remote.dto.FolderListResponse
+import pixel.cando.data.remote.dto.GetExamRequest
+import pixel.cando.data.remote.dto.GetExamResponse
 import pixel.cando.data.remote.dto.PatientGetRequest
 import pixel.cando.data.remote.dto.PatientGetResponse
 import pixel.cando.data.remote.dto.PatientListRequest
@@ -34,6 +36,11 @@ interface RestApi {
     suspend fun getExams(
         @Body request: ExamListRequest
     ): Response<ExamListResponse>
+
+    @POST("doctor/exams/get")
+    suspend fun getExam(
+        @Body request: GetExamRequest
+    ): Response<GetExamResponse>
 
     @POST("doctor/photos/upload")
     suspend fun uploadPhoto(

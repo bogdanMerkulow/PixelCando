@@ -2,11 +2,13 @@ package pixel.cando.ui
 
 import androidx.fragment.app.Fragment
 import com.github.terrakok.cicerone.androidx.FragmentScreen
+import pixel.cando.di.ExamDetailsArgument
 import pixel.cando.ui._base.fragment.withArgumentSet
 import pixel.cando.ui.auth.AuthFlowFragment
 import pixel.cando.ui.auth.password_recovery.PasswordRecoveryFragment
 import pixel.cando.ui.auth.sign_in.SignInFragment
 import pixel.cando.ui.main.MainFlowFragment
+import pixel.cando.ui.main.exam_details.ExamDetailsFragment
 import pixel.cando.ui.main.home.HomeFragment
 import pixel.cando.ui.main.patient_details.PatientDetailsFragment
 import pixel.cando.ui.main.patient_list.PatientListFragment
@@ -38,6 +40,19 @@ object Screens {
     ) = FragmentScreen {
         PatientDetailsFragment()
             .withArgumentSet(patientId)
+    }
+
+    fun examDetails(
+        examId: Long,
+        patientId: Long
+    ) = FragmentScreen {
+        ExamDetailsFragment()
+            .withArgumentSet(
+                ExamDetailsArgument(
+                    examId = examId,
+                    patientId = patientId,
+                )
+            )
     }
 
     fun profile() = FragmentScreen {

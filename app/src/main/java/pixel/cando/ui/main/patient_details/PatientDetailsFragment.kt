@@ -52,7 +52,11 @@ class PatientDetailsFragment : ViewBindingFragment<FragmentPatientDetailsBinding
     private val adapter by lazy {
         createDifferAdapter(
             headerAdapterDelegate(),
-            examAdapterDelegate(),
+            examAdapterDelegate {
+                eventSender?.sendEvent(
+                    PatientDetailsEvent.ExamTap(it)
+                )
+            },
             noDataListPlaceholder<ExamListItem.NoDataPlaceholder, ExamListItem>(),
             listInitialLoader<ExamListItem.InitialLoader, ExamListItem>(),
             listMoreLoader<ExamListItem.MoreLoader, ExamListItem>(),
@@ -186,12 +190,16 @@ private sealed class ExamListItem : ListItem {
 }
 
 private fun examAdapterDelegate(
+    clickListener: (Long) -> Unit
 ) = createDifferAdapterDelegate<
         ExamListItem.Exam,
         ExamListItem,
         ListItemExamBinding>(
     viewBindingCreator = ListItemExamBinding::inflate,
     viewHolderBinding = {
+        binding.root.setOnClickListener {
+            clickListener.invoke(item.exam.id)
+        }
         bind {
             binding.valueLabel.text = item.exam.value
             binding.dateLabel.text = item.exam.date
