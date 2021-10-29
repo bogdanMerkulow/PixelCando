@@ -81,13 +81,7 @@ class RealRemoteRepository(
                 PatientListItemInfo(
                     id = it.userId,
                     fullName = it.user.fullName,
-                    gender = it.gender.let {
-                        when (it) {
-                            "male" -> Gender.MALE
-                            "female" -> Gender.FEMALE
-                            else -> Gender.MALE
-                        }
-                    },
+                    gender = it.gender.toGender(),
                     age = it.age,
                     avatarText = it.user.avatar.text,
                     avatarBgColor = it.user.avatar.color,
@@ -110,8 +104,14 @@ class RealRemoteRepository(
             PatientSingleItemInfo(
                 id = it.patient.userId,
                 fullName = it.patient.user.fullName,
+                gender = it.patient.gender.toGender(),
+                age = it.patient.age,
                 weight = it.patient.weight,
                 height = it.patient.height,
+                phoneNumber = it.patient.user.contactPhone,
+                email = it.patient.user.contactEmail,
+                address = it.patient.user.address,
+                country = it.patient.user.country,
             )
         }
     }
@@ -269,3 +269,9 @@ class RealRemoteRepository(
 }
 
 class NotAuthorizedException : IOException()
+
+private fun String.toGender() = when (this) {
+    "male" -> Gender.MALE
+    "female" -> Gender.FEMALE
+    else -> Gender.MALE
+}

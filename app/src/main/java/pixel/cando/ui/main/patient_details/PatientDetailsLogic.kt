@@ -147,6 +147,15 @@ object PatientDetailsLogic {
                     )
                 )
             }
+            is PatientDetailsEvent.PatientInfoTap -> {
+                Next.dispatch(
+                    setOf(
+                        PatientDetailsEffect.NavigateToPatientInfo(
+                            patientId = model.patientId,
+                        )
+                    )
+                )
+            }
             // model
             is PatientDetailsEvent.LoadPatientInfoSuccess -> {
                 Next.next(
@@ -348,6 +357,13 @@ object PatientDetailsLogic {
                         )
                     )
                 }
+                is PatientDetailsEffect.NavigateToPatientInfo -> {
+                    flowRouter.navigateTo(
+                        Screens.patientInfo(
+                            patientId = effect.patientId,
+                        )
+                    )
+                }
                 is PatientDetailsEffect.ShowUnexpectedError -> {
                     messageDisplayer.showMessage(
                         resourceProvider.getString(R.string.something_went_wrong)
@@ -382,6 +398,7 @@ sealed class PatientDetailsEvent {
     // ui
     object RefreshRequest : PatientDetailsEvent()
     object LoadExamNextPage : PatientDetailsEvent()
+    object PatientInfoTap : PatientDetailsEvent()
 
     object TakePhotoTap : PatientDetailsEvent()
     data class PhotoTaken(
@@ -443,6 +460,10 @@ sealed class PatientDetailsEffect {
         val patientId: Long,
     ) : PatientDetailsEffect()
 
+    data class NavigateToPatientInfo(
+        val patientId: Long,
+    ) : PatientDetailsEffect()
+
     object OpenPhotoTaker : PatientDetailsEffect()
 
     data class UploadPhoto(
@@ -487,7 +508,7 @@ data class ExamDataModel(
 ) : Parcelable
 
 data class PatientDetailsViewModel(
-    val title: String,
+    val title: String?,
     val isLoaderVisible: Boolean,
     val isTakePhotoButtonEnabled: Boolean,
     val listState: ListState<ExamViewModel>,
@@ -506,7 +527,7 @@ data class ExamViewModel(
 fun PatientDetailsDataModel.viewModel(
     resourceProvider: ResourceProvider,
 ) = PatientDetailsViewModel(
-    title = patientFullName ?: "",
+    title = patientFullName,
     isLoaderVisible = isLoading,
     isTakePhotoButtonEnabled = isLoading.not(),
     listState = listState.plainState.map { exam, index, list ->

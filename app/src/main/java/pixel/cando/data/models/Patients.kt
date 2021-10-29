@@ -15,6 +15,12 @@ data class PatientListItemInfo(
 data class PatientSingleItemInfo(
     val id: Long,
     val fullName: String,
+    val gender: Gender,
+    val age: Int,
     val weight: Float,
     val height: Float,
+    val phoneNumber: String?,
+    val email: String?,
+    val address: String?,
+    val country: String?,
 )

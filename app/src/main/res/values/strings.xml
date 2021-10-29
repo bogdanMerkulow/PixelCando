@@ -34,7 +34,21 @@
     <string name="male">Male</string>
     <string name="female">Female</string>
 
+    <string name="weight">Weight</string>
+    <string name="height">Height</string>
+
     <string name="all">All</string>
+
+    <string name="patient_info_section_general">General</string>
+    <string name="patient_info_section_contacts">Contacts</string>
+
+    <string name="age">age</string>
+    <string name="gender">gender</string>
+
+    <string name="phone">Phone</string>
+    <string name="email">Email</string>
+    <string name="address">Address</string>
+    <string name="country">Country</string>
 
     <string name="photo_preview_title">Enter height and weight</string>
     <string name="photo_preview_subtitle">Height and weight params are required for proper calculations</string>

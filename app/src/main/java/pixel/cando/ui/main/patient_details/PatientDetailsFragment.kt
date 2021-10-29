@@ -138,6 +138,11 @@ class PatientDetailsFragment : ViewBindingFragment<FragmentPatientDetailsBinding
                 PatientDetailsEvent.RefreshRequest
             )
         }
+        viewBinding.patientInfoIcon.setOnClickListener {
+            eventSender?.sendEvent(
+                PatientDetailsEvent.PatientInfoTap
+            )
+        }
         viewBinding.examList.setHasFixedSize(true)
         viewBinding.examList.adapter = adapter
         viewBinding.examList.addLoadMoreListener {
