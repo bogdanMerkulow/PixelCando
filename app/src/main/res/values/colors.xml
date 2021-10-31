@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="blue_boston">#3976B5</color>
+    <color name="blue_malibu">#53A8DD</color>
+
+    <color name="orange_tulip_tree">#E5A743</color>
+
+    <color name="gray_dove">#646464</color>
+    <color name="gray_boulder">#757575</color>
+    <color name="gray_silver_chalice">#9E9E9E</color>
+    <color name="gray_silver">#C2C2C2</color>
+    <color name="gray_mercury">#E5E5E5</color>
+    <color name="gray_seashell">#F1F1F1</color>
+
+    <color name="black_mine_shaft">#212121</color>
+
+    <color name="black">#000000</color>
+    <color name="white">#FFFFFF</color>
+    <color name="white_alabaster">#FBFCFD</color>
+
+</resources>
