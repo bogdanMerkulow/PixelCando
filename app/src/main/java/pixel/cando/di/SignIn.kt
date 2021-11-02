@@ -9,19 +9,26 @@ import pixel.cando.data.remote.AuthRepository
 import pixel.cando.ui._base.fragment.FlowRouter
 import pixel.cando.ui._base.fragment.RootRouter
 import pixel.cando.ui._base.tea.ControllerFragmentDelegate
-import pixel.cando.ui.auth.sign_in.*
+import pixel.cando.ui.auth.sign_in.SignInDataModel
+import pixel.cando.ui.auth.sign_in.SignInEffect
+import pixel.cando.ui.auth.sign_in.SignInEvent
+import pixel.cando.ui.auth.sign_in.SignInFragment
+import pixel.cando.ui.auth.sign_in.SignInLogic
+import pixel.cando.ui.auth.sign_in.SignInViewModel
+import pixel.cando.ui.auth.sign_in.viewModel
+import pixel.cando.utils.PushNotificationsSubscriber
 import pixel.cando.utils.diffuser.DiffuserFragmentDelegate
 import pixel.cando.utils.messageDisplayer
 
-fun setup(
-    fragment: SignInFragment,
+fun SignInFragment.setup(
     rootRouter: RootRouter,
     flowRouter: FlowRouter,
     authRepository: AuthRepository,
     accessTokenStore: AccessTokenStore,
     userRoleStore: UserRoleStore,
+    pushNotificationsSubscriber: PushNotificationsSubscriber,
 ) {
-    if (fragment.delegates.isNotEmpty()) {
+    if (delegates.isNotEmpty()) {
         return
     }
     val controllerFragmentDelegate = ControllerFragmentDelegate<
@@ -42,7 +49,8 @@ fun setup(
                 authRepository = authRepository,
                 accessTokenStore = accessTokenStore,
                 userRoleStore = userRoleStore,
-                messageDisplayer = fragment.messageDisplayer,
+                messageDisplayer = messageDisplayer,
+                pushNotificationsSubscriber = pushNotificationsSubscriber,
             )
         )
             .logger(AndroidLogger.tag("SignIn")),
@@ -55,16 +63,14 @@ fun setup(
         modelMapper = {
             it.viewModel
         },
-        render = fragment
+        render = this
     )
 
-    val diffuserFragmentDelegate = DiffuserFragmentDelegate(
-        fragment
-    )
+    val diffuserFragmentDelegate = DiffuserFragmentDelegate(this)
 
-    fragment.eventSender = controllerFragmentDelegate
-    fragment.diffuserProvider = { diffuserFragmentDelegate.diffuser }
-    fragment.delegates = setOf(
+    eventSender = controllerFragmentDelegate
+    diffuserProvider = { diffuserFragmentDelegate.diffuser }
+    delegates = setOf(
         diffuserFragmentDelegate,
         controllerFragmentDelegate,
     )

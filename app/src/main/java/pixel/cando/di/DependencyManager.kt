@@ -36,6 +36,8 @@ import pixel.cando.ui.main.photo_preview.PhotoPreviewFragment
 import pixel.cando.ui.main.profile.ProfileFragment
 import pixel.cando.ui.root.RootEvent
 import pixel.cando.ui.root.RootFragment
+import pixel.cando.utils.OneSignalPushNotificationsSubscriber
+import pixel.cando.utils.PushNotificationsSubscriber
 import pixel.cando.utils.RealResourceProvider
 import pixel.cando.utils.ResourceProvider
 import java.lang.ref.WeakReference
@@ -125,6 +127,12 @@ class DependencyManager(
         )
     }
 
+    private val pushNotificationsSubscriber: PushNotificationsSubscriber by lazy {
+        OneSignalPushNotificationsSubscriber(
+            remoteRepository = remoteRepository,
+        )
+    }
+
     private val unauthorizedResultEventSource by lazy {
         createUnauthorizedResultEventSource()
     }
@@ -160,13 +168,13 @@ class DependencyManager(
                                     )
                                 }
                                 is SignInFragment -> {
-                                    setup(
-                                        fragment = fragment,
+                                    fragment.setup(
                                         rootRouter = requireRootRouter(),
                                         flowRouter = fragment.findImplementationOrThrow(),
                                         authRepository = authRepository,
                                         accessTokenStore = accessTokenStore,
                                         userRoleStore = userRoleStore,
+                                        pushNotificationsSubscriber = pushNotificationsSubscriber,
                                     )
                                 }
                                 is PasswordRecoveryFragment -> {

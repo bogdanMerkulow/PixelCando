@@ -1,5 +1,6 @@
 package pixel.cando.data.remote
 
+import pixel.cando.data.remote.dto.DeviceRegisterRequest
 import pixel.cando.data.remote.dto.EmptyRequest
 import pixel.cando.data.remote.dto.ExamListRequest
 import pixel.cando.data.remote.dto.ExamListResponse
@@ -60,5 +61,10 @@ interface RestApi {
     suspend fun updateAccount(
         @Body request: UpdateAccountRequest
     ): Response<UpdateAccountResponse>
+
+    @POST("account/devices/register")
+    suspend fun registerDevice(
+        @Body request: DeviceRegisterRequest
+    ): Response<Unit>
 
 }

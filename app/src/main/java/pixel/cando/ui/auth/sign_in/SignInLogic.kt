@@ -15,7 +15,9 @@ import pixel.cando.ui._base.fragment.RootRouter
 import pixel.cando.ui._base.tea.CoroutineScopeEffectHandler
 import pixel.cando.utils.Either
 import pixel.cando.utils.MessageDisplayer
+import pixel.cando.utils.PushNotificationsSubscriber
 import pixel.cando.utils.logError
+import pixel.cando.utils.onRight
 
 object SignInLogic {
 
@@ -119,6 +121,7 @@ object SignInLogic {
         accessTokenStore: AccessTokenStore,
         userRoleStore: UserRoleStore,
         messageDisplayer: MessageDisplayer,
+        pushNotificationsSubscriber: PushNotificationsSubscriber,
     ): Connectable<SignInEffect, SignInEvent> =
         CoroutineScopeEffectHandler { effect, output ->
             when (effect) {
@@ -131,6 +134,12 @@ object SignInLogic {
                         is Either.Left -> {
                             accessTokenStore.accessToken = result.left.accessToken
                             userRoleStore.userRole = result.left.userRole
+
+                            val pushNotificationSubscriptionResult =
+                                pushNotificationsSubscriber.subscribe()
+                            pushNotificationSubscriptionResult.onRight {
+                                logError(it)
+                            }
 
                             output.accept(
                                 SignInEvent.SignInSucceeded

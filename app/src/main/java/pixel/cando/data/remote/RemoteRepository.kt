@@ -11,6 +11,8 @@ import pixel.cando.data.models.PatientSingleItemInfo
 import pixel.cando.data.models.UploadPhotoFailure
 import pixel.cando.data.remote.dto.AccountDto
 import pixel.cando.data.remote.dto.AccountUserDto
+import pixel.cando.data.remote.dto.DeviceRegisterDto
+import pixel.cando.data.remote.dto.DeviceRegisterRequest
 import pixel.cando.data.remote.dto.EmptyRequest
 import pixel.cando.data.remote.dto.ExamListRequest
 import pixel.cando.data.remote.dto.FolderListRequest
@@ -62,6 +64,10 @@ interface RemoteRepository {
     suspend fun updateAccount(
         account: Account
     ): Either<Account, Throwable>
+
+    suspend fun subscribeForPushNotifications(
+        identifier: String
+    ): Either<Unit, Throwable>
 
 }
 
@@ -271,6 +277,21 @@ class RealRemoteRepository(
             )
         }.mapOnlyLeft {
             it.doctor.user.model()
+        }
+    }
+
+    override suspend fun subscribeForPushNotifications(
+        identifier: String
+    ): Either<Unit, Throwable> {
+        return callApi {
+            registerDevice(
+                DeviceRegisterRequest(
+                    DeviceRegisterDto(
+                        platform = "android",
+                        identifier = identifier,
+                    )
+                )
+            )
         }
     }
 
