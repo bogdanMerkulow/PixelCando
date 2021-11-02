@@ -10,6 +10,7 @@
         android:id="@+id/toolbar"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:theme="@style/Toolbar"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -167,13 +168,13 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <Button
-                android:id="@+id/logoutButton"
+                android:id="@+id/saveButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginHorizontal="@dimen/spacing_16"
                 android:layout_marginVertical="@dimen/spacing_24"
                 android:padding="@dimen/spacing_16"
-                android:text="@string/profile_logout_btn_title"
+                android:text="@string/profile_btn_save"
                 android:textColor="@color/white"
                 />
 

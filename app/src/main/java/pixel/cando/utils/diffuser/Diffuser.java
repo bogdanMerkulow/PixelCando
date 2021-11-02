@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicReference;
 
 /**
@@ -191,7 +192,10 @@ public final class Diffuser<A> {
     }
 
     private static <A> boolean notEqual(A a, A b) {
-        return !b.equals(a);
+        return !Objects.equals(
+                a,
+                b
+        );
     }
 
     /**

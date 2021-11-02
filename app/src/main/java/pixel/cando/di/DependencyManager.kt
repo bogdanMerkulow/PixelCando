@@ -228,6 +228,8 @@ class DependencyManager(
                                     fragment.setup(
                                         sessionWiper = sessionWiper,
                                         rootRouter = fragment.findImplementationOrThrow(),
+                                        resourceProvider = resourceProvider,
+                                        remoteRepository = remoteRepository,
                                     )
                                 }
                             }

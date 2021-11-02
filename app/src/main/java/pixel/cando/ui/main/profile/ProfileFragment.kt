@@ -1,7 +1,9 @@
 package pixel.cando.ui.main.profile
 
 import android.os.Bundle
+import android.view.MenuItem
 import com.google.android.material.textfield.TextInputLayout
+import pixel.cando.R
 import pixel.cando.databinding.FragmentProfileBinding
 import pixel.cando.ui._base.fragment.ViewBindingFragment
 import pixel.cando.ui._base.tea.EventSender
@@ -14,6 +16,7 @@ import pixel.cando.utils.diffuser.Diffuser.intoOnce
 import pixel.cando.utils.diffuser.DiffuserCreator
 import pixel.cando.utils.diffuser.DiffuserProvider
 import pixel.cando.utils.diffuser.DiffuserProviderNeeder
+import pixel.cando.utils.diffuser.ViewDiffusers.intoEnabled
 import pixel.cando.utils.diffuser.ViewDiffusers.intoVisibleOrGone
 import pixel.cando.utils.diffuser.map
 import pixel.cando.utils.doAfterTextChanged
@@ -40,6 +43,10 @@ class ProfileFragment : ViewBindingFragment<FragmentProfileBinding>(
             map(
                 { it.isContentVisible },
                 intoVisibleOrGone(viewBinding.scrollView)
+            ),
+            map(
+                { it.maySave },
+                intoEnabled(viewBinding.saveButton)
             ),
             map(
                 { it.fields },
@@ -84,10 +91,17 @@ class ProfileFragment : ViewBindingFragment<FragmentProfileBinding>(
             savedInstanceState
         )
 
-        viewBinding.logoutButton.setOnClickListener {
-            eventSender?.sendEvent(
-                ProfileEvent.LogoutTap
-            )
+        viewBinding.toolbar.menu
+            .add(R.string.profile_btn_logout)
+            .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS)
+            .setOnMenuItemClickListener {
+                eventSender?.sendEvent(
+                    ProfileEvent.LogoutTap
+                )
+                true
+            }
+
+        viewBinding.saveButton.setOnClickListener {
         }
 
         viewBinding.fullNameField.doAfterTextChanged {

@@ -21,9 +21,6 @@
     <string name="no_exams_description">There are no exams made yet for the patient. Please shoot the patient half-face and upload the photo to the engine</string>
     <string name="exam_bmi_value">BMI %.2f</string>
 
-    <string name="profile_title">Profile</string>
-    <string name="profile_logout_btn_title">Log Out</string>
-
     <string name="something_went_wrong">Something went wrong</string>
 
     <string name="list_placeholder_no_photos">No photos created yet\nPlease upload an image</string>
@@ -80,9 +77,12 @@
     <string name="cm">cm</string>
     <string name="percent" formatted="false">%</string>
 
+    <string name="profile_title">Profile</string>
+    <string name="profile_btn_logout">Logout</string>
     <string name="profile_section_account_info">Account Information</string>
     <string name="profile_section_contacts">Contacts</string>
     <string name="profile_full_name_cannot_be_empty">Full name cannot be empty</string>
+    <string name="profile_btn_save">Save</string>
 
     <string name="invalid_email">Invalid email</string>
 

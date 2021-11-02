@@ -147,17 +147,17 @@ private class BodyInterceptor(
         accessToken: String?
     ): RequestBody? {
         try {
-            if (requestBody.contentLength() > 0) {
+            val jsonObject = if (requestBody.contentLength() > 0) {
                 val buffer = Buffer()
                 requestBody.writeTo(buffer)
                 val jsonBodyAsString = buffer.readUtf8()
-                val obj = JSONObject(jsonBodyAsString)
-                obj.put("accessToken", accessToken)
-                obj.put("meta", getMeta())
-                return obj.toString().toRequestBody(
-                    requestBody.contentType()
-                )
-            }
+                JSONObject(jsonBodyAsString)
+            } else JSONObject()
+            jsonObject.put("accessToken", accessToken)
+            jsonObject.put("meta", getMeta())
+            return jsonObject.toString().toRequestBody(
+                requestBody.contentType()
+            )
         } catch (t: Throwable) {
             logError(t)
         }

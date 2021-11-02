@@ -8,16 +8,32 @@ import com.spotify.mobius.Next
 import kotlinx.parcelize.Parcelize
 import pixel.cando.R
 import pixel.cando.data.local.SessionWiper
+import pixel.cando.data.models.Account
+import pixel.cando.data.remote.RemoteRepository
 import pixel.cando.ui.Screens
 import pixel.cando.ui._base.fragment.RootRouter
 import pixel.cando.ui._base.tea.CoroutineScopeEffectHandler
+import pixel.cando.utils.MessageDisplayer
 import pixel.cando.utils.ResourceProvider
+import pixel.cando.utils.logError
+import pixel.cando.utils.onLeft
+import pixel.cando.utils.onRight
 
 object ProfileLogic {
 
     fun init(
         model: ProfileDataModel
     ): First<ProfileDataModel, ProfileEffect> {
+        if (model.account == null) {
+            return First.first(
+                model.copy(
+                    isLoading = true,
+                ),
+                setOf(
+                    ProfileEffect.LoadAccount
+                )
+            )
+        }
         return First.first(model)
     }
 
@@ -88,15 +104,58 @@ object ProfileLogic {
                     )
                 )
             }
+            // model
+            is ProfileEvent.AccountLoadSuccess -> {
+                Next.next(
+                    model.copy(
+                        account = event.account,
+                        isLoading = false,
+                    )
+                )
+            }
+            is ProfileEvent.AccountLoadFailure -> {
+                Next.next(
+                    model.copy(
+                        isLoading = false,
+                    ),
+                    setOf(
+                        ProfileEffect.ShowUnexpectedError
+                    )
+                )
+            }
         }
     }
 
     fun effectHandler(
         sessionWiper: SessionWiper,
         rootRouter: RootRouter,
+        remoteRepository: RemoteRepository,
+        messageDisplayer: MessageDisplayer,
+        resourceProvider: ResourceProvider,
     ): Connectable<ProfileEffect, ProfileEvent> =
         CoroutineScopeEffectHandler { effect, output ->
             when (effect) {
+                is ProfileEffect.LoadAccount -> {
+                    val result = remoteRepository.getAccount()
+                    result.onLeft {
+                        output.accept(
+                            ProfileEvent.AccountLoadSuccess(
+                                it.dataModel
+                            )
+                        )
+                    }
+                    result.onRight {
+                        logError(it)
+                        output.accept(
+                            ProfileEvent.AccountLoadFailure
+                        )
+                    }
+                }
+                is ProfileEffect.ShowUnexpectedError -> {
+                    messageDisplayer.showMessage(
+                        resourceProvider.getString(R.string.something_went_wrong)
+                    )
+                }
                 is ProfileEffect.Logout -> {
                     sessionWiper.wipe()
                     rootRouter.replaceScreen(
@@ -141,10 +200,19 @@ sealed class ProfileEvent {
     ) : ProfileEvent()
 
     object LogoutTap : ProfileEvent()
+
+    // model
+    data class AccountLoadSuccess(
+        val account: AccountDataModel
+    ) : ProfileEvent()
+
+    object AccountLoadFailure : ProfileEvent()
 }
 
 sealed class ProfileEffect {
     object Logout : ProfileEffect()
+    object LoadAccount : ProfileEffect()
+    object ShowUnexpectedError : ProfileEffect()
 }
 
 @Parcelize
@@ -157,10 +225,10 @@ data class ProfileDataModel(
 data class AccountDataModel(
     val fullName: String,
     val email: String,
-    val phoneNumber: String,
-    val contactEmail: String,
-    val address: String,
-    val country: String,
+    val phoneNumber: String?,
+    val contactEmail: String?,
+    val address: String?,
+    val country: String?,
 ) : Parcelable
 
 data class ProfileViewModel(
@@ -180,7 +248,7 @@ data class ProfileFieldListViewModel(
 )
 
 data class ProfileFieldViewModel(
-    val value: String,
+    val value: String?,
     val error: String?
 )
 
@@ -219,7 +287,7 @@ fun ProfileDataModel.viewModel(
         )
     },
     isLoaderVisible = isLoading,
-    isContentVisible = isLoading.not(),
+    isContentVisible = isLoading.not() && account != null,
     maySave = account?.let { it.maySave && isLoading.not() } ?: false,
 )
 
@@ -231,9 +299,20 @@ private val AccountDataModel.isEmailValid: Boolean
             && Patterns.EMAIL_ADDRESS.matcher(email).matches()
 
 private val AccountDataModel.isContactEmailValid: Boolean
-    get() = Patterns.EMAIL_ADDRESS.matcher(contactEmail).matches()
+    get() = contactEmail.isNullOrBlank()
+            || Patterns.EMAIL_ADDRESS.matcher(contactEmail).matches()
 
 private val AccountDataModel.maySave: Boolean
     get() = isFullNameValid
             && isEmailValid
             && isContactEmailValid
+
+private val Account.dataModel: AccountDataModel
+    get() = AccountDataModel(
+        fullName = fullName,
+        email = email,
+        phoneNumber = phoneNumber,
+        contactEmail = contactEmail,
+        address = address,
+        country = country,
+    )

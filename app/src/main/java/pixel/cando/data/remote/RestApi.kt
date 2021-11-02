@@ -1,9 +1,11 @@
 package pixel.cando.data.remote
 
+import pixel.cando.data.remote.dto.EmptyRequest
 import pixel.cando.data.remote.dto.ExamListRequest
 import pixel.cando.data.remote.dto.ExamListResponse
 import pixel.cando.data.remote.dto.FolderListRequest
 import pixel.cando.data.remote.dto.FolderListResponse
+import pixel.cando.data.remote.dto.GetAccountResponse
 import pixel.cando.data.remote.dto.GetExamRequest
 import pixel.cando.data.remote.dto.GetExamResponse
 import pixel.cando.data.remote.dto.PatientGetRequest
@@ -46,5 +48,10 @@ interface RestApi {
     suspend fun uploadPhoto(
         @Body request: UploadPhotoForPatientRequest
     ): Response<Unit>
+
+    @POST("doctor/account/get")
+    suspend fun getAccount(
+        @Body request: EmptyRequest
+    ): Response<GetAccountResponse>
 
 }

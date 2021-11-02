@@ -1,6 +1,7 @@
 package pixel.cando.data.remote
 
 import com.squareup.moshi.Moshi
+import pixel.cando.data.models.Account
 import pixel.cando.data.models.ExamListItemInfo
 import pixel.cando.data.models.ExamSingleItemInfo
 import pixel.cando.data.models.Folder
@@ -8,6 +9,7 @@ import pixel.cando.data.models.Gender
 import pixel.cando.data.models.PatientListItemInfo
 import pixel.cando.data.models.PatientSingleItemInfo
 import pixel.cando.data.models.UploadPhotoFailure
+import pixel.cando.data.remote.dto.EmptyRequest
 import pixel.cando.data.remote.dto.ExamListRequest
 import pixel.cando.data.remote.dto.FolderListRequest
 import pixel.cando.data.remote.dto.GetExamRequest
@@ -50,6 +52,9 @@ interface RemoteRepository {
         height: Float,
         photo: String
     ): Either<Unit, UploadPhotoFailure>
+
+    suspend fun getAccount(
+    ): Either<Account, Throwable>
 
 }
 
@@ -226,6 +231,26 @@ class RealRemoteRepository(
                 )
             },
         )
+    }
+
+    override suspend fun getAccount(
+    ): Either<Account, Throwable> {
+        return callApi {
+            getAccount(
+                EmptyRequest()
+            )
+        }.mapOnlyLeft {
+            it.doctor.user.let {
+                Account(
+                    fullName = it.fullName,
+                    email = it.email,
+                    phoneNumber = it.contactPhone,
+                    contactEmail = it.contactEmail,
+                    address = it.address,
+                    country = it.country,
+                )
+            }
+        }
     }
 
     private suspend fun <R> callApi(
