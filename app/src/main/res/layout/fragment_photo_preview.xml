@@ -83,7 +83,7 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/weightFieldParent"
-        style="@style/SignInField"
+        style="@style/InputField"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/spacing_16"
@@ -105,7 +105,7 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/heightFieldParent"
-        style="@style/SignInField"
+        style="@style/InputField"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginTop="@dimen/spacing_24"

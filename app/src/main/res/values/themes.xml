@@ -28,11 +28,21 @@
         <item name="itemTextColor">@color/bottom_navigation_tint</item>
     </style>
 
-    <style name="SignInField">
+    <style name="InputField">
         <item name="android:textColorHint">@color/gray_silver_chalice</item>
         <item name="boxBackgroundColor">@color/gray_seashell</item>
         <item name="boxCornerRadiusTopStart">@dimen/spacing_4</item>
         <item name="boxCornerRadiusTopEnd">@dimen/spacing_4</item>
+    </style>
+
+    <style name="SectionHeader">
+        <item name="fontFamily">sans-serif-medium</item>
+        <item name="android:textColor">@color/black_mine_shaft</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:paddingStart">@dimen/spacing_16</item>
+        <item name="android:paddingEnd">@dimen/spacing_16</item>
+        <item name="android:paddingTop">@dimen/spacing_24</item>
+        <item name="android:paddingBottom">@dimen/spacing_24</item>
     </style>
 
     <style name="TabsView">

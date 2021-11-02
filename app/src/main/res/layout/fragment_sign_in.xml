@@ -35,7 +35,7 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/emailFieldParent"
-        style="@style/SignInField"
+        style="@style/InputField"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/spacing_16"
@@ -59,7 +59,7 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/passwordFieldParent"
-        style="@style/SignInField"
+        style="@style/InputField"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="@dimen/spacing_16"

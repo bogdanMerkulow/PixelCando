@@ -45,6 +45,7 @@
     <string name="age">age</string>
     <string name="gender">gender</string>
 
+    <string name="full_name">Full Name</string>
     <string name="phone">Phone</string>
     <string name="email">Email</string>
     <string name="address">Address</string>
@@ -78,6 +79,12 @@
     <string name="kcal">kcal</string>
     <string name="cm">cm</string>
     <string name="percent" formatted="false">%</string>
+
+    <string name="profile_section_account_info">Account Information</string>
+    <string name="profile_section_contacts">Contacts</string>
+    <string name="profile_full_name_cannot_be_empty">Full name cannot be empty</string>
+
+    <string name="invalid_email">Invalid email</string>
 
     <!-- Camera -->
     <string name="camera_move_devices_top_closer_to_you">Tilt the top of device backward</string>
