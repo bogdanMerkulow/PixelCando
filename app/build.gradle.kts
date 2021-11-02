@@ -37,6 +37,15 @@ android {
             )
             signingConfig = signingConfigs.getByName("release")
         }
+        create("qa") {
+            isMinifyEnabled = true
+            isDebuggable = false
+            proguardFiles(
+                getDefaultProguardFile("proguard-android-optimize.txt"),
+                "proguard-rules.pro"
+            )
+            signingConfig = signingConfigs.getByName("release")
+        }
     }
     flavorDimensions.add("default")
     productFlavors {
@@ -99,6 +108,7 @@ dependencies {
     val chuckerVersion = "3.5.2"
     debugImplementation("com.github.chuckerteam.chucker:library:$chuckerVersion")
     releaseImplementation("com.github.chuckerteam.chucker:library-no-op:$chuckerVersion")
+    add("qaImplementation", "com.github.chuckerteam.chucker:library:$chuckerVersion")
 
     val cameraVersion = "1.0.2"
     implementation("androidx.camera:camera-camera2:$cameraVersion")
