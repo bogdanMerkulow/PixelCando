@@ -12,6 +12,8 @@ import pixel.cando.data.remote.dto.PatientGetRequest
 import pixel.cando.data.remote.dto.PatientGetResponse
 import pixel.cando.data.remote.dto.PatientListRequest
 import pixel.cando.data.remote.dto.PatientListResponse
+import pixel.cando.data.remote.dto.UpdateAccountRequest
+import pixel.cando.data.remote.dto.UpdateAccountResponse
 import pixel.cando.data.remote.dto.UploadPhotoForPatientRequest
 import retrofit2.Response
 import retrofit2.http.Body
@@ -53,5 +55,10 @@ interface RestApi {
     suspend fun getAccount(
         @Body request: EmptyRequest
     ): Response<GetAccountResponse>
+
+    @POST("doctor/account/update")
+    suspend fun updateAccount(
+        @Body request: UpdateAccountRequest
+    ): Response<UpdateAccountResponse>
 
 }

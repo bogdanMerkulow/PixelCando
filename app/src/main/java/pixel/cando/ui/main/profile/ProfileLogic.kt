@@ -97,6 +97,21 @@ object ProfileLogic {
                     )
                 )
             }
+            is ProfileEvent.SaveTap -> {
+                val account = model.account
+                if (account != null
+                    && model.isLoading.not()
+                ) {
+                    Next.next(
+                        model.copy(
+                            isLoading = true,
+                        ),
+                        setOf(
+                            ProfileEffect.UpdateAccount(account)
+                        )
+                    )
+                } else Next.noChange()
+            }
             is ProfileEvent.LogoutTap -> {
                 Next.dispatch(
                     setOf(
@@ -105,7 +120,7 @@ object ProfileLogic {
                 )
             }
             // model
-            is ProfileEvent.AccountLoadSuccess -> {
+            is ProfileEvent.LoadAccountSuccess -> {
                 Next.next(
                     model.copy(
                         account = event.account,
@@ -113,7 +128,25 @@ object ProfileLogic {
                     )
                 )
             }
-            is ProfileEvent.AccountLoadFailure -> {
+            is ProfileEvent.LoadAccountFailure -> {
+                Next.next(
+                    model.copy(
+                        isLoading = false,
+                    ),
+                    setOf(
+                        ProfileEffect.ShowUnexpectedError
+                    )
+                )
+            }
+            is ProfileEvent.UpdateAccountSuccess -> {
+                Next.next(
+                    model.copy(
+                        account = event.account,
+                        isLoading = false,
+                    )
+                )
+            }
+            is ProfileEvent.UpdateAccountFailure -> {
                 Next.next(
                     model.copy(
                         isLoading = false,
@@ -139,7 +172,7 @@ object ProfileLogic {
                     val result = remoteRepository.getAccount()
                     result.onLeft {
                         output.accept(
-                            ProfileEvent.AccountLoadSuccess(
+                            ProfileEvent.LoadAccountSuccess(
                                 it.dataModel
                             )
                         )
@@ -147,7 +180,25 @@ object ProfileLogic {
                     result.onRight {
                         logError(it)
                         output.accept(
-                            ProfileEvent.AccountLoadFailure
+                            ProfileEvent.LoadAccountFailure
+                        )
+                    }
+                }
+                is ProfileEffect.UpdateAccount -> {
+                    val result = remoteRepository.updateAccount(
+                        effect.account.model
+                    )
+                    result.onLeft {
+                        output.accept(
+                            ProfileEvent.UpdateAccountSuccess(
+                                it.dataModel
+                            )
+                        )
+                    }
+                    result.onRight {
+                        logError(it)
+                        output.accept(
+                            ProfileEvent.UpdateAccountFailure
                         )
                     }
                 }
@@ -199,19 +250,33 @@ sealed class ProfileEvent {
         val value: String
     ) : ProfileEvent()
 
+    object SaveTap : ProfileEvent()
+
     object LogoutTap : ProfileEvent()
 
     // model
-    data class AccountLoadSuccess(
+    data class LoadAccountSuccess(
         val account: AccountDataModel
     ) : ProfileEvent()
 
-    object AccountLoadFailure : ProfileEvent()
+    object LoadAccountFailure : ProfileEvent()
+
+    data class UpdateAccountSuccess(
+        val account: AccountDataModel
+    ) : ProfileEvent()
+
+    object UpdateAccountFailure : ProfileEvent()
+
 }
 
 sealed class ProfileEffect {
     object Logout : ProfileEffect()
     object LoadAccount : ProfileEffect()
+
+    data class UpdateAccount(
+        val account: AccountDataModel
+    ) : ProfileEffect()
+
     object ShowUnexpectedError : ProfileEffect()
 }
 
@@ -309,6 +374,16 @@ private val AccountDataModel.maySave: Boolean
 
 private val Account.dataModel: AccountDataModel
     get() = AccountDataModel(
+        fullName = fullName,
+        email = email,
+        phoneNumber = phoneNumber,
+        contactEmail = contactEmail,
+        address = address,
+        country = country,
+    )
+
+private val AccountDataModel.model: Account
+    get() = Account(
         fullName = fullName,
         email = email,
         phoneNumber = phoneNumber,

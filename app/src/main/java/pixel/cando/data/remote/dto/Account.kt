@@ -9,6 +9,16 @@ data class GetAccountResponse(
 )
 
 @JsonClass(generateAdapter = true)
+data class UpdateAccountRequest(
+    @Json(name = "doctor") val doctor: AccountDto
+)
+
+@JsonClass(generateAdapter = true)
+data class UpdateAccountResponse(
+    @Json(name = "doctor") val doctor: AccountDto
+)
+
+@JsonClass(generateAdapter = true)
 data class AccountDto(
     @Json(name = "user") val user: AccountUserDto,
 )

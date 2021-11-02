@@ -9,6 +9,8 @@ import pixel.cando.data.models.Gender
 import pixel.cando.data.models.PatientListItemInfo
 import pixel.cando.data.models.PatientSingleItemInfo
 import pixel.cando.data.models.UploadPhotoFailure
+import pixel.cando.data.remote.dto.AccountDto
+import pixel.cando.data.remote.dto.AccountUserDto
 import pixel.cando.data.remote.dto.EmptyRequest
 import pixel.cando.data.remote.dto.ExamListRequest
 import pixel.cando.data.remote.dto.FolderListRequest
@@ -16,6 +18,7 @@ import pixel.cando.data.remote.dto.GetExamRequest
 import pixel.cando.data.remote.dto.PatientGetRequest
 import pixel.cando.data.remote.dto.PatientListFilterDto
 import pixel.cando.data.remote.dto.PatientListRequest
+import pixel.cando.data.remote.dto.UpdateAccountRequest
 import pixel.cando.data.remote.dto.UploadPhotoForPatientRequest
 import pixel.cando.data.remote.dto.UploadPhotoForPatientWeightHeightDto
 import pixel.cando.utils.Either
@@ -54,6 +57,10 @@ interface RemoteRepository {
     ): Either<Unit, UploadPhotoFailure>
 
     suspend fun getAccount(
+    ): Either<Account, Throwable>
+
+    suspend fun updateAccount(
+        account: Account
     ): Either<Account, Throwable>
 
 }
@@ -240,16 +247,30 @@ class RealRemoteRepository(
                 EmptyRequest()
             )
         }.mapOnlyLeft {
-            it.doctor.user.let {
-                Account(
-                    fullName = it.fullName,
-                    email = it.email,
-                    phoneNumber = it.contactPhone,
-                    contactEmail = it.contactEmail,
-                    address = it.address,
-                    country = it.country,
+            it.doctor.user.model()
+        }
+    }
+
+    override suspend fun updateAccount(
+        account: Account
+    ): Either<Account, Throwable> {
+        return callApi {
+            updateAccount(
+                UpdateAccountRequest(
+                    AccountDto(
+                        AccountUserDto(
+                            fullName = account.fullName,
+                            email = account.email,
+                            contactPhone = account.phoneNumber,
+                            contactEmail = account.contactEmail,
+                            address = account.address,
+                            country = account.country,
+                        )
+                    )
                 )
-            }
+            )
+        }.mapOnlyLeft {
+            it.doctor.user.model()
         }
     }
 
@@ -300,3 +321,13 @@ private fun String.toGender() = when (this) {
     "female" -> Gender.FEMALE
     else -> Gender.MALE
 }
+
+private fun AccountUserDto.model(
+) = Account(
+    fullName = fullName,
+    email = email,
+    phoneNumber = contactPhone,
+    contactEmail = contactEmail,
+    address = address,
+    country = country,
+)

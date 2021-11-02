@@ -102,6 +102,9 @@ class ProfileFragment : ViewBindingFragment<FragmentProfileBinding>(
             }
 
         viewBinding.saveButton.setOnClickListener {
+            eventSender?.sendEvent(
+                ProfileEvent.SaveTap
+            )
         }
 
         viewBinding.fullNameField.doAfterTextChanged {
