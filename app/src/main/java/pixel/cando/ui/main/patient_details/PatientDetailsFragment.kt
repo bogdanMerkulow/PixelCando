@@ -130,7 +130,7 @@ class PatientDetailsFragment : ViewBindingFragment<FragmentPatientDetailsBinding
 
         viewBinding.takePhotoButton.setOnClickListener {
             eventSender?.sendEvent(
-                PatientDetailsEvent.TakePhotoTap
+                PatientDetailsEvent.CreateExamTap
             )
         }
         viewBinding.swipeRefresh.setOnRefreshListener {

@@ -90,6 +90,9 @@
 
     <string name="invalid_email">Invalid email</string>
 
+    <string name="gallery">Gallery</string>
+    <string name="camera">Camera</string>
+
     <!-- Camera -->
     <string name="camera_move_devices_top_closer_to_you">Tilt the top of device backward</string>
     <string name="camera_move_devices_top_away_from_you">Tilt the top of device forward</string>

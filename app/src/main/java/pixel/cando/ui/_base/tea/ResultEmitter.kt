@@ -23,9 +23,7 @@ class ResultEventSource<R, E>(
     ResultEmitter<R>,
     CoroutineScope {
 
-    private val parentJob = SupervisorJob()
-
-    override val coroutineContext: CoroutineContext = parentJob + Dispatchers.Default
+    override val coroutineContext: CoroutineContext = SupervisorJob() + Dispatchers.Default
 
     private val channel = Channel<R>()
 

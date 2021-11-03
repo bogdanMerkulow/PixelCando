@@ -28,6 +28,7 @@ import pixel.cando.ui._base.list.map
 import pixel.cando.ui._base.list.plainState
 import pixel.cando.ui._base.tea.CoroutineScopeEffectHandler
 import pixel.cando.ui._base.tea.toFirst
+import pixel.cando.utils.ImagePicker
 import pixel.cando.utils.MessageDisplayer
 import pixel.cando.utils.PermissionChecker
 import pixel.cando.utils.ResourceProvider
@@ -90,29 +91,26 @@ object PatientDetailsLogic {
                     event
                 )
             }
-            is PatientDetailsEvent.TakePhotoTap -> {
+            is PatientDetailsEvent.CreateExamTap -> {
+                Next.dispatch(
+                    setOf(
+                        PatientDetailsEffect.AskHowToGetPhoto
+                    )
+                )
+            }
+            is PatientDetailsEvent.PhotoTakingChosen -> {
                 Next.dispatch(
                     setOf(
                         PatientDetailsEffect.CheckCameraPermission
                     )
                 )
             }
-            is PatientDetailsEvent.PhotoTaken -> {
-                val weight = model.patientWeight
-                val height = model.patientHeight
-                if (weight != null
-                    && height != null
-                ) {
-                    Next.dispatch(
-                        setOf(
-                            PatientDetailsEffect.AskToConfirmPhoto(
-                                uri = event.uri,
-                                weight = weight,
-                                height = height,
-                            )
-                        )
+            is PatientDetailsEvent.ImagePickingChosen -> {
+                Next.dispatch(
+                    setOf(
+                        PatientDetailsEffect.OpenImagePicker
                     )
-                } else Next.noChange()
+                )
             }
             is PatientDetailsEvent.PhotoAccepted -> {
                 Next.next(
@@ -211,6 +209,40 @@ object PatientDetailsLogic {
                     )
                 )
             }
+            is PatientDetailsEvent.PhotoTaken -> {
+                val weight = model.patientWeight
+                val height = model.patientHeight
+                if (weight != null
+                    && height != null
+                ) {
+                    Next.dispatch(
+                        setOf(
+                            PatientDetailsEffect.AskToConfirmPhoto(
+                                uri = event.uri,
+                                weight = weight,
+                                height = height,
+                            )
+                        )
+                    )
+                } else Next.noChange()
+            }
+            is PatientDetailsEvent.ImagePicked -> {
+                val weight = model.patientWeight
+                val height = model.patientHeight
+                if (weight != null
+                    && height != null
+                ) {
+                    Next.dispatch(
+                        setOf(
+                            PatientDetailsEffect.AskToConfirmPhoto(
+                                uri = event.uri,
+                                weight = weight,
+                                height = height,
+                            )
+                        )
+                    )
+                } else Next.noChange()
+            }
         }
     }
 
@@ -250,11 +282,13 @@ object PatientDetailsLogic {
     fun effectHandler(
         photoTakerOpener: () -> Unit,
         photoConfirmationAsker: (PhotoPreviewArguments) -> Unit,
+        howToGetPhotoAsker: () -> Unit,
         remoteRepository: RemoteRepository,
         messageDisplayer: MessageDisplayer,
         resourceProvider: ResourceProvider,
         cameraPermissionChecker: PermissionChecker,
         writeStoragePermissionChecker: PermissionChecker,
+        imagePicker: ImagePicker,
         flowRouter: FlowRouter,
         context: Context,
     ): Connectable<PatientDetailsEffect, PatientDetailsEvent> {
@@ -299,6 +333,9 @@ object PatientDetailsLogic {
                 }
                 is PatientDetailsEffect.OpenPhotoTaker -> {
                     photoTakerOpener.invoke()
+                }
+                is PatientDetailsEffect.OpenImagePicker -> {
+                    imagePicker.pickImage()
                 }
                 is PatientDetailsEffect.UploadPhoto -> {
                     val bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
@@ -362,6 +399,9 @@ object PatientDetailsLogic {
                         writeStoragePermissionChecker.requestPermission()
                     }
                 }
+                is PatientDetailsEffect.AskHowToGetPhoto -> {
+                    howToGetPhotoAsker.invoke()
+                }
                 is PatientDetailsEffect.AskToConfirmPhoto -> {
                     photoConfirmationAsker.invoke(
                         PhotoPreviewArguments(
@@ -422,12 +462,10 @@ sealed class PatientDetailsEvent {
     object LoadExamNextPage : PatientDetailsEvent()
     object PatientInfoTap : PatientDetailsEvent()
 
-    object TakePhotoTap : PatientDetailsEvent()
-    data class PhotoTaken(
-        val uri: Uri
-    ) : PatientDetailsEvent()
+    object CreateExamTap : PatientDetailsEvent()
 
-    object ExitTap : PatientDetailsEvent()
+    object PhotoTakingChosen : PatientDetailsEvent()
+    object ImagePickingChosen : PatientDetailsEvent()
 
     data class PhotoAccepted(
         val uri: Uri,
@@ -438,6 +476,8 @@ sealed class PatientDetailsEvent {
     data class ExamTap(
         val id: Long
     ) : PatientDetailsEvent()
+
+    object ExitTap : PatientDetailsEvent()
 
     // model
 
@@ -467,6 +507,14 @@ sealed class PatientDetailsEvent {
 
     object WriteStoragePermissionGranted : PatientDetailsEvent()
     object WriteStoragePermissionDenied : PatientDetailsEvent()
+
+    data class PhotoTaken(
+        val uri: Uri
+    ) : PatientDetailsEvent()
+
+    data class ImagePicked(
+        val uri: Uri
+    ) : PatientDetailsEvent()
 }
 
 sealed class PatientDetailsEffect {
@@ -491,6 +539,8 @@ sealed class PatientDetailsEffect {
 
     object OpenPhotoTaker : PatientDetailsEffect()
 
+    object OpenImagePicker : PatientDetailsEffect()
+
     data class UploadPhoto(
         val patientId: Long,
         val uri: Uri,
@@ -508,6 +558,8 @@ sealed class PatientDetailsEffect {
     data class ShowErrorMessage(
         val message: String,
     ) : PatientDetailsEffect()
+
+    object AskHowToGetPhoto : PatientDetailsEffect()
 
     object CheckCameraPermission : PatientDetailsEffect()
 

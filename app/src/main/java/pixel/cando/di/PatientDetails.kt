@@ -1,12 +1,14 @@
 package pixel.cando.di
 
 import android.Manifest
+import android.app.AlertDialog
 import android.content.Context
 import androidx.lifecycle.lifecycleScope
 import com.spotify.mobius.Mobius
 import com.spotify.mobius.Update
 import com.spotify.mobius.android.AndroidLogger
 import kotlinx.coroutines.launch
+import pixel.cando.R
 import pixel.cando.data.remote.RemoteRepository
 import pixel.cando.ui._base.fragment.FlowRouter
 import pixel.cando.ui._base.fragment.SimpleFragmentDelegate
@@ -25,23 +27,24 @@ import pixel.cando.ui.main.patient_details.viewModel
 import pixel.cando.ui.main.photo_preview.PhotoPreviewFragment
 import pixel.cando.ui.main.photo_preview.PhotoPreviewResult
 import pixel.cando.utils.PermissionCheckerResult
+import pixel.cando.utils.RealImagePicker
 import pixel.cando.utils.RealPermissionChecker
 import pixel.cando.utils.ResourceProvider
+import pixel.cando.utils.createImagePickerResultEventSource
 import pixel.cando.utils.createPermissionCheckerResultEventSource
 import pixel.cando.utils.diffuser.DiffuserFragmentDelegate
 import pixel.cando.utils.messageDisplayer
 
-fun setup(
-    fragment: PatientDetailsFragment,
+fun PatientDetailsFragment.setup(
     remoteRepository: RemoteRepository,
     resourceProvider: ResourceProvider,
     context: Context,
     flowRouter: FlowRouter,
 ) {
-    if (fragment.delegates.isNotEmpty()) {
+    if (delegates.isNotEmpty()) {
         return
     }
-    val patientId = fragment.getArgument<Long>()
+    val patientId = getArgument<Long>()
 
     val cameraPermissionResultEventSource = createPermissionCheckerResultEventSource {
         when (it) {
@@ -67,6 +70,14 @@ fun setup(
         resultEmitter = writeStoragePermissionResultEventSource
     )
 
+    val imagePickerResultEventSource = createImagePickerResultEventSource<PatientDetailsEvent> {
+        PatientDetailsEvent.ImagePicked(it.uri)
+    }
+
+    val imagePicker = RealImagePicker(
+        resultEmitter = imagePickerResultEventSource,
+    )
+
     val photoPreviewDependencies = PhotoPreviewForPatientDetailsDependencies(
         resultEmitter = ResultEventSource {
             PatientDetailsEvent.PhotoAccepted(
@@ -76,6 +87,14 @@ fun setup(
             )
         }
     )
+
+    val howToGetPhotoResultEventSource = ResultEventSource<Int, PatientDetailsEvent> {
+        when (it) {
+            0 -> PatientDetailsEvent.PhotoTakingChosen
+            1 -> PatientDetailsEvent.ImagePickingChosen
+            else -> error("Illegal index received")
+        }
+    }
 
     val controllerFragmentDelegate = ControllerFragmentDelegate<
             PatientDetailsViewModel,
@@ -91,14 +110,14 @@ fun setup(
             },
             PatientDetailsLogic.effectHandler(
                 photoTakerOpener = {
-                    fragment.lifecycleScope.launch {
+                    lifecycleScope.launch {
                         CameraFragment.show(
-                            fragment.childFragmentManager
+                            childFragmentManager
                         )
                     }
                 },
                 photoConfirmationAsker = {
-                    fragment.lifecycleScope.launch {
+                    lifecycleScope.launch {
                         PhotoPreviewFragment()
                             .withArgumentSet(
                                 PhotoPreviewArguments(
@@ -108,16 +127,32 @@ fun setup(
                                 )
                             )
                             .show(
-                                fragment.childFragmentManager,
+                                childFragmentManager,
                                 ""
                             )
                     }
                 },
+                howToGetPhotoAsker = {
+                    lifecycleScope.launch {
+                        AlertDialog.Builder(requireContext())
+                            .setItems(
+                                arrayOf(
+                                    resourceProvider.getString(R.string.camera),
+                                    resourceProvider.getString(R.string.gallery),
+                                )
+                            ) { _, index ->
+                                howToGetPhotoResultEventSource.emit(index)
+                            }
+                            .create()
+                            .show()
+                    }
+                },
                 remoteRepository = remoteRepository,
-                messageDisplayer = fragment.messageDisplayer,
+                messageDisplayer = messageDisplayer,
                 resourceProvider = resourceProvider,
                 cameraPermissionChecker = cameraPermissionChecker,
                 writeStoragePermissionChecker = writeStoragePermissionChecker,
+                imagePicker = imagePicker,
                 flowRouter = flowRouter,
                 context = context,
             )
@@ -125,7 +160,9 @@ fun setup(
             .eventSources(
                 cameraPermissionResultEventSource,
                 writeStoragePermissionResultEventSource,
+                imagePickerResultEventSource,
                 photoPreviewDependencies.resultEmitter,
+                howToGetPhotoResultEventSource,
             )
             .logger(AndroidLogger.tag("PatientDetails")),
         initialState = {
@@ -141,20 +178,19 @@ fun setup(
                 resourceProvider = resourceProvider,
             )
         },
-        render = fragment
+        render = this
     )
 
-    val diffuserFragmentDelegate = DiffuserFragmentDelegate(
-        fragment
-    )
+    val diffuserFragmentDelegate = DiffuserFragmentDelegate(this)
 
-    fragment.eventSender = controllerFragmentDelegate
-    fragment.diffuserProvider = { diffuserFragmentDelegate.diffuser }
-    fragment.delegates = setOf(
+    eventSender = controllerFragmentDelegate
+    diffuserProvider = { diffuserFragmentDelegate.diffuser }
+    delegates = setOf(
         diffuserFragmentDelegate,
         controllerFragmentDelegate,
         cameraPermissionChecker,
         writeStoragePermissionChecker,
+        imagePicker,
         photoPreviewDependencies,
     )
 }
