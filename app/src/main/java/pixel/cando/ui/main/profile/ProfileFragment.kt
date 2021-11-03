@@ -132,11 +132,7 @@ class ProfileFragment : ViewBindingFragment<FragmentProfileBinding>(
                 ProfileEvent.AddressChanged(it)
             )
         }
-        viewBinding.countryField.doAfterTextChanged {
-            eventSender?.sendEvent(
-                ProfileEvent.CountryChanged(it)
-            )
-        }
+        viewBinding.countryField.isEnabled = false
 
     }
 

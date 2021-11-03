@@ -88,15 +88,6 @@ object ProfileLogic {
                     )
                 )
             }
-            is ProfileEvent.CountryChanged -> {
-                Next.next(
-                    model.copy(
-                        account = model.account?.copy(
-                            country = event.value
-                        )
-                    )
-                )
-            }
             is ProfileEvent.SaveTap -> {
                 val account = model.account
                 if (account != null
@@ -243,10 +234,6 @@ sealed class ProfileEvent {
     ) : ProfileEvent()
 
     data class AddressChanged(
-        val value: String
-    ) : ProfileEvent()
-
-    data class CountryChanged(
         val value: String
     ) : ProfileEvent()
 
