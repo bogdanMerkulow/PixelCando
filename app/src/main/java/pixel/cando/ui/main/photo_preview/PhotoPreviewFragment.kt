@@ -14,6 +14,8 @@ import pixel.cando.utils.diffuser.DiffuserProvider
 import pixel.cando.utils.diffuser.DiffuserProviderNeeder
 import pixel.cando.utils.diffuser.map
 import pixel.cando.utils.doAfterTextChanged
+import pixel.cando.utils.heightInputFilter
+import pixel.cando.utils.weightInputFilter
 
 class PhotoPreviewFragment : ViewBindingFullscreenDialogFragment<FragmentPhotoPreviewBinding>(
     FragmentPhotoPreviewBinding::inflate
@@ -77,7 +79,10 @@ class PhotoPreviewFragment : ViewBindingFullscreenDialogFragment<FragmentPhotoPr
                 PhotoPreviewEvent.WeightChanged(it)
             )
         }
+        viewBinding.weightField.filters = arrayOf(weightInputFilter())
+
         viewBinding.heightField.isEnabled = false
+        viewBinding.heightField.filters = arrayOf(heightInputFilter())
     }
 
     override fun renderViewModel(

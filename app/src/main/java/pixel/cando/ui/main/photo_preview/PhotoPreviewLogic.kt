@@ -122,7 +122,7 @@ fun PhotoPreviewDataModel.viewModel(
 ) = PhotoPreviewViewModel(
     uri = uri,
     weight = weight.toString(),
-    height = height.toString(),
+    height = String.format("%.0f", height),
 )
 
 data class PhotoPreviewResult(
