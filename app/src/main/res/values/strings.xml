@@ -60,7 +60,7 @@
     <string name="exam_details_tab_silhouette">Silhouette</string>
 
     <string name="exam_details_measurement_values_section_params">Params</string>
-    <string name="exam_details_measurement_values_section_circumferences">Circumferences</string>
+    <string name="exam_details_measurement_values_section_measures">Measures</string>
 
     <string name="created_at">Created At</string>
     <string name="bmi">Body Mass Index (BMI)</string>

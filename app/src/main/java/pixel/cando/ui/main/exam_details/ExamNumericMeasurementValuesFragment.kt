@@ -194,7 +194,7 @@ private fun ExamNumericMeasurementValuesFragment.Arguments.toListItems(
             isLast = false,
         ),
         ExamDetailsListItem.Header(
-            context.getString(R.string.exam_details_measurement_values_section_circumferences),
+            context.getString(R.string.exam_details_measurement_values_section_measures),
             isFirst = false,
             isLast = false,
         ),
