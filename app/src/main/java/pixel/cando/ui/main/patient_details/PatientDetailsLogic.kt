@@ -54,11 +54,11 @@ object PatientDetailsLogic {
                 First.first(
                     next.modelUnsafe(),
                     next.effects()
-                            + setOf(
-                        PatientDetailsEffect.LoadPatientInfo(
-                            patientId = model.patientId,
+                        .plus(
+                            PatientDetailsEffect.LoadPatientInfo(
+                                patientId = model.patientId,
+                            )
                         )
-                    )
                 )
             }
             model.listState.isLoading -> {
@@ -164,10 +164,11 @@ object PatientDetailsLogic {
                 )
             }
             is PatientDetailsEvent.PhotoUploadSuccess -> {
-                Next.next(
+                listUpdater.update(
                     model.copy(
                         isLoading = false,
-                    )
+                    ),
+                    PatientDetailsEvent.RefreshRequest
                 )
             }
             is PatientDetailsEvent.PhotoUploadFailure -> {
