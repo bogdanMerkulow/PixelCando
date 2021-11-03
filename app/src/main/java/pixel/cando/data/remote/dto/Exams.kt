@@ -36,7 +36,11 @@ data class ExamBriefDto(
 
 @JsonClass(generateAdapter = true)
 data class ExamParamsBriefDto(
+    @Json(name = "weight") val weight: Float,
     @Json(name = "bmi") val bmi: Float,
+    @Json(name = "fm") val fm: Float,
+    @Json(name = "ffm") val ffm: Float,
+    @Json(name = "abdominalFm") val abdominalFm: Float,
 )
 
 @JsonClass(generateAdapter = true)

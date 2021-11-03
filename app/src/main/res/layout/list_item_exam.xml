@@ -18,40 +18,95 @@
         android:gravity="center"
         android:textColor="@color/white"
         android:textSize="14sp"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="1"
         />
 
     <TextView
-        android:id="@+id/valueLabel"
+        android:id="@+id/weightLabel"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="@dimen/spacing_16"
-        android:ellipsize="end"
         android:fontFamily="sans-serif-medium"
-        android:maxLines="1"
         android:textColor="@color/black_mine_shaft"
         android:textSize="14sp"
         app:layout_constraintLeft_toRightOf="@id/numberLabel"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="BMI ..."
+        tools:text="Weight ..."
+        />
+
+    <TextView
+        android:id="@+id/fatMassLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_8"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="@color/black_mine_shaft"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="@id/weightLabel"
+        app:layout_constraintStart_toStartOf="@id/weightLabel"
+        app:layout_constraintTop_toBottomOf="@+id/weightLabel"
+        tools:text="Fat Mass ..."
+        />
+
+    <TextView
+        android:id="@+id/fatFreeMassLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_8"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="@color/black_mine_shaft"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="@id/fatMassLabel"
+        app:layout_constraintStart_toStartOf="@id/fatMassLabel"
+        app:layout_constraintTop_toBottomOf="@+id/fatMassLabel"
+        tools:text="Fat Free Mass ..."
+        />
+
+    <TextView
+        android:id="@+id/abdominalFatMassLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_8"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="@color/black_mine_shaft"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="@id/fatFreeMassLabel"
+        app:layout_constraintStart_toStartOf="@id/fatFreeMassLabel"
+        app:layout_constraintTop_toBottomOf="@+id/fatFreeMassLabel"
+        tools:text="Abdominal Fat Mass ..."
+        />
+
+
+    <TextView
+        android:id="@+id/bmiLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_8"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="@color/black_mine_shaft"
+        android:textSize="14sp"
+        app:layout_constraintEnd_toEndOf="@id/abdominalFatMassLabel"
+        app:layout_constraintStart_toStartOf="@id/abdominalFatMassLabel"
+        app:layout_constraintTop_toBottomOf="@+id/abdominalFatMassLabel"
+        tools:text="Abdominal Fat Mass ..."
         />
 
     <TextView
         android:id="@+id/dateLabel"
-        android:layout_width="0dp"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_8"
         android:ellipsize="end"
         android:maxLines="1"
         android:textColor="@color/gray_boulder"
         android:textSize="12sp"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintLeft_toLeftOf="@id/valueLabel"
-        app:layout_constraintRight_toRightOf="parent"
-        tools:text="3 days ago"
+        app:layout_constraintStart_toStartOf="@id/bmiLabel"
+        app:layout_constraintTop_toBottomOf="@+id/bmiLabel"
+        tools:text="dd MMM, H:mm"
         />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

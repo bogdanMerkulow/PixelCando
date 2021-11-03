@@ -1,5 +1,8 @@
 <resources>
 
+    <string name="locale_language">en</string>
+    <string name="locale_country">US</string>
+
     <string name="sign_in_email_placeholder">Email Address</string>
     <string name="sign_in_password_placeholder">Password</string>
     <string name="sign_in_access_account_hint">Login to access your Account</string>
@@ -21,7 +24,6 @@
     <string name="exams_header_title">Exams</string>
     <string name="no_exams_title">No exams yet</string>
     <string name="no_exams_description">There are no exams made yet for the patient. Please shoot the patient half-face and upload the photo to the engine</string>
-    <string name="exam_bmi_value">BMI %.2f</string>
 
     <string name="something_went_wrong">Something went wrong</string>
 
@@ -65,8 +67,8 @@
     <string name="created_at">Created At</string>
     <string name="bmi">Body Mass Index (BMI)</string>
     <string name="bmr">Basal Metabolic Rate (BMR)</string>
-    <string name="fm">Fat Mass (FM)</string>
-    <string name="ffm">Fat Free Mass (FFM)</string>
+    <string name="fat_mass">Fat Mass (FM)</string>
+    <string name="fat_free_mass">Fat Free Mass (FFM)</string>
     <string name="abdominal_fat_mass">Abdominal Fat Mass</string>
     <string name="tbw">Total Body Water (TBW)</string>
     <string name="hip">Hip</string>

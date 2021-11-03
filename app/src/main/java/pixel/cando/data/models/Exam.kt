@@ -6,6 +6,10 @@ data class ExamListItemInfo(
     val id: Long,
     val createdAt: LocalDateTime,
     val number: Int,
+    val weight: Float,
+    val fatMass: Float,
+    val fatFreeMass: Float,
+    val abdominalFatMass: Float,
     val bmi: Float,
 )
 

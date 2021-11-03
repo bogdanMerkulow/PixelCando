@@ -337,7 +337,7 @@ fun PatientListDataModel.viewModel(
         it.viewModel
     },
     listState = listState.plainState.map { patient, _, _ ->
-        val timeAgoFormatter = TimeAgoFormatter()
+        val timeAgoFormatter = TimeAgoFormatter(resourceProvider)
         patient.viewModel(
             resourceProvider = resourceProvider,
             timeAgoFormatter = timeAgoFormatter,

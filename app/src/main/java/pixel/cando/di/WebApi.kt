@@ -21,7 +21,6 @@ import pixel.cando.utils.ResourceProvider
 import pixel.cando.utils.logError
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
-import java.util.Locale
 import java.util.TimeZone
 import java.util.concurrent.TimeUnit
 
@@ -37,7 +36,8 @@ fun assembleRestApi(
             assembleOkHttpClient(
                 ContentTypeHeaderInterceptor(),
                 BodyInterceptor(
-                    accessTokenProvider = accessTokenProvider
+                    accessTokenProvider = accessTokenProvider,
+                    resourceProvider = resourceProvider,
                 ),
                 ChuckerInterceptor.Builder(context).build(),
                 NotAuthorizedHandlerInterceptor(),
@@ -60,7 +60,9 @@ fun assembleAuthApi(
         .client(
             assembleOkHttpClient(
                 ContentTypeHeaderInterceptor(),
-                BodyInterceptor(),
+                BodyInterceptor(
+                    resourceProvider = resourceProvider,
+                ),
                 ChuckerInterceptor.Builder(context).build(),
             )
         )
@@ -119,7 +121,8 @@ private class NotAuthorizedHandlerInterceptor : Interceptor {
 }
 
 private class BodyInterceptor(
-    private val accessTokenProvider: AccessTokenProvider? = null
+    private val accessTokenProvider: AccessTokenProvider? = null,
+    private val resourceProvider: ResourceProvider,
 ) : Interceptor {
 
     override fun intercept(
@@ -165,17 +168,10 @@ private class BodyInterceptor(
     }
 
     private fun getMeta(): JSONObject {
-        val locale = Locale.getDefault().let {
+        val locale = resourceProvider.getCurrentLocale().let {
             "${it.language}-${it.country}"
         }
-        val timeZone = TimeZone.getDefault()
-            .getDisplayName(
-                true,
-                TimeZone.SHORT,
-                Locale.ENGLISH
-            )
-            .split("GMT")
-            .lastOrNull()
+        val timeZone = TimeZone.getDefault().id
         return JSONObject().apply {
             put("locale", locale)
             put("timezone", timeZone)

@@ -31,12 +31,12 @@ import pixel.cando.ui._base.tea.toFirst
 import pixel.cando.utils.MessageDisplayer
 import pixel.cando.utils.PermissionChecker
 import pixel.cando.utils.ResourceProvider
-import pixel.cando.utils.TimeAgoFormatter
 import pixel.cando.utils.base64ForSending
 import pixel.cando.utils.logError
 import pixel.cando.utils.onLeft
 import pixel.cando.utils.onRight
 import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.concurrent.atomic.AtomicReference
 
 object PatientDetailsLogic {
@@ -531,7 +531,11 @@ data class ExamDataModel(
     val id: Long,
     val createdAt: LocalDateTime,
     val number: Int,
+    val weight: Float,
     val bmi: Float,
+    val fatMass: Float,
+    val fatFreeMass: Float,
+    val abdominalFatMass: Float,
 ) : Parcelable
 
 data class PatientDetailsViewModel(
@@ -543,7 +547,11 @@ data class PatientDetailsViewModel(
 
 data class ExamViewModel(
     val id: Long,
-    val value: String,
+    val weight: String,
+    val fatMass: String,
+    val fatFreeMass: String,
+    val abdominalFatMass: String,
+    val bmi: String,
     val date: String,
     val number: String,
     val isStarMarked: Boolean,
@@ -558,10 +566,12 @@ fun PatientDetailsDataModel.viewModel(
     isLoaderVisible = isLoading,
     isTakePhotoButtonEnabled = isLoading.not(),
     listState = listState.plainState.map { exam, index, list ->
-        val timeAgoFormatter = TimeAgoFormatter()
+        val dateTimeFormatter = DateTimeFormatter
+            .ofPattern("dd MMM, HH:mm")
+            .withLocale(resourceProvider.getCurrentLocale())
         exam.viewModel(
             resourceProvider = resourceProvider,
-            timeAgoFormatter = timeAgoFormatter,
+            dateTimeFormatter = dateTimeFormatter,
             isFirst = index == 0,
             isLast = index == list.size - 1
         )
@@ -570,13 +580,17 @@ fun PatientDetailsDataModel.viewModel(
 
 private fun ExamDataModel.viewModel(
     resourceProvider: ResourceProvider,
-    timeAgoFormatter: TimeAgoFormatter,
+    dateTimeFormatter: DateTimeFormatter,
     isFirst: Boolean,
     isLast: Boolean,
 ) = ExamViewModel(
     id = id,
-    value = resourceProvider.getString(R.string.exam_bmi_value, bmi),
-    date = timeAgoFormatter.format(createdAt),
+    weight = "${resourceProvider.getString(R.string.weight)} $weight",
+    fatMass = "${resourceProvider.getString(R.string.fat_mass)} $fatMass",
+    fatFreeMass = "${resourceProvider.getString(R.string.fat_free_mass)} $fatFreeMass",
+    abdominalFatMass = "${resourceProvider.getString(R.string.abdominal_fat_mass)} $abdominalFatMass",
+    bmi = "${resourceProvider.getString(R.string.bmi)} $bmi",
+    date = dateTimeFormatter.format(createdAt),
     number = number.toString(),
     isStarMarked = number == 1,
     isFirst = isFirst,
@@ -588,5 +602,9 @@ private fun ExamListItemInfo.dataModel(
     id = id,
     createdAt = createdAt,
     number = number,
+    weight = weight,
+    fatMass = fatMass,
+    fatFreeMass = fatFreeMass,
+    abdominalFatMass = abdominalFatMass,
     bmi = bmi,
 )

@@ -206,7 +206,11 @@ private fun examAdapterDelegate(
             clickListener.invoke(item.exam.id)
         }
         bind {
-            binding.valueLabel.text = item.exam.value
+            binding.weightLabel.text = item.exam.weight
+            binding.fatMassLabel.text = item.exam.fatMass
+            binding.fatFreeMassLabel.text = item.exam.fatFreeMass
+            binding.abdominalFatMassLabel.text = item.exam.abdominalFatMass
+            binding.bmiLabel.text = item.exam.bmi
             binding.dateLabel.text = item.exam.date
             if (item.exam.isStarMarked) {
                 binding.numberLabel.text = null

@@ -174,14 +174,14 @@ private fun ExamNumericMeasurementValuesFragment.Arguments.toListItems(
             isLast = false,
         ),
         ExamDetailsListItem.Measurement(
-            title = context.getString(R.string.fm),
+            title = context.getString(R.string.fat_mass),
             value = fm.toString(),
             unit = context.getString(R.string.kg),
             isFirst = false,
             isLast = false,
         ),
         ExamDetailsListItem.Measurement(
-            title = context.getString(R.string.ffm),
+            title = context.getString(R.string.fat_free_mass),
             value = ffm.toString(),
             unit = context.getString(R.string.kg),
             isFirst = false,

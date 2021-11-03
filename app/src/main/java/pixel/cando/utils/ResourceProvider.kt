@@ -2,8 +2,14 @@ package pixel.cando.utils
 
 import android.content.Context
 import android.graphics.drawable.Drawable
-import androidx.annotation.*
+import androidx.annotation.ColorRes
+import androidx.annotation.DimenRes
+import androidx.annotation.DrawableRes
+import androidx.annotation.PluralsRes
+import androidx.annotation.StringRes
 import androidx.core.content.ContextCompat
+import pixel.cando.R
+import java.util.Locale
 
 interface ResourceProvider {
 
@@ -24,6 +30,8 @@ interface ResourceProvider {
     ): String
 
     fun getDimension(@DimenRes id: Int): Float
+
+    fun getCurrentLocale(): Locale
 
 }
 
@@ -62,4 +70,10 @@ class RealResourceProvider(
         )
 
     override fun getDimension(@DimenRes id: Int): Float = context.resources.getDimension(id)
+
+    override fun getCurrentLocale(
+    ): Locale = Locale(
+        context.getString(R.string.locale_language),
+        context.getString(R.string.locale_country),
+    )
 }
