@@ -24,6 +24,7 @@ class ExamNumericMeasurementValuesFragment :
     @Parcelize
     data class Arguments(
         val createdAt: LocalDateTime,
+        val weight: Float,
         val bmi: Float,
         val bmr: Float,
         val fm: Float,
@@ -148,6 +149,13 @@ private fun ExamNumericMeasurementValuesFragment.Arguments.toListItems(
                 .ofPattern("dd/MM/yyyy HH:mm")
                 .format(createdAt),
             unit = "",
+            isFirst = false,
+            isLast = false,
+        ),
+        ExamDetailsListItem.Measurement(
+            title = context.getString(R.string.weight),
+            value = weight.toString(),
+            unit = context.getString(R.string.kg),
             isFirst = false,
             isLast = false,
         ),

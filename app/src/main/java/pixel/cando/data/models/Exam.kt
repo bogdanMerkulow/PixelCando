@@ -13,6 +13,7 @@ data class ExamSingleItemInfo(
     val id: Long,
     val createdAt: LocalDateTime,
     val number: Int,
+    val weight: Float,
     val bmi: Float,
     val bmr: Float,
     val fm: Float,

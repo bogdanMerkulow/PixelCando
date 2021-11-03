@@ -190,6 +190,7 @@ class RealRemoteRepository(
                     id = it.id,
                     createdAt = it.createdAt,
                     number = it.no,
+                    weight = it.params.weight,
                     bmi = it.params.bmi,
                     bmr = it.params.bmr,
                     fm = it.params.fm,

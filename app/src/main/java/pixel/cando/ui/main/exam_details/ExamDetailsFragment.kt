@@ -49,6 +49,7 @@ class ExamDetailsFragment : ViewBindingFragment<FragmentExamDetailsBinding>(
                     ExamNumericMeasurementValuesFragment.newInstance(
                         ExamNumericMeasurementValuesFragment.Arguments(
                             createdAt = item.createdAt,
+                            weight = item.weight,
                             bmi = item.bmi,
                             bmr = item.bmr,
                             fm = item.fm,

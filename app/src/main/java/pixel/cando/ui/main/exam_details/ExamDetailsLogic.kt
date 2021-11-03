@@ -97,6 +97,7 @@ object ExamDetailsLogic {
                                         patientFullName = patient.fullName,
                                         examCreatedAt = exam.createdAt,
                                         examNumber = exam.number,
+                                        weight = exam.weight,
                                         bmi = exam.bmi,
                                         bmr = exam.bmr,
                                         fm = exam.fm,
@@ -184,6 +185,7 @@ data class ExamDetailsLoadedDataModel(
     val patientFullName: String,
     val examCreatedAt: LocalDateTime,
     val examNumber: Int,
+    val weight: Float,
     val bmi: Float,
     val bmr: Float,
     val fm: Float,
@@ -209,6 +211,7 @@ sealed class ExamDetailsTabViewModel {
     data class NumericMeasurementValues(
         override val title: String,
         val createdAt: LocalDateTime,
+        val weight: Float,
         val bmi: Float,
         val bmr: Float,
         val fm: Float,
@@ -235,6 +238,7 @@ fun ExamDetailsDataModel.viewModel(
             ExamDetailsTabViewModel.NumericMeasurementValues(
                 title = resourceProvider.getString(R.string.exam_details_tab_details),
                 createdAt = it.examCreatedAt,
+                weight = it.weight,
                 bmi = it.bmi,
                 bmr = it.bmr,
                 fm = it.fm,
