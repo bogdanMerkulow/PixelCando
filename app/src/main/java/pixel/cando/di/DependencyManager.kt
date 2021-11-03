@@ -175,6 +175,8 @@ class DependencyManager(
                                         accessTokenStore = accessTokenStore,
                                         userRoleStore = userRoleStore,
                                         pushNotificationsSubscriber = pushNotificationsSubscriber,
+                                        resourceProvider = resourceProvider,
+                                        context = context,
                                     )
                                 }
                                 is PasswordRecoveryFragment -> {

@@ -1,8 +1,12 @@
 package pixel.cando.di
 
+import android.Manifest
+import android.content.Context
+import androidx.lifecycle.lifecycleScope
 import com.spotify.mobius.Mobius
 import com.spotify.mobius.Update
 import com.spotify.mobius.android.AndroidLogger
+import kotlinx.coroutines.launch
 import pixel.cando.data.local.AccessTokenStore
 import pixel.cando.data.local.UserRoleStore
 import pixel.cando.data.remote.AuthRepository
@@ -16,7 +20,12 @@ import pixel.cando.ui.auth.sign_in.SignInFragment
 import pixel.cando.ui.auth.sign_in.SignInLogic
 import pixel.cando.ui.auth.sign_in.SignInViewModel
 import pixel.cando.ui.auth.sign_in.viewModel
+import pixel.cando.ui.main.camera.CameraFragment
+import pixel.cando.utils.PermissionCheckerResult
 import pixel.cando.utils.PushNotificationsSubscriber
+import pixel.cando.utils.RealPermissionChecker
+import pixel.cando.utils.ResourceProvider
+import pixel.cando.utils.createPermissionCheckerResultEventSource
 import pixel.cando.utils.diffuser.DiffuserFragmentDelegate
 import pixel.cando.utils.messageDisplayer
 
@@ -27,10 +36,37 @@ fun SignInFragment.setup(
     accessTokenStore: AccessTokenStore,
     userRoleStore: UserRoleStore,
     pushNotificationsSubscriber: PushNotificationsSubscriber,
+    resourceProvider: ResourceProvider,
+    context: Context,
 ) {
     if (delegates.isNotEmpty()) {
         return
     }
+
+    val cameraPermissionResultEventSource = createPermissionCheckerResultEventSource {
+        when (it) {
+            is PermissionCheckerResult.Granted -> SignInEvent.CameraPermissionGranted
+            is PermissionCheckerResult.Denied -> SignInEvent.CameraPermissionDenied
+        }
+    }
+    val cameraPermissionChecker = RealPermissionChecker(
+        permission = Manifest.permission.CAMERA,
+        context = context,
+        resultEmitter = cameraPermissionResultEventSource
+    )
+
+    val writeStoragePermissionResultEventSource = createPermissionCheckerResultEventSource {
+        when (it) {
+            is PermissionCheckerResult.Granted -> SignInEvent.WriteStoragePermissionGranted
+            is PermissionCheckerResult.Denied -> SignInEvent.WriteStoragePermissionDenied
+        }
+    }
+    val writeStoragePermissionChecker = RealPermissionChecker(
+        permission = Manifest.permission.WRITE_EXTERNAL_STORAGE,
+        context = context,
+        resultEmitter = writeStoragePermissionResultEventSource
+    )
+
     val controllerFragmentDelegate = ControllerFragmentDelegate<
             SignInViewModel,
             SignInDataModel,
@@ -51,8 +87,22 @@ fun SignInFragment.setup(
                 userRoleStore = userRoleStore,
                 messageDisplayer = messageDisplayer,
                 pushNotificationsSubscriber = pushNotificationsSubscriber,
+                resourceProvider = resourceProvider,
+                photoTakerOpener = {
+                    lifecycleScope.launch {
+                        CameraFragment.show(
+                            childFragmentManager
+                        )
+                    }
+                },
+                cameraPermissionChecker = cameraPermissionChecker,
+                writeStoragePermissionChecker = writeStoragePermissionChecker,
             )
         )
+            .eventSources(
+                cameraPermissionResultEventSource,
+                writeStoragePermissionResultEventSource,
+            )
             .logger(AndroidLogger.tag("SignIn")),
         initialState = {
             SignInLogic.init(it)
@@ -73,5 +123,7 @@ fun SignInFragment.setup(
     delegates = setOf(
         diffuserFragmentDelegate,
         controllerFragmentDelegate,
+        cameraPermissionChecker,
+        writeStoragePermissionChecker,
     )
 }

@@ -5,6 +5,7 @@ import com.spotify.mobius.Connectable
 import com.spotify.mobius.First
 import com.spotify.mobius.Next
 import kotlinx.parcelize.Parcelize
+import pixel.cando.R
 import pixel.cando.data.local.AccessTokenStore
 import pixel.cando.data.local.UserRoleStore
 import pixel.cando.data.models.SignInFailure
@@ -15,7 +16,9 @@ import pixel.cando.ui._base.fragment.RootRouter
 import pixel.cando.ui._base.tea.CoroutineScopeEffectHandler
 import pixel.cando.utils.Either
 import pixel.cando.utils.MessageDisplayer
+import pixel.cando.utils.PermissionChecker
 import pixel.cando.utils.PushNotificationsSubscriber
+import pixel.cando.utils.ResourceProvider
 import pixel.cando.utils.logError
 import pixel.cando.utils.onRight
 
@@ -89,6 +92,13 @@ object SignInLogic {
                     )
                 )
             }
+            is SignInEvent.TapTakePhoto -> {
+                Next.dispatch(
+                    setOf(
+                        SignInEffect.CheckCameraPermission
+                    )
+                )
+            }
             // model
             is SignInEvent.SignInSucceeded -> {
                 Next.next(
@@ -111,6 +121,34 @@ object SignInLogic {
                     )
                 )
             }
+            is SignInEvent.CameraPermissionGranted -> {
+                Next.dispatch(
+                    setOf(
+                        SignInEffect.CheckWriteStoragePermission
+                    )
+                )
+            }
+            is SignInEvent.CameraPermissionDenied -> {
+                Next.dispatch(
+                    setOf(
+                        SignInEffect.ShowUnexpectedError // TODO change the message
+                    )
+                )
+            }
+            is SignInEvent.WriteStoragePermissionGranted -> {
+                Next.dispatch(
+                    setOf(
+                        SignInEffect.OpenPhotoTaker
+                    )
+                )
+            }
+            is SignInEvent.WriteStoragePermissionDenied -> {
+                Next.dispatch(
+                    setOf(
+                        SignInEffect.ShowUnexpectedError // TODO change the message
+                    )
+                )
+            }
         }
     }
 
@@ -122,6 +160,10 @@ object SignInLogic {
         userRoleStore: UserRoleStore,
         messageDisplayer: MessageDisplayer,
         pushNotificationsSubscriber: PushNotificationsSubscriber,
+        resourceProvider: ResourceProvider,
+        photoTakerOpener: () -> Unit,
+        cameraPermissionChecker: PermissionChecker,
+        writeStoragePermissionChecker: PermissionChecker,
     ): Connectable<SignInEffect, SignInEvent> =
         CoroutineScopeEffectHandler { effect, output ->
             when (effect) {
@@ -176,6 +218,32 @@ object SignInLogic {
                         )
                     )
                 }
+                is SignInEffect.OpenPhotoTaker -> {
+                    photoTakerOpener.invoke()
+                }
+                is SignInEffect.CheckCameraPermission -> {
+                    if (cameraPermissionChecker.checkPermission()) {
+                        output.accept(
+                            SignInEvent.CameraPermissionGranted
+                        )
+                    } else {
+                        cameraPermissionChecker.requestPermission()
+                    }
+                }
+                is SignInEffect.CheckWriteStoragePermission -> {
+                    if (writeStoragePermissionChecker.checkPermission()) {
+                        output.accept(
+                            SignInEvent.WriteStoragePermissionGranted
+                        )
+                    } else {
+                        writeStoragePermissionChecker.requestPermission()
+                    }
+                }
+                is SignInEffect.ShowUnexpectedError -> {
+                    messageDisplayer.showMessage(
+                        resourceProvider.getString(R.string.something_went_wrong)
+                    )
+                }
             }
         }
 
@@ -201,11 +269,19 @@ sealed class SignInEvent {
 
     object TapSignIn : SignInEvent()
 
+    object TapTakePhoto : SignInEvent()
+
     object TapRecoverPassword : SignInEvent()
 
     // model
     object SignInSucceeded : SignInEvent()
     object SignInFailed : SignInEvent()
+
+    object CameraPermissionGranted : SignInEvent()
+    object CameraPermissionDenied : SignInEvent()
+
+    object WriteStoragePermissionGranted : SignInEvent()
+    object WriteStoragePermissionDenied : SignInEvent()
 }
 
 sealed class SignInEffect {
@@ -219,6 +295,15 @@ sealed class SignInEffect {
     data class NavigateToPasswordRecovery(
         val email: String,
     ) : SignInEffect()
+
+    object CheckCameraPermission : SignInEffect()
+
+    object CheckWriteStoragePermission : SignInEffect()
+
+    object OpenPhotoTaker : SignInEffect()
+
+    object ShowUnexpectedError : SignInEffect()
+
 }
 
 @Parcelize

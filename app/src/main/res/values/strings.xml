@@ -5,6 +5,8 @@
     <string name="sign_in_access_account_hint">Login to access your Account</string>
     <string name="sing_in_password_hint">Password must contain at least 6 characters</string>
     <string name="sing_in_btn_title">Login</string>
+    <string name="sing_in_take_photo_success_title">Photo saved in camera roll</string>
+    <string name="sing_in_take_photo_success_message">You can open it and share in the way you need.</string>
 
     <string name="tab_title_chat">Chat</string>
     <string name="tab_title_chats">Chats</string>

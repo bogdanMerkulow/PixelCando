@@ -1,0 +1,6 @@
+<resources>
+
+    <string name="sing_in_take_photo_success_title">Foto salvata nel rullino fotografico del device</string>
+    <string name="sing_in_take_photo_success_message">Puoi visualizzare la foto, inviarla e condividerla.</string>
+
+</resources>

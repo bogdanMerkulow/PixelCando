@@ -1,15 +1,23 @@
 package pixel.cando.ui.auth.sign_in
 
+import android.app.AlertDialog
+import android.net.Uri
 import android.os.Bundle
+import pixel.cando.R
 import pixel.cando.databinding.FragmentSignInBinding
 import pixel.cando.ui._base.fragment.ViewBindingFragment
 import pixel.cando.ui._base.tea.EventSender
 import pixel.cando.ui._base.tea.EventSenderNeeder
 import pixel.cando.ui._base.tea.ViewModelRender
-import pixel.cando.utils.diffuser.*
+import pixel.cando.ui.main.camera.CameraFragment
+import pixel.cando.utils.diffuser.Diffuser
 import pixel.cando.utils.diffuser.Diffuser.intoOnce
+import pixel.cando.utils.diffuser.DiffuserCreator
+import pixel.cando.utils.diffuser.DiffuserProvider
+import pixel.cando.utils.diffuser.DiffuserProviderNeeder
 import pixel.cando.utils.diffuser.ViewDiffusers.intoEnabled
 import pixel.cando.utils.diffuser.ViewDiffusers.intoVisibleOrGone
+import pixel.cando.utils.diffuser.map
 import pixel.cando.utils.doAfterTextChanged
 
 class SignInFragment : ViewBindingFragment<FragmentSignInBinding>(
@@ -17,7 +25,8 @@ class SignInFragment : ViewBindingFragment<FragmentSignInBinding>(
 ), ViewModelRender<SignInViewModel>,
     EventSenderNeeder<SignInEvent>,
     DiffuserCreator<SignInViewModel, FragmentSignInBinding>,
-    DiffuserProviderNeeder<SignInViewModel> {
+    DiffuserProviderNeeder<SignInViewModel>,
+    CameraFragment.Callback {
 
     override var eventSender: EventSender<SignInEvent>? = null
 
@@ -72,6 +81,9 @@ class SignInFragment : ViewBindingFragment<FragmentSignInBinding>(
         viewBinding.signInButton.setOnClickListener {
             eventSender?.sendEvent(SignInEvent.TapSignIn)
         }
+        viewBinding.takePhotoButton.setOnClickListener {
+            eventSender?.sendEvent(SignInEvent.TapTakePhoto)
+        }
     }
 
     override fun renderViewModel(
@@ -79,4 +91,17 @@ class SignInFragment : ViewBindingFragment<FragmentSignInBinding>(
     ) {
         diffuserProvider?.invoke()?.run(viewModel)
     }
+
+    override fun onCameraResult(uri: Uri) {
+        AlertDialog.Builder(requireContext())
+            .setTitle(R.string.sing_in_take_photo_success_title)
+            .setMessage(R.string.sing_in_take_photo_success_message)
+            .setPositiveButton(
+                android.R.string.ok
+            ) { _, _ -> }
+            .create()
+            .show()
+    }
+
+    override fun onCameraCancel() {}
 }
