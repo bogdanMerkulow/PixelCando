@@ -43,8 +43,8 @@
     <string name="patient_info_section_general">General</string>
     <string name="patient_info_section_contacts">Contacts</string>
 
-    <string name="age">age</string>
-    <string name="gender">gender</string>
+    <string name="age">Age</string>
+    <string name="gender">Gender</string>
 
     <string name="full_name">Full Name</string>
     <string name="phone">Phone</string>
@@ -105,5 +105,6 @@
     </plurals>
     <string name="camera_rotation_check_not_available_title">Warning</string>
     <string name="camera_rotation_check_not_available_message">Gyroscope is not available in device. Here instructions on how to take picture</string>
+    <string name="camera_help_link">https://www.pixelcando.com/camera-hint</string>
 
 </resources>

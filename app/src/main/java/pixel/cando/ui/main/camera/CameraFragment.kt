@@ -4,6 +4,7 @@ import android.app.AlertDialog
 import android.content.ContentValues
 import android.content.Context
 import android.content.Context.SENSOR_SERVICE
+import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
@@ -416,7 +417,14 @@ class CameraFragment : ViewBindingFullscreenDialogFragment<FragmentCameraBinding
         AlertDialog.Builder(requireContext())
             .setTitle(R.string.camera_rotation_check_not_available_title)
             .setMessage(R.string.camera_rotation_check_not_available_message)
-            .setNeutralButton(android.R.string.ok) { _, _ -> }
+            .setPositiveButton(android.R.string.ok) { _, _ ->
+                val intent = Intent(
+                    Intent.ACTION_VIEW,
+                    Uri.parse(getString(R.string.camera_help_link))
+                )
+                startActivity(intent)
+            }
+            .setNegativeButton(R.string.cancel) { _, _ -> }
             .create()
             .show()
     }
