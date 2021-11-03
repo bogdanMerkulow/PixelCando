@@ -77,11 +77,7 @@ class PhotoPreviewFragment : ViewBindingFullscreenDialogFragment<FragmentPhotoPr
                 PhotoPreviewEvent.WeightChanged(it)
             )
         }
-        viewBinding.heightField.doAfterTextChanged {
-            eventSender?.sendEvent(
-                PhotoPreviewEvent.HeightChanged(it)
-            )
-        }
+        viewBinding.heightField.isEnabled = false
     }
 
     override fun renderViewModel(

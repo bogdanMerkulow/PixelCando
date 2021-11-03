@@ -39,13 +39,6 @@ object PhotoPreviewLogic {
                     )
                 )
             }
-            is PhotoPreviewEvent.HeightChanged -> {
-                Next.next(
-                    model.copy(
-                        height = event.height.toFloatOrNull() ?: model.height
-                    )
-                )
-            }
             is PhotoPreviewEvent.CancelTap,
             is PhotoPreviewEvent.BackTap -> {
                 Next.dispatch(
@@ -95,13 +88,11 @@ sealed class PhotoPreviewEvent {
     object ConfirmTap : PhotoPreviewEvent()
     object CancelTap : PhotoPreviewEvent()
     object BackTap : PhotoPreviewEvent()
+
     data class WeightChanged(
         val weight: String
     ) : PhotoPreviewEvent()
 
-    data class HeightChanged(
-        val height: String
-    ) : PhotoPreviewEvent()
 }
 
 sealed class PhotoPreviewEffect {
