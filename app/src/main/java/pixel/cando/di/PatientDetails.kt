@@ -1,5 +1,6 @@
 package pixel.cando.di
 
+import android.Manifest
 import android.content.Context
 import androidx.lifecycle.lifecycleScope
 import com.spotify.mobius.Mobius
@@ -41,15 +42,29 @@ fun setup(
         return
     }
     val patientId = fragment.getArgument<Long>()
-    val permissionResultEventSource = createPermissionCheckerResultEventSource {
+
+    val cameraPermissionResultEventSource = createPermissionCheckerResultEventSource {
         when (it) {
             is PermissionCheckerResult.Granted -> PatientDetailsEvent.CameraPermissionGranted
             is PermissionCheckerResult.Denied -> PatientDetailsEvent.CameraPermissionDenied
         }
     }
-    val permissionChecker = RealPermissionChecker(
+    val cameraPermissionChecker = RealPermissionChecker(
+        permission = Manifest.permission.CAMERA,
         context = context,
-        resultEmitter = permissionResultEventSource
+        resultEmitter = cameraPermissionResultEventSource
+    )
+
+    val writeStoragePermissionResultEventSource = createPermissionCheckerResultEventSource {
+        when (it) {
+            is PermissionCheckerResult.Granted -> PatientDetailsEvent.WriteStoragePermissionGranted
+            is PermissionCheckerResult.Denied -> PatientDetailsEvent.WriteStoragePermissionDenied
+        }
+    }
+    val writeStoragePermissionChecker = RealPermissionChecker(
+        permission = Manifest.permission.WRITE_EXTERNAL_STORAGE,
+        context = context,
+        resultEmitter = writeStoragePermissionResultEventSource
     )
 
     val photoPreviewDependencies = PhotoPreviewForPatientDetailsDependencies(
@@ -101,13 +116,15 @@ fun setup(
                 remoteRepository = remoteRepository,
                 messageDisplayer = fragment.messageDisplayer,
                 resourceProvider = resourceProvider,
-                permissionChecker = permissionChecker,
+                cameraPermissionChecker = cameraPermissionChecker,
+                writeStoragePermissionChecker = writeStoragePermissionChecker,
                 flowRouter = flowRouter,
                 context = context,
             )
         )
             .eventSources(
-                permissionResultEventSource,
+                cameraPermissionResultEventSource,
+                writeStoragePermissionResultEventSource,
                 photoPreviewDependencies.resultEmitter,
             )
             .logger(AndroidLogger.tag("PatientDetails")),
@@ -136,7 +153,8 @@ fun setup(
     fragment.delegates = setOf(
         diffuserFragmentDelegate,
         controllerFragmentDelegate,
-        permissionChecker,
+        cameraPermissionChecker,
+        writeStoragePermissionChecker,
         photoPreviewDependencies,
     )
 }

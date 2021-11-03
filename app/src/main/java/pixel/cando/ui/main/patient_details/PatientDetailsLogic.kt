@@ -1,6 +1,5 @@
 package pixel.cando.ui.main.patient_details
 
-import android.Manifest
 import android.content.Context
 import android.graphics.ImageDecoder
 import android.net.Uri
@@ -187,11 +186,25 @@ object PatientDetailsLogic {
             is PatientDetailsEvent.CameraPermissionGranted -> {
                 Next.dispatch(
                     setOf(
-                        PatientDetailsEffect.OpenPhotoTaker
+                        PatientDetailsEffect.CheckWriteStoragePermission
                     )
                 )
             }
             is PatientDetailsEvent.CameraPermissionDenied -> {
+                Next.dispatch(
+                    setOf(
+                        PatientDetailsEffect.ShowUnexpectedError // TODO change the message
+                    )
+                )
+            }
+            is PatientDetailsEvent.WriteStoragePermissionGranted -> {
+                Next.dispatch(
+                    setOf(
+                        PatientDetailsEffect.OpenPhotoTaker
+                    )
+                )
+            }
+            is PatientDetailsEvent.WriteStoragePermissionDenied -> {
                 Next.dispatch(
                     setOf(
                         PatientDetailsEffect.ShowUnexpectedError // TODO change the message
@@ -240,7 +253,8 @@ object PatientDetailsLogic {
         remoteRepository: RemoteRepository,
         messageDisplayer: MessageDisplayer,
         resourceProvider: ResourceProvider,
-        permissionChecker: PermissionChecker,
+        cameraPermissionChecker: PermissionChecker,
+        writeStoragePermissionChecker: PermissionChecker,
         flowRouter: FlowRouter,
         context: Context,
     ): Connectable<PatientDetailsEffect, PatientDetailsEvent> {
@@ -331,13 +345,21 @@ object PatientDetailsLogic {
                     }
                 }
                 is PatientDetailsEffect.CheckCameraPermission -> {
-                    val permission = Manifest.permission.CAMERA
-                    if (permissionChecker.checkPermission(permission)) {
+                    if (cameraPermissionChecker.checkPermission()) {
                         output.accept(
                             PatientDetailsEvent.CameraPermissionGranted
                         )
                     } else {
-                        permissionChecker.requestPermission(permission)
+                        cameraPermissionChecker.requestPermission()
+                    }
+                }
+                is PatientDetailsEffect.CheckWriteStoragePermission -> {
+                    if (writeStoragePermissionChecker.checkPermission()) {
+                        output.accept(
+                            PatientDetailsEvent.WriteStoragePermissionGranted
+                        )
+                    } else {
+                        writeStoragePermissionChecker.requestPermission()
                     }
                 }
                 is PatientDetailsEffect.AskToConfirmPhoto -> {
@@ -442,6 +464,9 @@ sealed class PatientDetailsEvent {
 
     object CameraPermissionGranted : PatientDetailsEvent()
     object CameraPermissionDenied : PatientDetailsEvent()
+
+    object WriteStoragePermissionGranted : PatientDetailsEvent()
+    object WriteStoragePermissionDenied : PatientDetailsEvent()
 }
 
 sealed class PatientDetailsEffect {
@@ -485,6 +510,8 @@ sealed class PatientDetailsEffect {
     ) : PatientDetailsEffect()
 
     object CheckCameraPermission : PatientDetailsEffect()
+
+    object CheckWriteStoragePermission : PatientDetailsEffect()
 
     object Exit : PatientDetailsEffect()
 }

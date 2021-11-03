@@ -293,17 +293,16 @@ class CameraFragment : ViewBindingFullscreenDialogFragment<FragmentCameraBinding
             val outputOptions = ImageCapture.OutputFileOptions.Builder(
                 context.contentResolver,
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-                    MediaStore.Audio.Media.getContentUri(
+                    MediaStore.Images.Media.getContentUri(
                         MediaStore.VOLUME_EXTERNAL_PRIMARY
                     )
                 } else {
-                    MediaStore.Audio.Media.EXTERNAL_CONTENT_URI
+                    MediaStore.Images.Media.EXTERNAL_CONTENT_URI
                 },
                 ContentValues()
-//                    .apply {
-//                    put(MediaStore.Audio.Media.DISPLAY_NAME, "${UUID.randomUUID()}.jpeg")
-//                    put(MediaStore.MediaColumns.MIME_TYPE, "image/jpeg")
-//                }
+                    .apply {
+                        put(MediaStore.Images.Media.DISPLAY_NAME, "${UUID.randomUUID()}.jpeg")
+                    }
             ).build()
 
             imageCapture.takePicture(

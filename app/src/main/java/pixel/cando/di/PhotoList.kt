@@ -1,5 +1,6 @@
 package pixel.cando.di
 
+import android.Manifest
 import android.content.Context
 import androidx.lifecycle.lifecycleScope
 import com.spotify.mobius.Mobius
@@ -32,15 +33,16 @@ fun setup(
     if (fragment.delegates.isNotEmpty()) {
         return
     }
-    val permissionResultEventSource = createPermissionCheckerResultEventSource {
+    val cameraPermissionResultEventSource = createPermissionCheckerResultEventSource {
         when (it) {
             is PermissionCheckerResult.Granted -> PhotoListEvent.CameraPermissionGranted
             is PermissionCheckerResult.Denied -> PhotoListEvent.CameraPermissionDenied
         }
     }
-    val permissionChecker = RealPermissionChecker(
+    val cameraPermissionChecker = RealPermissionChecker(
+        permission = Manifest.permission.CAMERA,
         context = context,
-        resultEmitter = permissionResultEventSource
+        resultEmitter = cameraPermissionResultEventSource
     )
     val controllerFragmentDelegate = ControllerFragmentDelegate<
             PhotoListViewModel,
@@ -65,11 +67,11 @@ fun setup(
                 remoteRepository = remoteRepository,
                 messageDisplayer = fragment.messageDisplayer,
                 resourceProvider = resourceProvider,
-                permissionChecker = permissionChecker,
+                cameraPermissionChecker = cameraPermissionChecker,
             )
         )
             .eventSources(
-                permissionResultEventSource
+                cameraPermissionResultEventSource
             )
             .logger(AndroidLogger.tag("PhotoList")),
         initialState = {
@@ -93,6 +95,6 @@ fun setup(
     fragment.delegates = setOf(
         diffuserFragmentDelegate,
         controllerFragmentDelegate,
-        permissionChecker,
+        cameraPermissionChecker,
     )
 }

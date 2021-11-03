@@ -1,6 +1,5 @@
 package pixel.cando.ui.main.photo_list
 
-import android.Manifest
 import android.graphics.Bitmap
 import android.os.Parcelable
 import com.spotify.mobius.Connectable
@@ -89,7 +88,7 @@ object PhotoListLogic {
         remoteRepository: RemoteRepository,
         messageDisplayer: MessageDisplayer,
         resourceProvider: ResourceProvider,
-        permissionChecker: PermissionChecker,
+        cameraPermissionChecker: PermissionChecker,
     ): Connectable<PhotoListEffect, PhotoListEvent> =
         CoroutineScopeEffectHandler { effect, output ->
             when (effect) {
@@ -121,13 +120,12 @@ object PhotoListLogic {
                     }
                 }
                 is PhotoListEffect.CheckCameraPermission -> {
-                    val permission = Manifest.permission.CAMERA
-                    if (permissionChecker.checkPermission(permission)) {
+                    if (cameraPermissionChecker.checkPermission()) {
                         output.accept(
                             PhotoListEvent.CameraPermissionGranted
                         )
                     } else {
-                        permissionChecker.requestPermission(permission)
+                        cameraPermissionChecker.requestPermission()
                     }
                 }
                 is PhotoListEffect.ShowUnexpectedError -> {

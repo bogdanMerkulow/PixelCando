@@ -12,13 +12,9 @@ import pixel.cando.ui._base.tea.ResultEmitter
 import pixel.cando.ui._base.tea.ResultEventSource
 
 interface PermissionChecker {
-    fun checkPermission(
-        permission: String
-    ): Boolean
+    fun checkPermission(): Boolean
 
-    fun requestPermission(
-        permission: String
-    )
+    fun requestPermission()
 }
 
 sealed class PermissionCheckerResult {
@@ -27,6 +23,7 @@ sealed class PermissionCheckerResult {
 }
 
 class RealPermissionChecker(
+    private val permission: String,
     private val context: Context,
     private val resultEmitter: ResultEmitter<PermissionCheckerResult>
 ) : SimpleFragmentDelegate(),
@@ -34,15 +31,12 @@ class RealPermissionChecker(
 
     private var launcher: ActivityResultLauncher<String>? = null
 
-    override fun requestPermission(
-        permission: String
-    ) {
+    override fun requestPermission() {
         launcher?.launch(permission)
             ?: throw IllegalStateException("ActivityResultLauncher was not initialized")
     }
 
     override fun checkPermission(
-        permission: String
     ): Boolean {
         return ContextCompat.checkSelfPermission(
             context,
