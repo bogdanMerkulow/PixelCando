@@ -426,14 +426,14 @@ class CameraFragment : ViewBindingFullscreenDialogFragment<FragmentCameraBinding
         AlertDialog.Builder(requireContext())
             .setTitle(R.string.camera_rotation_check_not_available_title)
             .setMessage(R.string.camera_rotation_check_not_available_message)
-            .setPositiveButton(android.R.string.ok) { _, _ ->
+            .setPositiveButton(R.string.camera_rotation_check_not_available_open_instructions) { _, _ ->
                 val intent = Intent(
                     Intent.ACTION_VIEW,
                     Uri.parse(getString(R.string.camera_help_link))
                 )
                 startActivity(intent)
             }
-            .setNegativeButton(R.string.cancel) { _, _ -> }
+            .setNegativeButton(R.string.camera_rotation_check_not_available_skip_instructions) { _, _ -> }
             .create()
             .show()
     }
