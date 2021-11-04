@@ -92,6 +92,9 @@ class CameraFragment : ViewBindingFullscreenDialogFragment<FragmentCameraBinding
     private var imageCapture: ImageCapture? = null
     private var camera: Camera? = null
 
+    private val footerGreenColor = Color.argb(242, 0, 153, 0)
+    private val footerRedColor = Color.argb(242, 153, 0, 0)
+
     override fun onViewBindingCreated(
         viewBinding: FragmentCameraBinding,
         savedInstanceState: Bundle?
@@ -240,31 +243,37 @@ class CameraFragment : ViewBindingFullscreenDialogFragment<FragmentCameraBinding
                     rotationStateDescription.setText(R.string.camera_device_position_ok)
                     rotationStateImage.setImageResource(R.drawable.ic_rotate_ok)
                     setTakeButtonEnabled(true)
+                    footer.setBackgroundColor(footerGreenColor)
                 }
                 DeviceRotationChecker.Result.NEED_ROTATE_LEFT -> {
                     rotationStateDescription.setText(R.string.camera_rotate_device_left)
                     rotationStateImage.setImageResource(R.drawable.ic_rotate_left)
                     setTakeButtonEnabled(false)
+                    footer.setBackgroundColor(footerRedColor)
                 }
                 DeviceRotationChecker.Result.NEED_ROTATE_RIGHT -> {
                     rotationStateDescription.setText(R.string.camera_rotate_device_right)
                     rotationStateImage.setImageResource(R.drawable.ic_rotate_right)
                     setTakeButtonEnabled(false)
+                    footer.setBackgroundColor(footerRedColor)
                 }
                 DeviceRotationChecker.Result.NEED_ROTATE_SCREEN_UPWARDS -> {
                     rotationStateDescription.setText(R.string.camera_move_devices_top_away_from_you)
                     rotationStateImage.setImageResource(R.drawable.ic_rotate_from)
                     setTakeButtonEnabled(false)
+                    footer.setBackgroundColor(footerRedColor)
                 }
                 DeviceRotationChecker.Result.NEED_ROTATE_SCREEN_DOWNWARDS -> {
                     rotationStateDescription.setText(R.string.camera_move_devices_top_closer_to_you)
                     rotationStateImage.setImageResource(R.drawable.ic_rotate_to)
                     setTakeButtonEnabled(false)
+                    footer.setBackgroundColor(footerRedColor)
                 }
                 DeviceRotationChecker.Result.NOT_AVAILABLE -> {
                     rotationStateDescription.text = null
                     rotationStateImage.setImageDrawable(null)
                     setTakeButtonEnabled(true)
+                    footer.setBackgroundColor(footerGreenColor)
                 }
             }
         }
