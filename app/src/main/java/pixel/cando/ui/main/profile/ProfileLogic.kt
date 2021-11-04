@@ -88,6 +88,24 @@ object ProfileLogic {
                     )
                 )
             }
+            is ProfileEvent.CityChanged -> {
+                Next.next(
+                    model.copy(
+                        account = model.account?.copy(
+                            city = event.value
+                        )
+                    )
+                )
+            }
+            is ProfileEvent.PostalCodeChanged -> {
+                Next.next(
+                    model.copy(
+                        account = model.account?.copy(
+                            postalCode = event.value
+                        )
+                    )
+                )
+            }
             is ProfileEvent.SaveTap -> {
                 val account = model.account
                 if (account != null
@@ -237,6 +255,14 @@ sealed class ProfileEvent {
         val value: String
     ) : ProfileEvent()
 
+    data class CityChanged(
+        val value: String
+    ) : ProfileEvent()
+
+    data class PostalCodeChanged(
+        val value: String
+    ) : ProfileEvent()
+
     object SaveTap : ProfileEvent()
 
     object LogoutTap : ProfileEvent()
@@ -281,6 +307,8 @@ data class AccountDataModel(
     val contactEmail: String?,
     val address: String?,
     val country: String?,
+    val city: String?,
+    val postalCode: String?,
 ) : Parcelable
 
 data class ProfileViewModel(
@@ -297,6 +325,8 @@ data class ProfileFieldListViewModel(
     val contactEmailField: ProfileFieldViewModel,
     val addressField: ProfileFieldViewModel,
     val countryField: ProfileFieldViewModel,
+    val cityField: ProfileFieldViewModel,
+    val postalCodeField: ProfileFieldViewModel,
 )
 
 data class ProfileFieldViewModel(
@@ -336,6 +366,14 @@ fun ProfileDataModel.viewModel(
                 value = it.country,
                 error = null
             ),
+            cityField = ProfileFieldViewModel(
+                value = it.city,
+                error = null
+            ),
+            postalCodeField = ProfileFieldViewModel(
+                value = it.postalCode,
+                error = null
+            ),
         )
     },
     isLoaderVisible = isLoading,
@@ -367,6 +405,8 @@ private val Account.dataModel: AccountDataModel
         contactEmail = contactEmail,
         address = address,
         country = country,
+        city = city,
+        postalCode = postalCode,
     )
 
 private val AccountDataModel.model: Account
@@ -377,4 +417,6 @@ private val AccountDataModel.model: Account
         contactEmail = contactEmail,
         address = address,
         country = country,
+        city = city,
+        postalCode = postalCode,
     )

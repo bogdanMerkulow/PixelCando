@@ -51,6 +51,8 @@
     <string name="email">Email</string>
     <string name="address">Indirizzo</string>
     <string name="country">Paese</string>
+    <string name="city">Città</string>
+    <string name="zip">CAP</string>
 
     <string name="photo_preview_title">Inserire peso</string>
     <string name="photo_preview_subtitle">Altezza e peso devono essere definiti per un corretto esame</string>

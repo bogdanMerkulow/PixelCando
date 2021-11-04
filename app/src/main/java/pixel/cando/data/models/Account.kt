@@ -7,4 +7,6 @@ data class Account(
     val contactEmail: String?,
     val address: String?,
     val country: String?,
+    val city: String?,
+    val postalCode: String?,
 )

@@ -149,6 +149,55 @@
 
             </com.google.android.material.textfield.TextInputLayout>
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginHorizontal="@dimen/spacing_16"
+                android:layout_marginTop="@dimen/spacing_24"
+                android:orientation="horizontal"
+                >
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/cityFieldParent"
+                    style="@style/InputField"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="@string/city"
+                    >
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/cityField"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <Space
+                    android:layout_width="@dimen/spacing_24"
+                    android:layout_height="wrap_content"
+                    />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/zipFieldParent"
+                    style="@style/InputField"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:hint="@string/zip"
+                    >
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        android:id="@+id/zipField"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+            </LinearLayout>
+
             <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/countryFieldParent"
                 style="@style/InputField"
@@ -166,6 +215,7 @@
                     />
 
             </com.google.android.material.textfield.TextInputLayout>
+
 
             <Button
                 android:id="@+id/saveButton"

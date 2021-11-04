@@ -276,6 +276,8 @@ class RealRemoteRepository(
                             contactEmail = account.contactEmail,
                             address = account.address,
                             country = account.country,
+                            city = account.city,
+                            postalCode = account.postalCode,
                         )
                     )
                 )
@@ -356,4 +358,6 @@ private fun AccountUserDto.model(
     contactEmail = contactEmail,
     address = address,
     country = country,
+    city = city,
+    postalCode = postalCode,
 )

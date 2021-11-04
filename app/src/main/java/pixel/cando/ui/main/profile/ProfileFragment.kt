@@ -76,6 +76,14 @@ class ProfileFragment : ViewBindingFragment<FragmentProfileBinding>(
                             { it?.countryField },
                             fieldDiffuser(viewBinding.countryFieldParent)
                         ),
+                        map(
+                            { it?.cityField },
+                            fieldDiffuser(viewBinding.cityFieldParent)
+                        ),
+                        map(
+                            { it?.postalCodeField },
+                            fieldDiffuser(viewBinding.zipFieldParent)
+                        ),
                     )
                 )
             )
@@ -133,6 +141,16 @@ class ProfileFragment : ViewBindingFragment<FragmentProfileBinding>(
             )
         }
         viewBinding.countryField.isEnabled = false
+        viewBinding.cityField.doAfterTextChanged {
+            eventSender?.sendEvent(
+                ProfileEvent.CityChanged(it)
+            )
+        }
+        viewBinding.zipField.doAfterTextChanged {
+            eventSender?.sendEvent(
+                ProfileEvent.PostalCodeChanged(it)
+            )
+        }
 
     }
 
