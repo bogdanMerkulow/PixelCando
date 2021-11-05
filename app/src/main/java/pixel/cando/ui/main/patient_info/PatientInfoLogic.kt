@@ -109,6 +109,8 @@ object PatientInfoLogic {
                                     email = it.email,
                                     address = it.address,
                                     country = it.country,
+                                    city = it.city,
+                                    postalCode = it.postalCode,
                                 )
                             )
                         )
@@ -182,6 +184,8 @@ data class PatientDataModel(
     val email: String?,
     val address: String?,
     val country: String?,
+    val city: String?,
+    val postalCode: String?,
 ) : Parcelable
 
 enum class PatientInfoLoadingState {
@@ -288,6 +292,18 @@ fun PatientInfoDataModel.viewModel(
             PatientInfoListItem.InfoPortion(
                 title = resourceProvider.getString(R.string.country),
                 value = it.country.orEmpty(),
+                isFirst = false,
+                isLast = false,
+            ),
+            PatientInfoListItem.InfoPortion(
+                title = resourceProvider.getString(R.string.city),
+                value = it.city.orEmpty(),
+                isFirst = false,
+                isLast = false,
+            ),
+            PatientInfoListItem.InfoPortion(
+                title = resourceProvider.getString(R.string.zip),
+                value = it.postalCode.orEmpty(),
                 isFirst = false,
                 isLast = true,
             ),

@@ -46,6 +46,8 @@ data class PatientUserDto(
     @Json(name = "contactPhone") val contactPhone: String?,
     @Json(name = "address") val address: String?,
     @Json(name = "country") val country: String?,
+    @Json(name = "city") val city: String?,
+    @Json(name = "postalCode") val postalCode: String?,
     @Json(name = "avatar") val avatar: PatientUserAvatarDto,
 )
 

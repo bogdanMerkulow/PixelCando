@@ -130,6 +130,8 @@ class RealRemoteRepository(
                 email = it.patient.user.contactEmail,
                 address = it.patient.user.address,
                 country = it.patient.user.country,
+                city = it.patient.user.city,
+                postalCode = it.patient.user.postalCode,
             )
         }
     }

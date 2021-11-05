@@ -23,4 +23,6 @@ data class PatientSingleItemInfo(
     val email: String?,
     val address: String?,
     val country: String?,
+    val city: String?,
+    val postalCode: String?,
 )
