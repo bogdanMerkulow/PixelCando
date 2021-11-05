@@ -8,8 +8,15 @@
     <string name="sign_in_access_account_hint">Login to access your Account</string>
     <string name="sing_in_password_hint">Password must contain at least 6 characters</string>
     <string name="sing_in_btn_title">Login</string>
+    <string name="sing_in_btn_recover_password">Forgot password?</string>
     <string name="sing_in_take_photo_success_title">Photo saved in camera roll</string>
     <string name="sing_in_take_photo_success_message">You can open it and share in the way you need.</string>
+
+    <string name="password_recovery_title">Restore password</string>
+    <string name="password_recovery_hint">Please enter your email and we will send instructions to restore your password</string>
+    <string name="password_recovery_email_placeholder">Email Address</string>
+    <string name="password_recovery_btn_title">Restore</string>
+    <string name="password_recovery_success_message">Instructions have been sent. Please check your inbox and follow instructions</string>
 
     <string name="tab_title_chat">Chat</string>
     <string name="tab_title_chats">Chats</string>

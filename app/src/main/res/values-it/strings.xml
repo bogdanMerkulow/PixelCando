@@ -8,8 +8,15 @@
     <string name="sign_in_access_account_hint">Accesso all\'account</string>
     <string name="sing_in_password_hint">La password deve contenere almeno 6 caratteri</string>
     <string name="sing_in_btn_title">Login</string>
+    <string name="sing_in_btn_recover_password">Password dimenticata?</string>
     <string name="sing_in_take_photo_success_title">Foto salvata nel rullino fotografico del device</string>
     <string name="sing_in_take_photo_success_message">Puoi visualizzare la foto, inviarla e condividerla.</string>
+
+    <string name="password_recovery_title">Password dimenticata</string>
+    <string name="password_recovery_hint">Per favore inserisci la tua email per ricevere le istruzioni per il recupero della password</string>
+    <string name="password_recovery_email_placeholder">Indirizzo email</string>
+    <string name="password_recovery_btn_title">Recupera</string>
+    <string name="password_recovery_success_message">TI abbiamo inviato le istruzioni. Per favore verifica nella tua casella di posta. Grazie</string>
 
     <string name="tab_title_chat">Chat</string>
     <string name="tab_title_chats">Chats</string>

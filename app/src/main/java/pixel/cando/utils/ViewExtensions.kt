@@ -1,12 +1,15 @@
 package pixel.cando.utils
 
+import android.app.Activity
 import android.content.Context
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.TypedValue
 import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewbinding.ViewBinding
 import pixel.cando.R
@@ -166,5 +169,16 @@ fun View.setListRoundedBg(
             context,
             R.drawable.bg_rounded_list_indeterminate_item
         )
+    }
+}
+
+fun Fragment.hideKeyboard() {
+    (context?.getSystemService(Activity.INPUT_METHOD_SERVICE) as? InputMethodManager)?.let { inputMethodService ->
+        view?.findFocus()?.let { view ->
+            inputMethodService.hideSoftInputFromWindow(
+                view.windowToken,
+                0
+            )
+        }
     }
 }

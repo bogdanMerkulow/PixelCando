@@ -19,6 +19,7 @@ import pixel.cando.utils.diffuser.ViewDiffusers.intoEnabled
 import pixel.cando.utils.diffuser.ViewDiffusers.intoVisibleOrGone
 import pixel.cando.utils.diffuser.map
 import pixel.cando.utils.doAfterTextChanged
+import pixel.cando.utils.hideKeyboard
 
 class SignInFragment : ViewBindingFragment<FragmentSignInBinding>(
     FragmentSignInBinding::inflate
@@ -79,10 +80,14 @@ class SignInFragment : ViewBindingFragment<FragmentSignInBinding>(
             )
         }
         viewBinding.signInButton.setOnClickListener {
+            hideKeyboard()
             eventSender?.sendEvent(SignInEvent.TapSignIn)
         }
         viewBinding.takePhotoButton.setOnClickListener {
             eventSender?.sendEvent(SignInEvent.TapTakePhoto)
+        }
+        viewBinding.recoverPassword.setOnClickListener {
+            eventSender?.sendEvent(SignInEvent.TapRecoverPassword)
         }
     }
 

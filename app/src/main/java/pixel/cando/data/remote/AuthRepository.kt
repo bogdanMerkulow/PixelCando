@@ -1,13 +1,13 @@
 package pixel.cando.data.remote
 
 import com.squareup.moshi.Moshi
+import pixel.cando.data.models.PasswordRecoveryFailure
 import pixel.cando.data.models.SignInFailure
 import pixel.cando.data.models.SignInSuccess
 import pixel.cando.data.models.UserRole
 import pixel.cando.data.remote.dto.PasswordRecoveryRequest
 import pixel.cando.data.remote.dto.SignInRequest
 import pixel.cando.utils.Either
-import retrofit2.Response
 
 interface AuthRepository {
 
@@ -18,7 +18,7 @@ interface AuthRepository {
 
     suspend fun recoverPassword(
         email: String
-    ): Either<Unit, Throwable>
+    ): Either<Unit, PasswordRecoveryFailure>
 
 }
 
@@ -71,32 +71,30 @@ class RealAuthRepository(
 
     override suspend fun recoverPassword(
         email: String
-    ): Either<Unit, Throwable> {
-        return callApi {
-            authApi.recoverPassword(
+    ): Either<Unit, PasswordRecoveryFailure> {
+        return try {
+            val response = authApi.recoverPassword(
                 PasswordRecoveryRequest(
                     email = email
                 )
             )
-        }
-    }
-
-    private suspend fun <R> callApi(
-        action: suspend () -> Response<R>
-    ): Either<R, Throwable> {
-        return try {
-            val response = action.invoke()
             if (response.isSuccessful) {
-                Either.Left(response.body()!!)
+                Either.Left(
+                    response.body()!!
+                )
             } else {
                 Either.Right(
-                    IllegalStateException(
-                        "Unsuccessful response received"
+                    response.errorMessage(moshi)?.let {
+                        PasswordRecoveryFailure.CustomMessage(it)
+                    } ?: PasswordRecoveryFailure.UnknownError(
+                        IllegalStateException("Can not handle")
                     )
                 )
             }
         } catch (ex: Throwable) {
-            Either.Right(ex)
+            Either.Right(
+                PasswordRecoveryFailure.UnknownError(ex)
+            )
         }
     }
 

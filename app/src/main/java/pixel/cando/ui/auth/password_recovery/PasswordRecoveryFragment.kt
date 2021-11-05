@@ -6,11 +6,16 @@ import pixel.cando.ui._base.fragment.ViewBindingFragment
 import pixel.cando.ui._base.tea.EventSender
 import pixel.cando.ui._base.tea.EventSenderNeeder
 import pixel.cando.ui._base.tea.ViewModelRender
-import pixel.cando.utils.diffuser.*
+import pixel.cando.utils.diffuser.Diffuser
 import pixel.cando.utils.diffuser.Diffuser.intoOnce
+import pixel.cando.utils.diffuser.DiffuserCreator
+import pixel.cando.utils.diffuser.DiffuserProvider
+import pixel.cando.utils.diffuser.DiffuserProviderNeeder
 import pixel.cando.utils.diffuser.ViewDiffusers.intoEnabled
 import pixel.cando.utils.diffuser.ViewDiffusers.intoVisibleOrGone
+import pixel.cando.utils.diffuser.map
 import pixel.cando.utils.doAfterTextChanged
+import pixel.cando.utils.hideKeyboard
 
 class PasswordRecoveryFragment : ViewBindingFragment<FragmentPasswordRecoveryBinding>(
     FragmentPasswordRecoveryBinding::inflate
@@ -35,7 +40,7 @@ class PasswordRecoveryFragment : ViewBindingFragment<FragmentPasswordRecoveryBin
             ),
             map(
                 { it.isRecoveryButtonEnabled },
-                intoEnabled(viewBinding.sendEmailButton)
+                intoEnabled(viewBinding.recoverPasswordButton)
             ),
             map(
                 { it.isLoaderVisible },
@@ -59,7 +64,8 @@ class PasswordRecoveryFragment : ViewBindingFragment<FragmentPasswordRecoveryBin
                 PasswordRecoveryEvent.EmailChanged(it)
             )
         }
-        viewBinding.sendEmailButton.setOnClickListener {
+        viewBinding.recoverPasswordButton.setOnClickListener {
+            hideKeyboard()
             eventSender?.sendEvent(
                 PasswordRecoveryEvent.TapRecover
             )

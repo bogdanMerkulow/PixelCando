@@ -6,11 +6,13 @@ import com.spotify.mobius.First
 import com.spotify.mobius.Next
 import kotlinx.parcelize.Parcelize
 import pixel.cando.R
+import pixel.cando.data.models.PasswordRecoveryFailure
 import pixel.cando.data.remote.AuthRepository
 import pixel.cando.ui._base.fragment.FlowRouter
 import pixel.cando.ui._base.tea.CoroutineScopeEffectHandler
 import pixel.cando.utils.MessageDisplayer
 import pixel.cando.utils.ResourceProvider
+import pixel.cando.utils.logError
 import pixel.cando.utils.onLeft
 import pixel.cando.utils.onRight
 
@@ -62,6 +64,7 @@ object PasswordRecoveryLogic {
                         isLoading = false
                     ),
                     setOf(
+                        PasswordRecoveryEffect.ShowSuccessMessage,
                         PasswordRecoveryEffect.Exit
                     )
                 )
@@ -72,7 +75,9 @@ object PasswordRecoveryLogic {
                         isLoading = false
                     ),
                     setOf(
-                        PasswordRecoveryEffect.ShowError
+                        event.message?.let {
+                            PasswordRecoveryEffect.ShowMessage(it)
+                        } ?: PasswordRecoveryEffect.ShowUnexpectedError
                     )
                 )
             }
@@ -97,12 +102,34 @@ object PasswordRecoveryLogic {
                         )
                     }
                     result.onRight {
-                        output.accept(
-                            PasswordRecoveryEvent.SendPasswordRecoveryEmailFailure
-                        )
+                        when (it) {
+                            is PasswordRecoveryFailure.CustomMessage -> {
+                                output.accept(
+                                    PasswordRecoveryEvent.SendPasswordRecoveryEmailFailure(
+                                        it.message
+                                    )
+                                )
+                            }
+                            is PasswordRecoveryFailure.UnknownError -> {
+                                logError(it.throwable)
+                                output.accept(
+                                    PasswordRecoveryEvent.SendPasswordRecoveryEmailFailure(null)
+                                )
+                            }
+                        }
                     }
                 }
-                is PasswordRecoveryEffect.ShowError -> {
+                is PasswordRecoveryEffect.ShowMessage -> {
+                    messageDisplayer.showMessage(
+                        effect.message
+                    )
+                }
+                is PasswordRecoveryEffect.ShowSuccessMessage -> {
+                    messageDisplayer.showMessage(
+                        resourceProvider.getString(R.string.password_recovery_success_message)
+                    )
+                }
+                is PasswordRecoveryEffect.ShowUnexpectedError -> {
                     messageDisplayer.showMessage(
                         resourceProvider.getString(R.string.something_went_wrong)
                     )
@@ -133,7 +160,9 @@ sealed class PasswordRecoveryEvent {
 
     // model
     object SendPasswordRecoveryEmailSuccess : PasswordRecoveryEvent()
-    object SendPasswordRecoveryEmailFailure : PasswordRecoveryEvent()
+    data class SendPasswordRecoveryEmailFailure(
+        val message: String?
+    ) : PasswordRecoveryEvent()
 }
 
 sealed class PasswordRecoveryEffect {
@@ -141,7 +170,13 @@ sealed class PasswordRecoveryEffect {
         val email: String
     ) : PasswordRecoveryEffect()
 
-    object ShowError : PasswordRecoveryEffect()
+    object ShowUnexpectedError : PasswordRecoveryEffect()
+
+    object ShowSuccessMessage : PasswordRecoveryEffect()
+
+    data class ShowMessage(
+        val message: String
+    ) : PasswordRecoveryEffect()
 
     object Exit : PasswordRecoveryEffect()
 }
