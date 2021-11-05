@@ -34,6 +34,8 @@ import pixel.cando.utils.onRight
 import java.time.LocalDateTime
 import java.util.concurrent.atomic.AtomicReference
 
+private const val ALL_FOLDER_ID = -1L
+
 object PatientListLogic {
 
     fun init(
@@ -48,7 +50,7 @@ object PatientListLogic {
                 First.first(
                     next.modelUnsafe(),
                     next.effects()
-                            + setOf(PatientListEffect.LoadFolders)
+                        .plus(PatientListEffect.LoadFolders)
                 )
             }
             model.listState.isLoading -> {
@@ -140,7 +142,7 @@ object PatientListLogic {
         modelUpdater = { copy(listState = it) },
         loadPageEffectMapper = {
             PatientListEffect.LoadPage(
-                folderId = currentFolderId,
+                folderId = currentFolderId.takeIf { it != ALL_FOLDER_ID },
                 page = it.page,
             )
         },
@@ -207,7 +209,7 @@ object PatientListLogic {
 
     fun initialModel(
     ) = PatientListDataModel(
-        currentFolderId = null,
+        currentFolderId = ALL_FOLDER_ID,
         folders = emptyList(),
         listState = ParcelableListState.NotInitialized()
     )
@@ -223,7 +225,7 @@ sealed class PatientListEvent {
     ) : PatientListEvent()
 
     data class PickFolder(
-        val folderId: Long?,
+        val folderId: Long,
     ) : PatientListEvent()
 
     // model
@@ -276,13 +278,14 @@ data class FolderDataModel(
 
 @Parcelize
 data class PatientListDataModel(
-    val currentFolderId: Long?,
+    val currentFolderId: Long,
     val folders: List<FolderDataModel>,
     val listState: ParcelableListState<PatientDataModel>
 ) : Parcelable
 
 data class PatientListViewModel(
     val folders: List<FolderViewModel>,
+    val pickedFolderIndex: Int,
     val listState: ListState<PatientViewModel>
 )
 
@@ -332,18 +335,27 @@ private val FolderDataModel.viewModel: FolderViewModel
 
 fun PatientListDataModel.viewModel(
     resourceProvider: ResourceProvider
-) = PatientListViewModel(
-    folders = folders.map {
-        it.viewModel
-    },
-    listState = listState.plainState.map { patient, _, _ ->
-        val timeAgoFormatter = TimeAgoFormatter(resourceProvider)
-        patient.viewModel(
-            resourceProvider = resourceProvider,
-            timeAgoFormatter = timeAgoFormatter,
+): PatientListViewModel {
+    val foldersToShow = listOf(
+        FolderViewModel(
+            id = ALL_FOLDER_ID,
+            title = resourceProvider.getString(R.string.all)
         )
+    ) + folders.map {
+        it.viewModel
     }
-)
+    return PatientListViewModel(
+        folders = foldersToShow,
+        pickedFolderIndex = foldersToShow.indexOfFirst { it.id == currentFolderId },
+        listState = listState.plainState.map { patient, _, _ ->
+            val timeAgoFormatter = TimeAgoFormatter(resourceProvider)
+            patient.viewModel(
+                resourceProvider = resourceProvider,
+                timeAgoFormatter = timeAgoFormatter,
+            )
+        }
+    )
+}
 
 private val PatientListItemInfo.dataModel: PatientDataModel
     get() = PatientDataModel(
