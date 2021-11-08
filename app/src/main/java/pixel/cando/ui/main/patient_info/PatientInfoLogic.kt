@@ -242,7 +242,7 @@ fun PatientInfoDataModel.viewModel(
                 isLast = false,
             ),
             PatientInfoListItem.InfoPortion(
-                title = resourceProvider.getString(R.string.age),
+                title = resourceProvider.getString(R.string.gender),
                 value = resourceProvider.getString(
                     when (it.gender) {
                         Gender.MALE -> R.string.male
