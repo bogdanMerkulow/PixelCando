@@ -620,7 +620,7 @@ fun PatientDetailsDataModel.viewModel(
     isTakePhotoButtonEnabled = isLoading.not(),
     listState = listState.plainState.map { exam, index, list ->
         val dateTimeFormatter = DateTimeFormatter
-            .ofPattern("dd MMM, HH:mm")
+            .ofPattern("dd MMM yyyy, HH:mm")
             .withLocale(resourceProvider.getCurrentLocale())
         exam.viewModel(
             resourceProvider = resourceProvider,
