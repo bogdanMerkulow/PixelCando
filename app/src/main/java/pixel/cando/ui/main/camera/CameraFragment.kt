@@ -174,6 +174,10 @@ class CameraFragment : ViewBindingFullscreenDialogFragment<FragmentCameraBinding
             }
         }
 
+        viewBinding.helper.setOnClickListener {
+            openHelpLink()
+        }
+
         viewBinding.cancel.setOnClickListener {
             dismiss()
             findImplementation<Callback>()?.onCameraCancel()
@@ -427,15 +431,19 @@ class CameraFragment : ViewBindingFullscreenDialogFragment<FragmentCameraBinding
             .setTitle(R.string.camera_rotation_check_not_available_title)
             .setMessage(R.string.camera_rotation_check_not_available_message)
             .setPositiveButton(R.string.camera_rotation_check_not_available_open_instructions) { _, _ ->
-                val intent = Intent(
-                    Intent.ACTION_VIEW,
-                    Uri.parse(getString(R.string.camera_help_link))
-                )
-                startActivity(intent)
+                openHelpLink()
             }
             .setNegativeButton(R.string.camera_rotation_check_not_available_skip_instructions) { _, _ -> }
             .create()
             .show()
+    }
+
+    private fun openHelpLink() {
+        val intent = Intent(
+            Intent.ACTION_VIEW,
+            Uri.parse(getString(R.string.camera_help_link))
+        )
+        startActivity(intent)
     }
 
     interface Callback {
