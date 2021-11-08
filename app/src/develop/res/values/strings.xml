@@ -1,4 +1,4 @@
 <resources>
-    <string name="app_name">(D) FitYourOutfit</string>
-    <string name="base_url">https://pixelcando.voodoo.work/backend/</string>
+    <string name="app_name" translatable="false">(D) FitYourOutfit</string>
+    <string name="base_url" translatable="false">https://pixelcando.voodoo.work/backend/</string>
 </resources>

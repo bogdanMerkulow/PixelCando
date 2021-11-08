@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">FitYourOutfit</string>
+    <string name="app_name" translatable="false">FitYourOutfit</string>
+    <string name="base_url" translatable="false">https://fityouroutfit.com/backend/</string>
 </resources>
