@@ -31,6 +31,7 @@ import pixel.cando.utils.diffuser.DiffuserCreator
 import pixel.cando.utils.diffuser.DiffuserProvider
 import pixel.cando.utils.diffuser.DiffuserProviderNeeder
 import pixel.cando.utils.diffuser.ViewDiffusers.intoEnabled
+import pixel.cando.utils.diffuser.ViewDiffusers.intoText
 import pixel.cando.utils.diffuser.ViewDiffusers.intoVisibleOrGone
 import pixel.cando.utils.diffuser.intoListDifferAdapter
 import pixel.cando.utils.diffuser.intoSwipeRefresh
@@ -113,6 +114,16 @@ class PatientDetailsFragment : ViewBindingFragment<FragmentPatientDetailsBinding
                 },
                 intoListDifferAdapter(adapter)
             ),
+            map(
+                { it.photoToReview != null },
+                intoVisibleOrGone(
+                    viewBinding.reviewPhotoGroup
+                )
+            ),
+            map(
+                { it.photoToReview?.date },
+                intoText(viewBinding.reviewPhotoDate)
+            )
         )
     }
 

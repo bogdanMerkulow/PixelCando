@@ -90,6 +90,9 @@
     <string name="cm">cm</string>
     <string name="percent" formatted="false">%</string>
 
+    <string name="patient_photo_review_ask_text">Per favore, verificare la foto per accettarla o rifiutarla</string>
+    <string name="patient_photo_review_start_btn_title">Verifica</string>
+
     <string name="profile_title">Profilo</string>
     <string name="profile_btn_logout">Esci</string>
     <string name="profile_section_account_info">Dettaglio account</string>

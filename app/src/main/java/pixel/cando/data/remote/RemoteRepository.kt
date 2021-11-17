@@ -7,6 +7,7 @@ import pixel.cando.data.models.ExamSingleItemInfo
 import pixel.cando.data.models.Folder
 import pixel.cando.data.models.Gender
 import pixel.cando.data.models.PatientListItemInfo
+import pixel.cando.data.models.PatientPhotoToReview
 import pixel.cando.data.models.PatientSingleItemInfo
 import pixel.cando.data.models.UploadPhotoFailure
 import pixel.cando.data.remote.dto.AccountDto
@@ -132,6 +133,13 @@ class RealRemoteRepository(
                 country = it.patient.user.country,
                 city = it.patient.user.city,
                 postalCode = it.patient.user.postalCode,
+                photoToReview = it.patient.photo?.let {
+                    PatientPhotoToReview(
+                        id = it.id,
+                        createdAt = it.createdAt,
+                        url = it.file.original
+                    )
+                }
             )
         }
     }

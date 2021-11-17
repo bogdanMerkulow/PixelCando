@@ -32,6 +32,7 @@ import pixel.cando.utils.ImagePicker
 import pixel.cando.utils.MessageDisplayer
 import pixel.cando.utils.PermissionChecker
 import pixel.cando.utils.ResourceProvider
+import pixel.cando.utils.TimeAgoFormatter
 import pixel.cando.utils.base64ForSending
 import pixel.cando.utils.logError
 import pixel.cando.utils.onLeft
@@ -157,9 +158,7 @@ object PatientDetailsLogic {
             is PatientDetailsEvent.LoadPatientInfoSuccess -> {
                 Next.next(
                     model.copy(
-                        patientFullName = event.patientFullName,
-                        patientWeight = event.patientWeight,
-                        patientHeight = event.patientHeight,
+                        patientData = event.patientData,
                     )
                 )
             }
@@ -211,34 +210,28 @@ object PatientDetailsLogic {
                 )
             }
             is PatientDetailsEvent.PhotoTaken -> {
-                val weight = model.patientWeight
-                val height = model.patientHeight
-                if (weight != null
-                    && height != null
-                ) {
+                val patientData = model.patientData
+                if (patientData != null) {
                     Next.dispatch(
                         setOf(
                             PatientDetailsEffect.AskToConfirmPhoto(
                                 uri = event.uri,
-                                weight = weight,
-                                height = height,
+                                weight = patientData.weight,
+                                height = patientData.height,
                             )
                         )
                     )
                 } else Next.noChange()
             }
             is PatientDetailsEvent.ImagePicked -> {
-                val weight = model.patientWeight
-                val height = model.patientHeight
-                if (weight != null
-                    && height != null
-                ) {
+                val patientData = model.patientData
+                if (patientData != null) {
                     Next.dispatch(
                         setOf(
                             PatientDetailsEffect.AskToConfirmPhoto(
                                 uri = event.uri,
-                                weight = weight,
-                                height = height,
+                                weight = patientData.weight,
+                                height = patientData.height,
                             )
                         )
                     )
@@ -303,9 +296,19 @@ object PatientDetailsLogic {
                     result.onLeft {
                         output.accept(
                             PatientDetailsEvent.LoadPatientInfoSuccess(
-                                patientFullName = it.fullName,
-                                patientWeight = it.weight,
-                                patientHeight = it.height,
+                                PatientLoadableDataModel(
+                                    fullName = it.fullName,
+                                    weight = it.weight,
+                                    height = it.height,
+                                    photoToReview = it.photoToReview?.let {
+                                        PatientPhotoToReviewDataModel(
+                                            id = it.id,
+                                            createdAt = it.createdAt,
+                                            url = it.url,
+                                        )
+                                    }
+                                )
+
                             )
                         )
                     }
@@ -448,10 +451,8 @@ object PatientDetailsLogic {
         patientId: Long,
     ) = PatientDetailsDataModel(
         patientId = patientId,
-        patientFullName = null,
-        patientWeight = null,
-        patientHeight = null,
         isLoading = false,
+        patientData = null,
         listState = ParcelableListState.NotInitialized(),
     )
 
@@ -493,9 +494,7 @@ sealed class PatientDetailsEvent {
     object StopExamListLoading : PatientDetailsEvent()
 
     data class LoadPatientInfoSuccess(
-        val patientFullName: String,
-        val patientWeight: Float,
-        val patientHeight: Float,
+        val patientData: PatientLoadableDataModel
     ) : PatientDetailsEvent()
 
     object PhotoUploadSuccess : PatientDetailsEvent()
@@ -572,10 +571,8 @@ sealed class PatientDetailsEffect {
 @Parcelize
 data class PatientDetailsDataModel(
     val patientId: Long,
-    val patientFullName: String?,
-    val patientWeight: Float?,
-    val patientHeight: Float?,
     val isLoading: Boolean,
+    val patientData: PatientLoadableDataModel?,
     val listState: ParcelableListState<ExamDataModel>,
 ) : Parcelable
 
@@ -591,11 +588,27 @@ data class ExamDataModel(
     val abdominalFatMass: Float,
 ) : Parcelable
 
+@Parcelize
+data class PatientLoadableDataModel(
+    val fullName: String,
+    val weight: Float,
+    val height: Float,
+    val photoToReview: PatientPhotoToReviewDataModel?
+) : Parcelable
+
+@Parcelize
+data class PatientPhotoToReviewDataModel(
+    val id: Long,
+    val createdAt: LocalDateTime,
+    val url: String,
+) : Parcelable
+
 data class PatientDetailsViewModel(
     val title: String?,
     val isLoaderVisible: Boolean,
     val isTakePhotoButtonEnabled: Boolean,
     val listState: ListState<ExamViewModel>,
+    val photoToReview: PatientPhotoToReviewViewModel?,
 )
 
 data class ExamViewModel(
@@ -612,10 +625,14 @@ data class ExamViewModel(
     val isLast: Boolean,
 )
 
+data class PatientPhotoToReviewViewModel(
+    val date: String,
+)
+
 fun PatientDetailsDataModel.viewModel(
     resourceProvider: ResourceProvider,
 ) = PatientDetailsViewModel(
-    title = patientFullName,
+    title = patientData?.fullName,
     isLoaderVisible = isLoading,
     isTakePhotoButtonEnabled = isLoading.not(),
     listState = listState.plainState.map { exam, index, list ->
@@ -627,6 +644,11 @@ fun PatientDetailsDataModel.viewModel(
             dateTimeFormatter = dateTimeFormatter,
             isFirst = index == 0,
             isLast = index == list.size - 1
+        )
+    },
+    photoToReview = patientData?.photoToReview?.let {
+        PatientPhotoToReviewViewModel(
+            date = TimeAgoFormatter(resourceProvider).format(it.createdAt)
         )
     }
 )
