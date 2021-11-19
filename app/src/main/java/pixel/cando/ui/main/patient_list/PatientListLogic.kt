@@ -57,7 +57,7 @@ object PatientListLogic {
                 listUpdater.update(
                     model,
                     PatientListEvent.StopListLoading
-                ).toFirst
+                ).toFirst(model)
             }
             else -> {
                 First.first(

@@ -27,6 +27,7 @@ import pixel.cando.ui._base.list.listStateUpdater
 import pixel.cando.ui._base.list.map
 import pixel.cando.ui._base.list.plainState
 import pixel.cando.ui._base.tea.CoroutineScopeEffectHandler
+import pixel.cando.ui._base.tea.mapEffects
 import pixel.cando.ui._base.tea.toFirst
 import pixel.cando.ui.main.patient_photo_review.PatientPhotoReviewArguments
 import pixel.cando.utils.ImagePicker
@@ -67,7 +68,7 @@ object PatientDetailsLogic {
                 listUpdater.update(
                     model,
                     PatientDetailsEvent.StopExamListLoading
-                ).toFirst
+                ).toFirst(model)
             }
             else -> {
                 First.first(
@@ -91,7 +92,15 @@ object PatientDetailsLogic {
                 listUpdater.update(
                     model,
                     event
-                )
+                ).mapEffects {
+                    if (event is PatientDetailsEvent.RefreshRequest)
+                        it.plus(
+                            PatientDetailsEffect.LoadPatientInfo(
+                                patientId = model.patientId,
+                            )
+                        )
+                    else it
+                }
             }
             is PatientDetailsEvent.CreateExamTap -> {
                 Next.dispatch(
@@ -157,7 +166,9 @@ object PatientDetailsLogic {
             }
             is PatientDetailsEvent.ReviewPatientTap -> {
                 val patientData = model.patientData
-                if (patientData?.photoToReview != null) {
+                if (model.isLoading.not()
+                    && patientData?.photoToReview != null
+                ) {
                     Next.dispatch(
                         setOf(
                             PatientDetailsEffect.NavigateToPatientPhotoReview(
@@ -168,11 +179,41 @@ object PatientDetailsLogic {
                     )
                 } else Next.noChange()
             }
+            is PatientDetailsEvent.PhotoConfirmed -> {
+                val photoId = model.patientData?.photoToReview?.id
+                if (photoId != null) {
+                    Next.next(
+                        model.copy(
+                            isLoading = true,
+                        ),
+                        setOf(
+                            PatientDetailsEffect.ConfirmPhoto(photoId)
+                        )
+                    )
+                } else Next.noChange()
+            }
+            is PatientDetailsEvent.PhotoRejected -> {
+                val photoId = model.patientData?.photoToReview?.id
+                if (photoId != null) {
+                    Next.next(
+                        model.copy(
+                            isLoading = true,
+                        ),
+                        setOf(
+                            PatientDetailsEffect.RejectPhoto(
+                                id = photoId,
+                                reason = event.reason,
+                            )
+                        )
+                    )
+                } else Next.noChange()
+            }
             // model
             is PatientDetailsEvent.LoadPatientInfoSuccess -> {
                 Next.next(
                     model.copy(
                         patientData = event.patientData,
+                        isLoading = false,
                     )
                 )
             }
@@ -250,6 +291,56 @@ object PatientDetailsLogic {
                         )
                     )
                 } else Next.noChange()
+            }
+            is PatientDetailsEvent.ConfirmPhotoSuccess -> {
+                Next.next(
+                    model.copy(
+                        isLoading = false,
+                        patientData = model.patientData?.copy(
+                            photoToReview = null
+                        )
+                    ),
+                    setOf(
+                        PatientDetailsEffect.LoadPatientInfo(
+                            model.patientId
+                        )
+                    )
+                )
+            }
+            is PatientDetailsEvent.ConfirmPhotoFailure -> {
+                Next.next(
+                    model.copy(
+                        isLoading = false,
+                    ),
+                    setOf(
+                        PatientDetailsEffect.ShowUnexpectedError
+                    )
+                )
+            }
+            is PatientDetailsEvent.RejectPhotoSuccess -> {
+                Next.next(
+                    model.copy(
+                        isLoading = false,
+                        patientData = model.patientData?.copy(
+                            photoToReview = null
+                        )
+                    ),
+                    setOf(
+                        PatientDetailsEffect.LoadPatientInfo(
+                            model.patientId
+                        )
+                    )
+                )
+            }
+            is PatientDetailsEvent.RejectPhotoFailure -> {
+                Next.next(
+                    model.copy(
+                        isLoading = false,
+                    ),
+                    setOf(
+                        PatientDetailsEffect.ShowUnexpectedError
+                    )
+                )
             }
         }
     }
@@ -400,6 +491,37 @@ object PatientDetailsLogic {
                         )
                     }
                 }
+                is PatientDetailsEffect.ConfirmPhoto -> {
+                    val result = remoteRepository.confirmPhoto(effect.id)
+                    result.onLeft {
+                        output.accept(
+                            PatientDetailsEvent.ConfirmPhotoSuccess
+                        )
+                    }
+                    result.onRight {
+                        logError(it)
+                        output.accept(
+                            PatientDetailsEvent.ConfirmPhotoSuccess
+                        )
+                    }
+                }
+                is PatientDetailsEffect.RejectPhoto -> {
+                    val result = remoteRepository.rejectPhoto(
+                        id = effect.id,
+                        reason = effect.reason,
+                    )
+                    result.onLeft {
+                        output.accept(
+                            PatientDetailsEvent.RejectPhotoSuccess
+                        )
+                    }
+                    result.onRight {
+                        logError(it)
+                        output.accept(
+                            PatientDetailsEvent.RejectPhotoFailure
+                        )
+                    }
+                }
                 is PatientDetailsEffect.CheckCameraPermission -> {
                     if (cameraPermissionChecker.checkPermission()) {
                         output.accept(
@@ -506,6 +628,12 @@ sealed class PatientDetailsEvent {
 
     object ExitTap : PatientDetailsEvent()
 
+    object PhotoConfirmed : PatientDetailsEvent()
+
+    data class PhotoRejected(
+        val reason: String,
+    ) : PatientDetailsEvent()
+
     // model
 
     class ExamListLoadSuccess(
@@ -540,6 +668,14 @@ sealed class PatientDetailsEvent {
     data class ImagePicked(
         val uri: Uri
     ) : PatientDetailsEvent()
+
+    object ConfirmPhotoSuccess : PatientDetailsEvent()
+    object ConfirmPhotoFailure : PatientDetailsEvent()
+
+    object RejectPhotoSuccess : PatientDetailsEvent()
+    object RejectPhotoFailure : PatientDetailsEvent()
+
+
 }
 
 sealed class PatientDetailsEffect {
@@ -582,6 +718,15 @@ sealed class PatientDetailsEffect {
     data class NavigateToPatientPhotoReview(
         val patientFullName: String,
         val photoUrl: String
+    ) : PatientDetailsEffect()
+
+    data class ConfirmPhoto(
+        val id: Long,
+    ) : PatientDetailsEffect()
+
+    data class RejectPhoto(
+        val id: Long,
+        val reason: String,
     ) : PatientDetailsEffect()
 
     object ShowUnexpectedError : PatientDetailsEffect()

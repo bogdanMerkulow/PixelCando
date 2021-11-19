@@ -12,6 +12,7 @@ import pixel.cando.data.models.PatientSingleItemInfo
 import pixel.cando.data.models.UploadPhotoFailure
 import pixel.cando.data.remote.dto.AccountDto
 import pixel.cando.data.remote.dto.AccountUserDto
+import pixel.cando.data.remote.dto.ConfirmPhotoRequest
 import pixel.cando.data.remote.dto.DeviceRegisterDto
 import pixel.cando.data.remote.dto.DeviceRegisterRequest
 import pixel.cando.data.remote.dto.EmptyRequest
@@ -21,6 +22,7 @@ import pixel.cando.data.remote.dto.GetExamRequest
 import pixel.cando.data.remote.dto.PatientGetRequest
 import pixel.cando.data.remote.dto.PatientListFilterDto
 import pixel.cando.data.remote.dto.PatientListRequest
+import pixel.cando.data.remote.dto.RejectPhotoRequest
 import pixel.cando.data.remote.dto.UpdateAccountRequest
 import pixel.cando.data.remote.dto.UploadPhotoForPatientRequest
 import pixel.cando.data.remote.dto.UploadPhotoForPatientWeightHeightDto
@@ -68,6 +70,15 @@ interface RemoteRepository {
 
     suspend fun subscribeForPushNotifications(
         identifier: String
+    ): Either<Unit, Throwable>
+
+    suspend fun confirmPhoto(
+        id: Long,
+    ): Either<Unit, Throwable>
+
+    suspend fun rejectPhoto(
+        id: Long,
+        reason: String,
     ): Either<Unit, Throwable>
 
 }
@@ -307,6 +318,32 @@ class RealRemoteRepository(
                         platform = "android",
                         identifier = identifier,
                     )
+                )
+            )
+        }
+    }
+
+    override suspend fun confirmPhoto(
+        id: Long
+    ): Either<Unit, Throwable> {
+        return callApi {
+            confirmPhoto(
+                ConfirmPhotoRequest(
+                    id = id,
+                )
+            )
+        }
+    }
+
+    override suspend fun rejectPhoto(
+        id: Long,
+        reason: String
+    ): Either<Unit, Throwable> {
+        return callApi {
+            rejectPhoto(
+                RejectPhotoRequest(
+                    id = id,
+                    reason = reason,
                 )
             )
         }

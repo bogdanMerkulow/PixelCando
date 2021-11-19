@@ -1,5 +1,6 @@
 package pixel.cando.data.remote
 
+import pixel.cando.data.remote.dto.ConfirmPhotoRequest
 import pixel.cando.data.remote.dto.DeviceRegisterRequest
 import pixel.cando.data.remote.dto.EmptyRequest
 import pixel.cando.data.remote.dto.ExamListRequest
@@ -13,6 +14,7 @@ import pixel.cando.data.remote.dto.PatientGetRequest
 import pixel.cando.data.remote.dto.PatientGetResponse
 import pixel.cando.data.remote.dto.PatientListRequest
 import pixel.cando.data.remote.dto.PatientListResponse
+import pixel.cando.data.remote.dto.RejectPhotoRequest
 import pixel.cando.data.remote.dto.UpdateAccountRequest
 import pixel.cando.data.remote.dto.UpdateAccountResponse
 import pixel.cando.data.remote.dto.UploadPhotoForPatientRequest
@@ -65,6 +67,16 @@ interface RestApi {
     @POST("account/devices/register")
     suspend fun registerDevice(
         @Body request: DeviceRegisterRequest
+    ): Response<Unit>
+
+    @POST("doctor/photos/confirm")
+    suspend fun confirmPhoto(
+        @Body request: ConfirmPhotoRequest
+    ): Response<Unit>
+
+    @POST("doctor/photos/reject")
+    suspend fun rejectPhoto(
+        @Body request: RejectPhotoRequest
     ): Response<Unit>
 
 }

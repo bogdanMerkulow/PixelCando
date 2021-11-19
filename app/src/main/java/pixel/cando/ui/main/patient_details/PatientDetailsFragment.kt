@@ -191,12 +191,17 @@ class PatientDetailsFragment : ViewBindingFragment<FragmentPatientDetailsBinding
     }
 
     override fun onAcceptPatientPhoto() {
-
+        eventSender?.sendEvent(
+            PatientDetailsEvent.PhotoConfirmed
+        )
     }
 
     override fun onRejectPatientPhoto(
         reason: String
     ) {
+        eventSender?.sendEvent(
+            PatientDetailsEvent.PhotoRejected(reason)
+        )
     }
 }
 
