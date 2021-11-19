@@ -92,6 +92,9 @@
 
     <string name="patient_photo_review_ask_text">Please review the photo and accept or reject it</string>
     <string name="patient_photo_review_start_btn_title">Review</string>
+    <string name="patient_photo_review_reject_dialog_title">Rejecting</string>
+    <string name="patient_photo_review_reject_dialog_subtitle">Please describe why you are rejecting the photo</string>
+    <string name="patient_photo_review_reject_dialog_btn_title">Reject</string>
 
     <string name="profile_title">Profile</string>
     <string name="profile_btn_logout">Logout</string>

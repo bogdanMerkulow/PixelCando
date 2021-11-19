@@ -92,6 +92,9 @@
 
     <string name="patient_photo_review_ask_text">Per favore, verificare la foto per accettarla o rifiutarla</string>
     <string name="patient_photo_review_start_btn_title">Verifica</string>
+    <string name="patient_photo_review_reject_dialog_title">Rifiutando la foto</string>
+    <string name="patient_photo_review_reject_dialog_subtitle">Inserire una motivazione per il rifiuto della foto</string>
+    <string name="patient_photo_review_reject_dialog_btn_title">Rifiuta</string>
 
     <string name="profile_title">Profilo</string>
     <string name="profile_btn_logout">Esci</string>

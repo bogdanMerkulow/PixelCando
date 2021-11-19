@@ -28,6 +28,7 @@ import pixel.cando.ui._base.list.map
 import pixel.cando.ui._base.list.plainState
 import pixel.cando.ui._base.tea.CoroutineScopeEffectHandler
 import pixel.cando.ui._base.tea.toFirst
+import pixel.cando.ui.main.patient_photo_review.PatientPhotoReviewArguments
 import pixel.cando.utils.ImagePicker
 import pixel.cando.utils.MessageDisplayer
 import pixel.cando.utils.PermissionChecker
@@ -154,6 +155,19 @@ object PatientDetailsLogic {
                     )
                 )
             }
+            is PatientDetailsEvent.ReviewPatientTap -> {
+                val patientData = model.patientData
+                if (patientData?.photoToReview != null) {
+                    Next.dispatch(
+                        setOf(
+                            PatientDetailsEffect.NavigateToPatientPhotoReview(
+                                patientFullName = patientData.fullName,
+                                photoUrl = patientData.photoToReview.url,
+                            )
+                        )
+                    )
+                } else Next.noChange()
+            }
             // model
             is PatientDetailsEvent.LoadPatientInfoSuccess -> {
                 Next.next(
@@ -277,6 +291,7 @@ object PatientDetailsLogic {
         photoTakerOpener: () -> Unit,
         photoConfirmationAsker: (PhotoPreviewArguments) -> Unit,
         howToGetPhotoAsker: () -> Unit,
+        patientPhotoReviewOpener: (PatientPhotoReviewArguments) -> Unit,
         remoteRepository: RemoteRepository,
         messageDisplayer: MessageDisplayer,
         resourceProvider: ResourceProvider,
@@ -430,6 +445,14 @@ object PatientDetailsLogic {
                         )
                     )
                 }
+                is PatientDetailsEffect.NavigateToPatientPhotoReview -> {
+                    patientPhotoReviewOpener.invoke(
+                        PatientPhotoReviewArguments(
+                            patientFullName = effect.patientFullName,
+                            photoUrl = effect.photoUrl,
+                        )
+                    )
+                }
                 is PatientDetailsEffect.ShowUnexpectedError -> {
                     messageDisplayer.showMessage(
                         resourceProvider.getString(R.string.something_went_wrong)
@@ -465,6 +488,8 @@ sealed class PatientDetailsEvent {
     object PatientInfoTap : PatientDetailsEvent()
 
     object CreateExamTap : PatientDetailsEvent()
+
+    object ReviewPatientTap : PatientDetailsEvent()
 
     object PhotoTakingChosen : PatientDetailsEvent()
     object ImagePickingChosen : PatientDetailsEvent()
@@ -552,6 +577,11 @@ sealed class PatientDetailsEffect {
         val uri: Uri,
         val weight: Float,
         val height: Float,
+    ) : PatientDetailsEffect()
+
+    data class NavigateToPatientPhotoReview(
+        val patientFullName: String,
+        val photoUrl: String
     ) : PatientDetailsEffect()
 
     object ShowUnexpectedError : PatientDetailsEffect()

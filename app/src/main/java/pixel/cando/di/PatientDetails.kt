@@ -24,6 +24,7 @@ import pixel.cando.ui.main.patient_details.PatientDetailsFragment
 import pixel.cando.ui.main.patient_details.PatientDetailsLogic
 import pixel.cando.ui.main.patient_details.PatientDetailsViewModel
 import pixel.cando.ui.main.patient_details.viewModel
+import pixel.cando.ui.main.patient_photo_review.PatientPhotoReviewFragment
 import pixel.cando.ui.main.photo_preview.PhotoPreviewFragment
 import pixel.cando.ui.main.photo_preview.PhotoPreviewResult
 import pixel.cando.utils.PermissionCheckerResult
@@ -145,6 +146,12 @@ fun PatientDetailsFragment.setup(
                             }
                             .create()
                             .show()
+                    }
+                },
+                patientPhotoReviewOpener = {
+                    lifecycleScope.launch {
+                        PatientPhotoReviewFragment.newInstance(it)
+                            .show(childFragmentManager, "")
                     }
                 },
                 remoteRepository = remoteRepository,

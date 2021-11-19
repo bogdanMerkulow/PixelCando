@@ -23,6 +23,7 @@ import pixel.cando.ui._commmon.listMoreLoader
 import pixel.cando.ui._commmon.noDataListPlaceholder
 import pixel.cando.ui._commmon.toListItems
 import pixel.cando.ui.main.camera.CameraFragment
+import pixel.cando.ui.main.patient_photo_review.PatientPhotoReviewFragment
 import pixel.cando.utils.addLoadMoreListener
 import pixel.cando.utils.context
 import pixel.cando.utils.diffuser.Diffuser
@@ -44,7 +45,8 @@ class PatientDetailsFragment : ViewBindingFragment<FragmentPatientDetailsBinding
     EventSenderNeeder<PatientDetailsEvent>,
     DiffuserCreator<PatientDetailsViewModel, FragmentPatientDetailsBinding>,
     DiffuserProviderNeeder<PatientDetailsViewModel>,
-    CameraFragment.Callback {
+    CameraFragment.Callback,
+    PatientPhotoReviewFragment.Listener {
 
     override var eventSender: EventSender<PatientDetailsEvent>? = null
 
@@ -154,6 +156,11 @@ class PatientDetailsFragment : ViewBindingFragment<FragmentPatientDetailsBinding
                 PatientDetailsEvent.PatientInfoTap
             )
         }
+        viewBinding.reviewPhotoButton.setOnClickListener {
+            eventSender?.sendEvent(
+                PatientDetailsEvent.ReviewPatientTap
+            )
+        }
         viewBinding.examList.setHasFixedSize(true)
         viewBinding.examList.adapter = adapter
         viewBinding.examList.addLoadMoreListener {
@@ -183,6 +190,14 @@ class PatientDetailsFragment : ViewBindingFragment<FragmentPatientDetailsBinding
     override fun onCameraCancel() {
     }
 
+    override fun onAcceptPatientPhoto() {
+
+    }
+
+    override fun onRejectPatientPhoto(
+        reason: String
+    ) {
+    }
 }
 
 private sealed class ExamListItem : ListItem {
