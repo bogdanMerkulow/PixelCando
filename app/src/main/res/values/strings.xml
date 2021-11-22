@@ -19,14 +19,13 @@
     <string name="password_recovery_success_message">Instructions have been sent. Please check your inbox and follow instructions</string>
 
     <string name="tab_title_chat">Chat</string>
-    <string name="tab_title_chats">Chats</string>
     <string name="tab_title_photos">Photos</string>
     <string name="tab_title_patients">Patients</string>
     <string name="tab_title_profile">Profile</string>
 
-    <string name="screen_title_patients">Patients</string>
+    <string name="patient_list_screen_title">Patients</string>
     <string name="no_patients_title">No patients yet</string>
-    <string name="no_patients_description">There is no patient in this folder. Please add one by clicking the Plus floating button below</string>
+    <string name="no_patients_description">There is no patient in this folder</string>
 
     <string name="exams_header_title">Exams</string>
     <string name="no_exams_title">No exams yet</string>
@@ -95,6 +94,9 @@
     <string name="patient_photo_review_reject_dialog_title">Rejecting</string>
     <string name="patient_photo_review_reject_dialog_subtitle">Please describe why you are rejecting the photo</string>
     <string name="patient_photo_review_reject_dialog_btn_title">Reject</string>
+
+    <string name="chat_list_screen_title">Chat</string>
+    <string name="chat_list_my_message">You:</string>
 
     <string name="profile_title">Profile</string>
     <string name="profile_btn_logout">Logout</string>

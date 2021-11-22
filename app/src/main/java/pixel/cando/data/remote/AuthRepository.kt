@@ -46,6 +46,7 @@ class RealAuthRepository(
                         Either.Left(
                             SignInSuccess(
                                 accessToken = userDto.accessToken,
+                                userId = userDto.id,
                                 userRole = userRole
                             )
                         )

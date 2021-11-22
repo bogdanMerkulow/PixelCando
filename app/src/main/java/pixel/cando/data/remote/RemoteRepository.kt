@@ -2,6 +2,8 @@ package pixel.cando.data.remote
 
 import com.squareup.moshi.Moshi
 import pixel.cando.data.models.Account
+import pixel.cando.data.models.ChatItem
+import pixel.cando.data.models.ChatRecentMessage
 import pixel.cando.data.models.ExamListItemInfo
 import pixel.cando.data.models.ExamSingleItemInfo
 import pixel.cando.data.models.Folder
@@ -12,6 +14,8 @@ import pixel.cando.data.models.PatientSingleItemInfo
 import pixel.cando.data.models.UploadPhotoFailure
 import pixel.cando.data.remote.dto.AccountDto
 import pixel.cando.data.remote.dto.AccountUserDto
+import pixel.cando.data.remote.dto.ChatListFilterDto
+import pixel.cando.data.remote.dto.ChatListRequest
 import pixel.cando.data.remote.dto.ConfirmPhotoRequest
 import pixel.cando.data.remote.dto.DeviceRegisterDto
 import pixel.cando.data.remote.dto.DeviceRegisterRequest
@@ -80,6 +84,11 @@ interface RemoteRepository {
         id: Long,
         reason: String,
     ): Either<Unit, Throwable>
+
+    suspend fun getChats(
+        folderId: Long?,
+        page: Int,
+    ): Either<List<ChatItem>, Throwable>
 
 }
 
@@ -346,6 +355,42 @@ class RealRemoteRepository(
                     reason = reason,
                 )
             )
+        }
+    }
+
+    override suspend fun getChats(
+        folderId: Long?,
+        page: Int,
+    ): Either<List<ChatItem>, Throwable> {
+        return callApi {
+            getChats(
+                ChatListRequest(
+                    offset = page * pageSize,
+                    limit = pageSize,
+                    filters = ChatListFilterDto(
+                        query = null,
+                        folderId = folderId,
+                    )
+                )
+            )
+        }.mapOnlyLeft {
+            it.results.map {
+                ChatItem(
+                    id = it.id,
+                    fullName = it.fullName,
+                    avatarText = it.avatar.abbr,
+                    avatarBgColor = it.avatar.color,
+                    unreadCount = it.unreadCount,
+                    recentMessage = it.recentMessage?.let {
+                        ChatRecentMessage(
+                            id = it.id,
+                            createdAt = it.createdAt,
+                            senderId = it.senderId,
+                            content = it.content,
+                        )
+                    }
+                )
+            }
         }
     }
 

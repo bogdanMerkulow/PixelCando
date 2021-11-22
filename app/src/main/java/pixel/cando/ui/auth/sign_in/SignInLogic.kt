@@ -7,6 +7,7 @@ import com.spotify.mobius.Next
 import kotlinx.parcelize.Parcelize
 import pixel.cando.R
 import pixel.cando.data.local.AccessTokenStore
+import pixel.cando.data.local.LoggedInUserIdStore
 import pixel.cando.data.local.UserRoleStore
 import pixel.cando.data.models.SignInFailure
 import pixel.cando.data.remote.AuthRepository
@@ -158,6 +159,7 @@ object SignInLogic {
         authRepository: AuthRepository,
         accessTokenStore: AccessTokenStore,
         userRoleStore: UserRoleStore,
+        loggedInUserIdStore: LoggedInUserIdStore,
         messageDisplayer: MessageDisplayer,
         pushNotificationsSubscriber: PushNotificationsSubscriber,
         resourceProvider: ResourceProvider,
@@ -176,6 +178,7 @@ object SignInLogic {
                         is Either.Left -> {
                             accessTokenStore.accessToken = result.left.accessToken
                             userRoleStore.userRole = result.left.userRole
+                            loggedInUserIdStore.loggedInUserId = result.left.userId
 
                             val pushNotificationSubscriptionResult =
                                 pushNotificationsSubscriber.subscribe()

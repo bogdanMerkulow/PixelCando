@@ -2,6 +2,7 @@ package pixel.cando.data.models
 
 data class SignInSuccess(
     val accessToken: String,
+    val userId: Long,
     val userRole: UserRole,
 )
 

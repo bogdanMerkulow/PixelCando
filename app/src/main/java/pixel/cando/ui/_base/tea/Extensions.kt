@@ -25,6 +25,15 @@ fun <M, F> Next<M, F>.toFirst(
     this.effects()
 )
 
+fun <M, F> First<M, F>.mapEffects(
+    mapper: (Set<F>) -> Set<F>
+): First<M, F> {
+    return First.first(
+        model(),
+        mapper.invoke(effects())
+    )
+}
+
 fun <M, F> Next<M, F>.mapEffects(
     mapper: (Set<F>) -> Set<F>
 ): Next<M, F> {

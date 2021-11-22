@@ -13,6 +13,12 @@ data class PatientListRequest(
 )
 
 @JsonClass(generateAdapter = true)
+data class PatientListFilterDto(
+    @Json(name = "query") val query: String?,
+    @Json(name = "folderId") val folderId: Long?,
+)
+
+@JsonClass(generateAdapter = true)
 data class PatientListResponse(
     @Json(name = "results") val results: List<PatientDto>,
 )
