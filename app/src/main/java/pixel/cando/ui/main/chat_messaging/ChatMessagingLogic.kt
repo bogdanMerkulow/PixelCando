@@ -5,6 +5,8 @@ import com.spotify.mobius.Connectable
 import com.spotify.mobius.First
 import com.spotify.mobius.Next
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import pixel.cando.R
@@ -12,6 +14,7 @@ import pixel.cando.data.models.ChatMessage
 import pixel.cando.data.remote.RemoteRepository
 import pixel.cando.ui._base.fragment.FlowRouter
 import pixel.cando.ui._base.tea.CoroutineScopeEffectHandler
+import pixel.cando.ui._base.tea.mapEffects
 import pixel.cando.utils.MessageDisplayer
 import pixel.cando.utils.ResourceProvider
 import pixel.cando.utils.logError
@@ -42,6 +45,12 @@ object ChatMessagingLogic {
                     model
                 )
             }
+        }.mapEffects {
+            it.plus(
+                ChatMessagingEffect.StartPeriodicCheckForNewMessages(
+                    chatId = model.chatId,
+                )
+            )
         }
     }
 
@@ -109,22 +118,12 @@ object ChatMessagingLogic {
                 )
             }
             is ChatMessagingEvent.SendMessageSuccess -> {
-                val listStateAndEffects = model.listState.reduce(
-                    ChatMessageListAction.TotalCountChanged(
-                        totalCount = event.totalCount
-                    )
-                ).first.reduce(
-                    ChatMessageListAction.LoadNewMessages()
-                )
                 Next.next(
                     model.copy(
                         maySendMessage = false,
                         isSendingMessage = false,
-                        listState = listStateAndEffects.first,
                     ),
-                    listStateAndEffects.second.mapped(
-                        chatId = model.chatId
-                    ).plus(
+                    setOf(
                         ChatMessagingEffect.ClearMessageInput
                     )
                 )
@@ -138,6 +137,15 @@ object ChatMessagingLogic {
                         ChatMessagingEffect.ShowUnexpectedError
                     )
                 )
+            }
+            is ChatMessagingEvent.ChatMessageCountReceived -> {
+                model.listState.reduce(
+                    ChatMessageListAction.TotalCountChanged(
+                        totalCount = event.totalCount
+                    )
+                ).first.reduce(
+                    ChatMessageListAction.LoadNewMessages()
+                ).toNext(model)
             }
         }
     }
@@ -192,8 +200,11 @@ object ChatMessagingLogic {
                     sendMessageResult.onLeft {
                         messageListResult.onLeft {
                             output.accept(
-                                ChatMessagingEvent.SendMessageSuccess(
-                                    totalCount = it.totalCount,
+                                ChatMessagingEvent.SendMessageSuccess
+                            )
+                            output.accept(
+                                ChatMessagingEvent.ChatMessageCountReceived(
+                                    totalCount = it.totalCount
                                 )
                             )
                         }
@@ -209,6 +220,27 @@ object ChatMessagingLogic {
                         output.accept(
                             ChatMessagingEvent.SendMessageFailure
                         )
+                    }
+                }
+                is ChatMessagingEffect.StartPeriodicCheckForNewMessages -> {
+                    while (isActive) {
+                        val result = remoteRepository.getChatMessages(
+                            chatId = effect.chatId,
+                            offset = 0,
+                            count = 0,
+                            sinceDate = null,
+                        )
+                        result.onLeft {
+                            output.accept(
+                                ChatMessagingEvent.ChatMessageCountReceived(
+                                    totalCount = it.totalCount
+                                )
+                            )
+                        }
+                        result.onRight {
+                            logError(it)
+                        }
+                        delay(2_000L)
                     }
                 }
                 is ChatMessagingEffect.ClearMessageInput -> {
@@ -267,11 +299,13 @@ sealed class ChatMessagingEvent {
 
     object StopListLoading : ChatMessagingEvent()
 
-    data class SendMessageSuccess(
-        val totalCount: Int,
-    ) : ChatMessagingEvent()
+    object SendMessageSuccess : ChatMessagingEvent()
 
     object SendMessageFailure : ChatMessagingEvent()
+
+    data class ChatMessageCountReceived(
+        val totalCount: Int,
+    ) : ChatMessagingEvent()
 
 }
 
@@ -291,6 +325,10 @@ sealed class ChatMessagingEffect {
     object ShowUnexpectedError : ChatMessagingEffect()
 
     object ClearMessageInput : ChatMessagingEffect()
+
+    data class StartPeriodicCheckForNewMessages(
+        val chatId: Long,
+    ) : ChatMessagingEffect()
 
 }
 
@@ -402,14 +440,20 @@ private fun Set<ChatMessageListSideEffect>.mapped(
 
 private fun Pair<ParcelableChatMessageListState<ChatMessageDataModel>, Set<ChatMessageListSideEffect>>.toNext(
     model: ChatMessagingDataModel
-) = Next.next(
-    model.copy(
-        listState = first,
-    ),
-    second.mapped(
-        chatId = model.chatId,
-    )
-)
+) = second.mapped(
+    chatId = model.chatId,
+).let { effects ->
+    if (model.listState == first) {
+        Next.dispatch(effects)
+    } else {
+        Next.next(
+            model.copy(
+                listState = first,
+            ),
+            effects
+        )
+    }
+}
 
 private fun Pair<ParcelableChatMessageListState<ChatMessageDataModel>, Set<ChatMessageListSideEffect>>.toFirst(
     model: ChatMessagingDataModel
