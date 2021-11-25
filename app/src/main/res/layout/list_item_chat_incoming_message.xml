@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    >
+
+    <TextView
+        android:id="@+id/dateLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_12"
+        android:textColor="@color/gray_silver"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:text="29 Apr, 14:10"
+        />
+
+    <TextView
+        android:id="@+id/senderFullNameLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/spacing_8"
+        android:textColor="@color/black_mine_shaft"
+        android:textSize="12sp"
+        app:layout_constraintEnd_toStartOf="@id/dateLabel"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="@+id/contentLabel"
+        app:layout_constraintTop_toTopOf="@+id/dateLabel"
+        app:layout_constraintWidth="wrap_content_constrained"
+        tools:text="Sender Name"
+        />
+
+    <TextView
+        android:id="@+id/contentLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/spacing_16"
+        android:layout_marginTop="@dimen/spacing_10"
+        android:layout_marginEnd="@dimen/spacing_40"
+        android:layout_marginBottom="@dimen/spacing_12"
+        android:background="@drawable/bg_chat_incoming_message"
+        android:paddingHorizontal="@dimen/spacing_16"
+        android:paddingVertical="@dimen/spacing_20"
+        android:textColor="@color/white"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/senderFullNameLabel"
+        app:layout_constraintWidth="wrap_content_constrained"
+        tools:text="Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Id aliquet lectus proin nibh nisl. Suspendisse faucibus interdum posuere lorem ipsum dolor sit amet consecteturg."
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

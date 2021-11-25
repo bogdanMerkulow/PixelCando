@@ -806,27 +806,29 @@ data class PatientPhotoToReviewViewModel(
 
 fun PatientDetailsDataModel.viewModel(
     resourceProvider: ResourceProvider,
-) = PatientDetailsViewModel(
-    title = patientData?.fullName,
-    isLoaderVisible = isLoading,
-    isTakePhotoButtonEnabled = isLoading.not(),
-    listState = listState.plainState.map { exam, index, list ->
-        val dateTimeFormatter = DateTimeFormatter
-            .ofPattern("dd MMM yyyy, HH:mm")
-            .withLocale(resourceProvider.getCurrentLocale())
-        exam.viewModel(
-            resourceProvider = resourceProvider,
-            dateTimeFormatter = dateTimeFormatter,
-            isFirst = index == 0,
-            isLast = index == list.size - 1
-        )
-    },
-    photoToReview = patientData?.photoToReview?.let {
-        PatientPhotoToReviewViewModel(
-            date = TimeAgoFormatter(resourceProvider).format(it.createdAt)
-        )
-    }
-)
+): PatientDetailsViewModel {
+    val dateTimeFormatter = DateTimeFormatter
+        .ofPattern("dd MMM yyyy, HH:mm")
+        .withLocale(resourceProvider.getCurrentLocale())
+    return PatientDetailsViewModel(
+        title = patientData?.fullName,
+        isLoaderVisible = isLoading,
+        isTakePhotoButtonEnabled = isLoading.not(),
+        listState = listState.plainState.map { exam, index, list ->
+            exam.viewModel(
+                resourceProvider = resourceProvider,
+                dateTimeFormatter = dateTimeFormatter,
+                isFirst = index == 0,
+                isLast = index == list.size - 1
+            )
+        },
+        photoToReview = patientData?.photoToReview?.let {
+            PatientPhotoToReviewViewModel(
+                date = TimeAgoFormatter(resourceProvider).format(it.createdAt)
+            )
+        }
+    )
+}
 
 private fun ExamDataModel.viewModel(
     resourceProvider: ResourceProvider,

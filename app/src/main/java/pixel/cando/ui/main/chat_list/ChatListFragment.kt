@@ -47,6 +47,9 @@ class ChatListFragment : ViewBindingFragment<FragmentChatListBinding>(
     private val adapter by lazy {
         createDifferAdapter(
             chatAdapterDelegate {
+                eventSender?.sendEvent(
+                    ChatListEvent.PickChat(it)
+                )
             },
             noDataListPlaceholder<ChatListItem.NoDataPlaceholder, ChatListItem>(),
             listInitialLoader<ChatListItem.InitialLoader, ChatListItem>(),

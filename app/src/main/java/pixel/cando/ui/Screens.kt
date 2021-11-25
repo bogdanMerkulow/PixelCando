@@ -9,6 +9,7 @@ import pixel.cando.ui.auth.password_recovery.PasswordRecoveryFragment
 import pixel.cando.ui.auth.sign_in.SignInFragment
 import pixel.cando.ui.main.MainFlowFragment
 import pixel.cando.ui.main.chat_list.ChatListFragment
+import pixel.cando.ui.main.chat_messaging.ChatMessagingFragment
 import pixel.cando.ui.main.exam_details.ExamDetailsFragment
 import pixel.cando.ui.main.home.HomeFragment
 import pixel.cando.ui.main.patient_details.PatientDetailsFragment
@@ -70,6 +71,13 @@ object Screens {
 
     fun chatList() = FragmentScreen {
         ChatListFragment()
+    }
+
+    fun chatMessaging(
+        chatId: Long
+    ) = FragmentScreen {
+        ChatMessagingFragment()
+            .withArgumentSet(chatId)
     }
 
     fun empty() = FragmentScreen { Fragment() } //only for development

@@ -98,6 +98,10 @@
     <string name="chat_list_screen_title">Chat</string>
     <string name="chat_list_my_message">You:</string>
 
+    <string name="chat_messaging_my_message">You</string>
+    <string name="chat_messaging_no_messages_title">No messages yet</string>
+    <string name="chat_messaging_no_messages_description">There is no messages yet</string>
+
     <string name="profile_title">Profile</string>
     <string name="profile_btn_logout">Logout</string>
     <string name="profile_section_account_info">Account Information</string>

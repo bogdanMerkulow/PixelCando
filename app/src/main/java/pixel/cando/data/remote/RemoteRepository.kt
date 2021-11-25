@@ -3,6 +3,7 @@ package pixel.cando.data.remote
 import com.squareup.moshi.Moshi
 import pixel.cando.data.models.Account
 import pixel.cando.data.models.ChatItem
+import pixel.cando.data.models.ChatMessage
 import pixel.cando.data.models.ChatRecentMessage
 import pixel.cando.data.models.ExamListItemInfo
 import pixel.cando.data.models.ExamSingleItemInfo
@@ -16,6 +17,8 @@ import pixel.cando.data.remote.dto.AccountDto
 import pixel.cando.data.remote.dto.AccountUserDto
 import pixel.cando.data.remote.dto.ChatListFilterDto
 import pixel.cando.data.remote.dto.ChatListRequest
+import pixel.cando.data.remote.dto.ChatMessageListFilterDto
+import pixel.cando.data.remote.dto.ChatMessageListRequest
 import pixel.cando.data.remote.dto.ConfirmPhotoRequest
 import pixel.cando.data.remote.dto.DeviceRegisterDto
 import pixel.cando.data.remote.dto.DeviceRegisterRequest
@@ -34,6 +37,7 @@ import pixel.cando.utils.Either
 import pixel.cando.utils.mapOnlyLeft
 import retrofit2.Response
 import java.io.IOException
+import java.time.LocalDateTime
 
 interface RemoteRepository {
 
@@ -89,6 +93,12 @@ interface RemoteRepository {
         folderId: Long?,
         page: Int,
     ): Either<List<ChatItem>, Throwable>
+
+    suspend fun getChatMessages(
+        chatId: Long,
+        page: Int,
+        sinceDate: LocalDateTime?,
+    ): Either<List<ChatMessage>, Throwable>
 
 }
 
@@ -389,6 +399,37 @@ class RealRemoteRepository(
                             content = it.content,
                         )
                     }
+                )
+            }
+        }
+    }
+
+    override suspend fun getChatMessages(
+        chatId: Long,
+        page: Int,
+        sinceDate: LocalDateTime?
+    ): Either<List<ChatMessage>, Throwable> {
+        return callApi {
+            getChatMessages(
+                ChatMessageListRequest(
+                    userId = chatId,
+                    offset = page * pageSize,
+                    limit = pageSize,
+                    filters = sinceDate?.let {
+                        ChatMessageListFilterDto(
+                            since = it
+                        )
+                    }
+                )
+            )
+        }.mapOnlyLeft {
+            it.results.map {
+                ChatMessage(
+                    id = it.id,
+                    senderId = it.senderId,
+                    senderFullName = it.sender.fullName,
+                    createdAt = it.createdAt,
+                    content = it.content,
                 )
             }
         }

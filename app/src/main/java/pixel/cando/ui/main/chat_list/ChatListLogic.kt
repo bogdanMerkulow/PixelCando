@@ -13,6 +13,7 @@ import pixel.cando.R
 import pixel.cando.data.models.ChatItem
 import pixel.cando.data.models.Folder
 import pixel.cando.data.remote.RemoteRepository
+import pixel.cando.ui.Screens
 import pixel.cando.ui._base.fragment.FlowRouter
 import pixel.cando.ui._base.list.ListAction
 import pixel.cando.ui._base.list.ListState
@@ -99,6 +100,15 @@ object ChatListLogic {
                     event
                 )
             }
+            is ChatListEvent.PickChat -> {
+                Next.dispatch(
+                    setOf(
+                        ChatListEffect.NavigateToChat(
+                            chatId = event.chatId,
+                        )
+                    )
+                )
+            }
         }
     }
 
@@ -179,6 +189,13 @@ object ChatListLogic {
                         logError(it)
                     }
                 }
+                is ChatListEffect.NavigateToChat -> {
+                    flowRouter.navigateTo(
+                        Screens.chatMessaging(
+                            chatId = effect.chatId,
+                        )
+                    )
+                }
                 is ChatListEffect.ShowUnexpectedError -> {
                     messageDisplayer.showMessage(
                         resourceProvider.getString(
@@ -203,12 +220,17 @@ object ChatListLogic {
 
 sealed class ChatListEvent {
 
+    // ui
     object RefreshRequest : ChatListEvent()
 
     object LoadNextPage : ChatListEvent()
 
     data class PickFolder(
         val folderId: Long,
+    ) : ChatListEvent()
+
+    data class PickChat(
+        val chatId: Long,
     ) : ChatListEvent()
 
     // model
@@ -236,6 +258,10 @@ sealed class ChatListEffect {
     ) : ChatListEffect()
 
     object LoadFolders : ChatListEffect()
+
+    data class NavigateToChat(
+        val chatId: Long,
+    ) : ChatListEffect()
 
     object ShowUnexpectedError : ChatListEffect()
 

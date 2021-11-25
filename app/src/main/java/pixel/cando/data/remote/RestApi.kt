@@ -2,6 +2,8 @@ package pixel.cando.data.remote
 
 import pixel.cando.data.remote.dto.ChatListRequest
 import pixel.cando.data.remote.dto.ChatListResponse
+import pixel.cando.data.remote.dto.ChatMessageListRequest
+import pixel.cando.data.remote.dto.ChatMessageListResponse
 import pixel.cando.data.remote.dto.ConfirmPhotoRequest
 import pixel.cando.data.remote.dto.DeviceRegisterRequest
 import pixel.cando.data.remote.dto.EmptyRequest
@@ -85,5 +87,10 @@ interface RestApi {
     suspend fun getChats(
         @Body request: ChatListRequest
     ): Response<ChatListResponse>
+
+    @POST("doctor/chat/feed")
+    suspend fun getChatMessages(
+        @Body request: ChatMessageListRequest
+    ): Response<ChatMessageListResponse>
 
 }

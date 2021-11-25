@@ -45,7 +45,7 @@ internal inline fun <reified ARG> Fragment.setArgument(
 
 internal inline fun <reified ARG> Fragment.getArgument(
 ): ARG {
-    return arguments!!.let { bundle ->
+    return requireArguments().let { bundle ->
         when {
             Int::class.java.isAssignableFrom(ARG::class.java) -> bundle.getInt(argumentKey) as ARG
             Long::class.java.isAssignableFrom(ARG::class.java) -> bundle.getLong(argumentKey) as ARG

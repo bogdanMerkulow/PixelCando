@@ -29,6 +29,7 @@ import pixel.cando.ui.auth.password_recovery.PasswordRecoveryFragment
 import pixel.cando.ui.auth.sign_in.SignInFragment
 import pixel.cando.ui.createUnauthorizedResultEventSource
 import pixel.cando.ui.main.chat_list.ChatListFragment
+import pixel.cando.ui.main.chat_messaging.ChatMessagingFragment
 import pixel.cando.ui.main.exam_details.ExamDetailsFragment
 import pixel.cando.ui.main.home.HomeFragment
 import pixel.cando.ui.main.patient_details.PatientDetailsFragment
@@ -252,6 +253,14 @@ class DependencyManager(
                                     )
                                 }
                                 is ChatListFragment -> {
+                                    fragment.setup(
+                                        remoteRepository = remoteRepository,
+                                        resourceProvider = resourceProvider,
+                                        loggedInUserIdProvider = loggedInUserIdStore,
+                                        flowRouter = fragment.findImplementationOrThrow(),
+                                    )
+                                }
+                                is ChatMessagingFragment -> {
                                     fragment.setup(
                                         remoteRepository = remoteRepository,
                                         resourceProvider = resourceProvider,
