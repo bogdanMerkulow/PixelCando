@@ -19,7 +19,8 @@ data class ChatMessageListFilterDto(
 
 @JsonClass(generateAdapter = true)
 data class ChatMessageListResponse(
-    @Json(name = "results") val results: List<ChatMessageDto>
+    @Json(name = "count") val count: Int,
+    @Json(name = "results") val results: List<ChatMessageDto>,
 )
 
 @JsonClass(generateAdapter = true)
@@ -34,4 +35,15 @@ data class ChatMessageDto(
 @JsonClass(generateAdapter = true)
 data class ChatMessageSenderDto(
     @Json(name = "fullName") val fullName: String,
+)
+
+@JsonClass(generateAdapter = true)
+data class SendChatMessageRequest(
+    @Json(name = "message") val message: SendChatMessageDto,
+)
+
+@JsonClass(generateAdapter = true)
+data class SendChatMessageDto(
+    @Json(name = "recipientId") val recipientId: Long,
+    @Json(name = "content") val content: String,
 )

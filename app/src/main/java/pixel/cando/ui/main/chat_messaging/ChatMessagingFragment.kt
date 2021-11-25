@@ -2,6 +2,7 @@ package pixel.cando.ui.main.chat_messaging
 
 import android.os.Bundle
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import pixel.cando.R
 import pixel.cando.databinding.FragmentChatMessagingBinding
 import pixel.cando.databinding.ListItemChatIncomingMessageBinding
@@ -19,15 +20,17 @@ import pixel.cando.ui._commmon.NoDataListPlaceholder
 import pixel.cando.ui._commmon.listInitialLoader
 import pixel.cando.ui._commmon.listMoreLoader
 import pixel.cando.ui._commmon.noDataListPlaceholder
-import pixel.cando.ui._commmon.toListItems
 import pixel.cando.utils.addLoadMoreListener
 import pixel.cando.utils.context
 import pixel.cando.utils.diffuser.Diffuser
 import pixel.cando.utils.diffuser.DiffuserCreator
 import pixel.cando.utils.diffuser.DiffuserProvider
 import pixel.cando.utils.diffuser.DiffuserProviderNeeder
+import pixel.cando.utils.diffuser.ViewDiffusers.intoVisibleOrGone
+import pixel.cando.utils.diffuser.ViewDiffusers.intoVisibleOrInvisible
 import pixel.cando.utils.diffuser.intoListDifferAdapter
 import pixel.cando.utils.diffuser.map
+import pixel.cando.utils.doAfterTextChanged
 
 class ChatMessagingFragment : ViewBindingFragment<FragmentChatMessagingBinding>(
     FragmentChatMessagingBinding::inflate
@@ -52,7 +55,6 @@ class ChatMessagingFragment : ViewBindingFragment<FragmentChatMessagingBinding>(
 
     private val layoutManager by lazy {
         LinearLayoutManager(requireContext()).apply {
-            //stackFromEnd = true
             reverseLayout = true
         }
     }
@@ -91,7 +93,15 @@ class ChatMessagingFragment : ViewBindingFragment<FragmentChatMessagingBinding>(
                     )
                 },
                 intoListDifferAdapter(adapter)
-            )
+            ),
+            map(
+                { it.isSendButtonVisible },
+                intoVisibleOrInvisible(viewBinding.sendMessageIcon)
+            ),
+            map(
+                { it.isMessageSendingProgressVisible },
+                intoVisibleOrGone(viewBinding.messageSendingProgressBar)
+            ),
         )
     }
 
@@ -105,7 +115,34 @@ class ChatMessagingFragment : ViewBindingFragment<FragmentChatMessagingBinding>(
         viewBinding.list.adapter = adapter
         viewBinding.list.addLoadMoreListener {
             eventSender?.sendEvent(
-                ChatMessagingEvent.LoadNextPage
+                ChatMessagingEvent.LoadOldMessages
+            )
+        }
+        adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
+            override fun onItemRangeInserted(
+                positionStart: Int,
+                itemCount: Int
+            ) {
+                if (positionStart == 0) {
+                    val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
+                    if (firstVisibleItemPosition == 0) {
+                        viewBinding.list.smoothScrollToPosition(0)
+                    }
+                }
+            }
+        })
+        viewBinding.sendMessageIcon.setOnClickListener {
+            eventSender?.sendEvent(
+                ChatMessagingEvent.SendMessage(
+                    message = viewBinding.messageField.text.toString()
+                )
+            )
+        }
+        viewBinding.messageField.doAfterTextChanged {
+            eventSender?.sendEvent(
+                ChatMessagingEvent.MessageChanged(
+                    message = it
+                )
             )
         }
     }
@@ -114,6 +151,10 @@ class ChatMessagingFragment : ViewBindingFragment<FragmentChatMessagingBinding>(
         viewModel: ChatMessagingViewModel
     ) {
         diffuserProvider?.invoke()?.run(viewModel)
+    }
+
+    fun clearMessageInput() {
+        viewBinding?.messageField?.text?.clear()
     }
 
 }
@@ -182,3 +223,32 @@ private fun incomingMessageAdapterDelegate(
         oldItem == newItem
     }
 )
+
+private fun <T, R> ChatMessageListState<T>.toListItems(
+    noDataPlaceholderProvider: () -> R,
+    initialLoaderProvider: () -> R,
+    moreLoaderProvider: () -> R,
+    itemMapper: List<T>.() -> List<R>,
+): List<R> = when (this) {
+    is ChatMessageListState.NotInitialized,
+    is ChatMessageListState.EmptyError -> emptyList()
+    is ChatMessageListState.Empty -> listOf(
+        noDataPlaceholderProvider.invoke()
+    )
+    is ChatMessageListState.EmptyProgress -> listOf(
+        initialLoaderProvider.invoke()
+    )
+    else -> {
+        val items: List<R> = itemMapper.invoke(
+            loadedItems()
+        )
+        if (this is ChatMessageListState.OldMessagesLoading) {
+            items.plus(moreLoaderProvider.invoke())
+        } else if (this is ChatMessageListState.NewMessagesLoading) {
+            listOf(moreLoaderProvider.invoke())
+                .plus(items)
+        } else {
+            items
+        }
+    }
+}

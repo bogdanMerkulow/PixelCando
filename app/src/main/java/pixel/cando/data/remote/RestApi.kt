@@ -19,6 +19,7 @@ import pixel.cando.data.remote.dto.PatientGetResponse
 import pixel.cando.data.remote.dto.PatientListRequest
 import pixel.cando.data.remote.dto.PatientListResponse
 import pixel.cando.data.remote.dto.RejectPhotoRequest
+import pixel.cando.data.remote.dto.SendChatMessageRequest
 import pixel.cando.data.remote.dto.UpdateAccountRequest
 import pixel.cando.data.remote.dto.UpdateAccountResponse
 import pixel.cando.data.remote.dto.UploadPhotoForPatientRequest
@@ -92,5 +93,10 @@ interface RestApi {
     suspend fun getChatMessages(
         @Body request: ChatMessageListRequest
     ): Response<ChatMessageListResponse>
+
+    @POST("doctor/chat/send")
+    suspend fun sendChatMessage(
+        @Body request: SendChatMessageRequest
+    ): Response<Unit>
 
 }

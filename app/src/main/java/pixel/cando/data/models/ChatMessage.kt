@@ -9,3 +9,8 @@ data class ChatMessage(
     val createdAt: LocalDateTime,
     val content: String,
 )
+
+data class MessageListPortion(
+    val totalCount: Int,
+    val messages: List<ChatMessage>,
+)

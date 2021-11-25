@@ -9,6 +9,7 @@ import pixel.cando.data.models.ExamListItemInfo
 import pixel.cando.data.models.ExamSingleItemInfo
 import pixel.cando.data.models.Folder
 import pixel.cando.data.models.Gender
+import pixel.cando.data.models.MessageListPortion
 import pixel.cando.data.models.PatientListItemInfo
 import pixel.cando.data.models.PatientPhotoToReview
 import pixel.cando.data.models.PatientSingleItemInfo
@@ -30,6 +31,8 @@ import pixel.cando.data.remote.dto.PatientGetRequest
 import pixel.cando.data.remote.dto.PatientListFilterDto
 import pixel.cando.data.remote.dto.PatientListRequest
 import pixel.cando.data.remote.dto.RejectPhotoRequest
+import pixel.cando.data.remote.dto.SendChatMessageDto
+import pixel.cando.data.remote.dto.SendChatMessageRequest
 import pixel.cando.data.remote.dto.UpdateAccountRequest
 import pixel.cando.data.remote.dto.UploadPhotoForPatientRequest
 import pixel.cando.data.remote.dto.UploadPhotoForPatientWeightHeightDto
@@ -96,9 +99,15 @@ interface RemoteRepository {
 
     suspend fun getChatMessages(
         chatId: Long,
-        page: Int,
+        offset: Int,
+        count: Int,
         sinceDate: LocalDateTime?,
-    ): Either<List<ChatMessage>, Throwable>
+    ): Either<MessageListPortion, Throwable>
+
+    suspend fun sendChatMessage(
+        chatId: Long,
+        message: String,
+    ): Either<Unit, Throwable>
 
 }
 
@@ -406,15 +415,16 @@ class RealRemoteRepository(
 
     override suspend fun getChatMessages(
         chatId: Long,
-        page: Int,
+        offset: Int,
+        count: Int,
         sinceDate: LocalDateTime?
-    ): Either<List<ChatMessage>, Throwable> {
+    ): Either<MessageListPortion, Throwable> {
         return callApi {
             getChatMessages(
                 ChatMessageListRequest(
                     userId = chatId,
-                    offset = page * pageSize,
-                    limit = pageSize,
+                    offset = offset,
+                    limit = count,
                     filters = sinceDate?.let {
                         ChatMessageListFilterDto(
                             since = it
@@ -423,15 +433,34 @@ class RealRemoteRepository(
                 )
             )
         }.mapOnlyLeft {
-            it.results.map {
-                ChatMessage(
-                    id = it.id,
-                    senderId = it.senderId,
-                    senderFullName = it.sender.fullName,
-                    createdAt = it.createdAt,
-                    content = it.content,
+            MessageListPortion(
+                totalCount = it.count,
+                messages = it.results.map {
+                    ChatMessage(
+                        id = it.id,
+                        senderId = it.senderId,
+                        senderFullName = it.sender.fullName,
+                        createdAt = it.createdAt,
+                        content = it.content,
+                    )
+                }
+            )
+        }
+    }
+
+    override suspend fun sendChatMessage(
+        chatId: Long,
+        message: String
+    ): Either<Unit, Throwable> {
+        return callApi {
+            sendChatMessage(
+                SendChatMessageRequest(
+                    SendChatMessageDto(
+                        recipientId = chatId,
+                        content = message,
+                    )
                 )
-            }
+            )
         }
     }
 

@@ -11,15 +11,7 @@ import pixel.cando.R
 import pixel.cando.data.models.ChatMessage
 import pixel.cando.data.remote.RemoteRepository
 import pixel.cando.ui._base.fragment.FlowRouter
-import pixel.cando.ui._base.list.ListAction
-import pixel.cando.ui._base.list.ListState
-import pixel.cando.ui._base.list.ParcelableListState
-import pixel.cando.ui._base.list.isLoading
-import pixel.cando.ui._base.list.listStateUpdater
-import pixel.cando.ui._base.list.map
-import pixel.cando.ui._base.list.plainState
 import pixel.cando.ui._base.tea.CoroutineScopeEffectHandler
-import pixel.cando.ui._base.tea.toFirst
 import pixel.cando.utils.MessageDisplayer
 import pixel.cando.utils.ResourceProvider
 import pixel.cando.utils.logError
@@ -35,17 +27,14 @@ object ChatMessagingLogic {
         model: ChatMessagingDataModel
     ): First<ChatMessagingDataModel, ChatMessagingEffect> {
         return when {
-            model.listState is ParcelableListState.NotInitialized -> {
-                listUpdater.update(
-                    model,
-                    ChatMessagingEvent.RefreshRequest
-                )
-                    .toFirst(model)
+            model.listState is ParcelableChatMessageListState.NotInitialized -> {
+                model.listState.reduce(
+                    ChatMessageListAction.Refresh()
+                ).toFirst(model)
             }
             model.listState.isLoading -> {
-                listUpdater.update(
-                    model,
-                    ChatMessagingEvent.StopListLoading
+                model.listState.reduce(
+                    ChatMessageListAction.StopLoading()
                 ).toFirst(model)
             }
             else -> {
@@ -61,82 +50,169 @@ object ChatMessagingLogic {
         event: ChatMessagingEvent
     ): Next<ChatMessagingDataModel, ChatMessagingEffect> {
         return when (event) {
-            is ChatMessagingEvent.RefreshRequest,
-            is ChatMessagingEvent.MessageListLoadSuccess,
-            is ChatMessagingEvent.MessageListLoadFailure,
-            is ChatMessagingEvent.LoadNextPage,
+            is ChatMessagingEvent.RefreshRequest -> {
+                model.listState.reduce(
+                    ChatMessageListAction.Refresh()
+                ).toNext(model)
+            }
+            is ChatMessagingEvent.MessagesLoadSuccess -> {
+                model.listState.reduce(
+                    ChatMessageListAction.MessagesLoadSuccess(
+                        totalCount = event.totalCount,
+                        items = event.messages,
+                    )
+                ).toNext(model)
+            }
+            is ChatMessagingEvent.MessagesLoadFailure -> {
+                model.listState.reduce(
+                    ChatMessageListAction.MessagesLoadFailure(
+                        error = event.error
+                    )
+                ).toNext(model)
+            }
+            is ChatMessagingEvent.LoadOldMessages -> {
+                model.listState.reduce(
+                    ChatMessageListAction.LoadOldMessages()
+                ).toNext(model)
+            }
+            is ChatMessagingEvent.LoadNewMessages -> {
+                model.listState.reduce(
+                    ChatMessageListAction.LoadNewMessages()
+                ).toNext(model)
+            }
             is ChatMessagingEvent.StopListLoading -> {
-                listUpdater.update(
-                    model,
-                    event
+                model.listState.reduce(
+                    ChatMessageListAction.StopLoading()
+                ).toNext(model)
+            }
+            is ChatMessagingEvent.MessageChanged -> {
+                val maySendMessage = event.message.isNotBlank()
+                if (maySendMessage != model.maySendMessage) {
+                    Next.next(
+                        model.copy(
+                            maySendMessage = maySendMessage,
+                        )
+                    )
+                } else Next.noChange()
+            }
+            is ChatMessagingEvent.SendMessage -> {
+                Next.next(
+                    model.copy(
+                        isSendingMessage = true,
+                    ),
+                    setOf(
+                        ChatMessagingEffect.SendMessage(
+                            chatId = model.chatId,
+                            message = event.message,
+                        )
+                    )
+                )
+            }
+            is ChatMessagingEvent.SendMessageSuccess -> {
+                val listStateAndEffects = model.listState.reduce(
+                    ChatMessageListAction.TotalCountChanged(
+                        totalCount = event.totalCount
+                    )
+                ).first.reduce(
+                    ChatMessageListAction.LoadNewMessages()
+                )
+                Next.next(
+                    model.copy(
+                        maySendMessage = false,
+                        isSendingMessage = false,
+                        listState = listStateAndEffects.first,
+                    ),
+                    listStateAndEffects.second.mapped(
+                        chatId = model.chatId
+                    ).plus(
+                        ChatMessagingEffect.ClearMessageInput
+                    )
+                )
+            }
+            is ChatMessagingEvent.SendMessageFailure -> {
+                Next.next(
+                    model.copy(
+                        isSendingMessage = false,
+                    ),
+                    setOf(
+                        ChatMessagingEffect.ShowUnexpectedError
+                    )
                 )
             }
         }
     }
-
-    private val listUpdater = listStateUpdater<
-            ChatMessagingDataModel,
-            ChatMessagingEvent,
-            ChatMessagingEffect,
-            ChatMessageDataModel>(
-        listStateExtractor = { listState },
-        eventMapper = {
-            when (it) {
-                is ChatMessagingEvent.RefreshRequest -> ListAction.Refresh()
-                is ChatMessagingEvent.MessageListLoadSuccess -> {
-                    if (it.messages.isNotEmpty()) ListAction.PageLoaded(it.messages)
-                    else ListAction.EmptyPageLoaded()
-                }
-                is ChatMessagingEvent.MessageListLoadFailure -> ListAction.PageLoadFailed(it.error)
-                is ChatMessagingEvent.LoadNextPage -> ListAction.LoadMore()
-                is ChatMessagingEvent.StopListLoading -> ListAction.StopLoading()
-                else -> null
-            }
-        },
-        modelUpdater = { copy(listState = it) },
-        loadPageEffectMapper = {
-            ChatMessagingEffect.LoadPage(
-                chatId = chatId,
-                page = it.page,
-            )
-        },
-        emitErrorEffectMapper = {
-            ChatMessagingEffect.ShowUnexpectedError
-        }
-    )
 
     fun effectHandler(
         messageDisplayer: MessageDisplayer,
         resourceProvider: ResourceProvider,
         remoteRepository: RemoteRepository,
         flowRouter: FlowRouter,
+        messageInputClearer: () -> Unit,
     ): Connectable<ChatMessagingEffect, ChatMessagingEvent> {
-        val loadNextPageJob = AtomicReference<Job>()
+        val loadPortionJob = AtomicReference<Job>()
         return CoroutineScopeEffectHandler { effect, output ->
             when (effect) {
-                is ChatMessagingEffect.LoadPage -> {
-                    loadNextPageJob.getAndSet(
+                is ChatMessagingEffect.LoadMessagesPortion -> {
+                    loadPortionJob.getAndSet(
                         launch {
                             val result = remoteRepository.getChatMessages(
                                 chatId = effect.chatId,
-                                page = effect.page,
+                                offset = effect.offset,
+                                count = effect.count,
                                 sinceDate = null,
                             )
                             result.onLeft {
                                 output.accept(
-                                    ChatMessagingEvent.MessageListLoadSuccess(
-                                        it.map { it.dataModel() }
+                                    ChatMessagingEvent.MessagesLoadSuccess(
+                                        totalCount = it.totalCount,
+                                        messages = it.messages.map { it.dataModel() },
                                     )
                                 )
                             }
                             result.onRight {
                                 logError(it)
                                 output.accept(
-                                    ChatMessagingEvent.MessageListLoadFailure(it)
+                                    ChatMessagingEvent.MessagesLoadFailure(it)
                                 )
                             }
                         }
                     )?.cancel()
+                }
+                is ChatMessagingEffect.SendMessage -> {
+                    val sendMessageResult = remoteRepository.sendChatMessage(
+                        chatId = effect.chatId,
+                        message = effect.message,
+                    )
+                    val messageListResult = remoteRepository.getChatMessages(
+                        chatId = effect.chatId,
+                        offset = 0,
+                        count = 0,
+                        sinceDate = null,
+                    )
+                    sendMessageResult.onLeft {
+                        messageListResult.onLeft {
+                            output.accept(
+                                ChatMessagingEvent.SendMessageSuccess(
+                                    totalCount = it.totalCount,
+                                )
+                            )
+                        }
+                        messageListResult.onRight {
+                            logError(it)
+                            output.accept(
+                                ChatMessagingEvent.SendMessageFailure
+                            )
+                        }
+                    }
+                    sendMessageResult.onRight {
+                        logError(it)
+                        output.accept(
+                            ChatMessagingEvent.SendMessageFailure
+                        )
+                    }
+                }
+                is ChatMessagingEffect.ClearMessageInput -> {
+                    messageInputClearer.invoke()
                 }
                 is ChatMessagingEffect.ShowUnexpectedError -> {
                     messageDisplayer.showMessage(
@@ -155,7 +231,9 @@ object ChatMessagingLogic {
     ) = ChatMessagingDataModel(
         chatId = chatId,
         loggedInUserId = loggedInUserId,
-        listState = ParcelableListState.NotInitialized(),
+        listState = ParcelableChatMessageListState.NotInitialized(),
+        maySendMessage = false,
+        isSendingMessage = false,
     )
 
 }
@@ -163,31 +241,56 @@ object ChatMessagingLogic {
 sealed class ChatMessagingEvent {
 
     // ui
-    object RefreshRequest : ChatMessagingEvent()
 
-    object LoadNextPage : ChatMessagingEvent()
+    object LoadOldMessages : ChatMessagingEvent()
+    object LoadNewMessages : ChatMessagingEvent()
+
+    data class SendMessage(
+        val message: String
+    ) : ChatMessagingEvent()
+
+    data class MessageChanged(
+        val message: String
+    ) : ChatMessagingEvent()
 
     // model
-    class MessageListLoadSuccess(
+    object RefreshRequest : ChatMessagingEvent()
+
+    data class MessagesLoadSuccess(
+        val totalCount: Int,
         val messages: List<ChatMessageDataModel>,
     ) : ChatMessagingEvent()
 
-    class MessageListLoadFailure(
+    data class MessagesLoadFailure(
         val error: Throwable,
     ) : ChatMessagingEvent()
 
     object StopListLoading : ChatMessagingEvent()
 
+    data class SendMessageSuccess(
+        val totalCount: Int,
+    ) : ChatMessagingEvent()
+
+    object SendMessageFailure : ChatMessagingEvent()
+
 }
 
 sealed class ChatMessagingEffect {
 
-    data class LoadPage(
+    data class LoadMessagesPortion(
         val chatId: Long,
-        val page: Int,
+        val offset: Int,
+        val count: Int,
+    ) : ChatMessagingEffect()
+
+    data class SendMessage(
+        val chatId: Long,
+        val message: String,
     ) : ChatMessagingEffect()
 
     object ShowUnexpectedError : ChatMessagingEffect()
+
+    object ClearMessageInput : ChatMessagingEffect()
 
 }
 
@@ -195,7 +298,9 @@ sealed class ChatMessagingEffect {
 data class ChatMessagingDataModel(
     val chatId: Long,
     val loggedInUserId: Long,
-    val listState: ParcelableListState<ChatMessageDataModel>
+    val listState: ParcelableChatMessageListState<ChatMessageDataModel>,
+    val maySendMessage: Boolean,
+    val isSendingMessage: Boolean,
 ) : Parcelable
 
 @Parcelize
@@ -208,14 +313,15 @@ data class ChatMessageDataModel(
 ) : Parcelable
 
 data class ChatMessagingViewModel(
-    val listState: ListState<ChatMessageViewModel>,
+    val listState: ChatMessageListState<ChatMessageViewModel>,
+    val isSendButtonVisible: Boolean,
+    val isMessageSendingProgressVisible: Boolean,
 )
 
 sealed class ChatMessageViewModel {
     abstract val id: Long
     abstract val date: String
     abstract val content: String
-
 
     data class Outgoing(
         override val id: Long,
@@ -253,7 +359,9 @@ fun ChatMessagingDataModel.viewModel(
                 loggedInUserId = loggedInUserId,
                 dateTimeFormatter = dateTimeFormatter,
             )
-        }//.reversed()
+        },
+        isSendButtonVisible = maySendMessage && isSendingMessage.not(),
+        isMessageSendingProgressVisible = isSendingMessage,
     )
 }
 
@@ -274,3 +382,42 @@ private fun ChatMessageDataModel.viewModel(
         content = content,
     )
 }
+
+private fun Set<ChatMessageListSideEffect>.mapped(
+    chatId: Long,
+) = map {
+    when (it) {
+        is ChatMessageListSideEffect.LoadPortion -> {
+            ChatMessagingEffect.LoadMessagesPortion(
+                chatId = chatId,
+                offset = it.offset,
+                count = it.count,
+            )
+        }
+        is ChatMessageListSideEffect.EmitError -> {
+            ChatMessagingEffect.ShowUnexpectedError
+        }
+    }
+}.toSet()
+
+private fun Pair<ParcelableChatMessageListState<ChatMessageDataModel>, Set<ChatMessageListSideEffect>>.toNext(
+    model: ChatMessagingDataModel
+) = Next.next(
+    model.copy(
+        listState = first,
+    ),
+    second.mapped(
+        chatId = model.chatId,
+    )
+)
+
+private fun Pair<ParcelableChatMessageListState<ChatMessageDataModel>, Set<ChatMessageListSideEffect>>.toFirst(
+    model: ChatMessagingDataModel
+) = First.first(
+    model.copy(
+        listState = first,
+    ),
+    second.mapped(
+        chatId = model.chatId,
+    )
+)

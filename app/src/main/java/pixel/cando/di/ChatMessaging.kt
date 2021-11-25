@@ -1,8 +1,10 @@
 package pixel.cando.di
 
+import androidx.lifecycle.lifecycleScope
 import com.spotify.mobius.Mobius
 import com.spotify.mobius.Update
 import com.spotify.mobius.android.AndroidLogger
+import kotlinx.coroutines.launch
 import pixel.cando.data.local.LoggedInUserIdProvider
 import pixel.cando.data.remote.RemoteRepository
 import pixel.cando.ui._base.fragment.FlowRouter
@@ -51,6 +53,11 @@ fun ChatMessagingFragment.setup(
                 resourceProvider = resourceProvider,
                 remoteRepository = remoteRepository,
                 flowRouter = flowRouter,
+                messageInputClearer = {
+                    lifecycleScope.launch {
+                        clearMessageInput()
+                    }
+                },
             )
         )
             .logger(AndroidLogger.tag("ChatMessaging")),
