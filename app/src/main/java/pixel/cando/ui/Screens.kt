@@ -74,10 +74,10 @@ object Screens {
     }
 
     fun chatMessaging(
-        chatId: Long
+        userId: Long
     ) = FragmentScreen {
         ChatMessagingFragment()
-            .withArgumentSet(chatId)
+            .withArgumentSet(userId)
     }
 
     fun empty() = FragmentScreen { Fragment() } //only for development

@@ -46,7 +46,11 @@ class ChatMessagingFragment : ViewBindingFragment<FragmentChatMessagingBinding>(
     private val adapter by lazy {
         createDifferAdapter(
             outgoingMessageAdapterDelegate(),
-            incomingMessageAdapterDelegate(),
+            incomingMessageAdapterDelegate {
+                eventSender?.sendEvent(
+                    ChatMessagingEvent.MessageGetVisible(it)
+                )
+            },
             noDataListPlaceholder<ChatMessagingItem.NoDataPlaceholder, ChatMessagingItem>(),
             listInitialLoader<ChatMessagingItem.InitialLoader, ChatMessagingItem>(),
             listMoreLoader<ChatMessagingItem.MoreLoader, ChatMessagingItem>(),
@@ -203,6 +207,7 @@ private fun outgoingMessageAdapterDelegate(
 )
 
 private fun incomingMessageAdapterDelegate(
+    onGetVisible: (Long) -> Unit,
 ) = createDifferAdapterDelegate<
         ChatMessagingItem.IncomingMessage,
         ChatMessagingItem,
@@ -210,6 +215,9 @@ private fun incomingMessageAdapterDelegate(
         >(
     viewBindingCreator = ListItemChatIncomingMessageBinding::inflate,
     viewHolderBinding = {
+        onViewAttachedToWindow {
+            onGetVisible(item.message.id)
+        }
         bind {
             binding.contentLabel.text = item.message.content
             binding.dateLabel.text = item.message.date

@@ -31,7 +31,7 @@ fun ChatMessagingFragment.setup(
         return
     }
 
-    val chatId = getArgument<Long>()
+    val userId = getArgument<Long>()
 
     val loggedInUserId = loggedInUserIdProvider.loggedInUserId
         ?: return
@@ -66,7 +66,7 @@ fun ChatMessagingFragment.setup(
         },
         defaultStateProvider = {
             ChatMessagingLogic.initialModel(
-                chatId = chatId,
+                userId = userId,
                 loggedInUserId = loggedInUserId,
             )
         },

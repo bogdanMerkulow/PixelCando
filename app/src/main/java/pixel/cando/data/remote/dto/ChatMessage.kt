@@ -47,3 +47,9 @@ data class SendChatMessageDto(
     @Json(name = "recipientId") val recipientId: Long,
     @Json(name = "content") val content: String,
 )
+
+@JsonClass(generateAdapter = true)
+data class ReadChatMessagesRequest(
+    @Json(name = "patientId") val patientId: Long,
+    @Json(name = "until") val until: LocalDateTime,
+)

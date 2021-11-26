@@ -30,6 +30,7 @@ import pixel.cando.data.remote.dto.GetExamRequest
 import pixel.cando.data.remote.dto.PatientGetRequest
 import pixel.cando.data.remote.dto.PatientListFilterDto
 import pixel.cando.data.remote.dto.PatientListRequest
+import pixel.cando.data.remote.dto.ReadChatMessagesRequest
 import pixel.cando.data.remote.dto.RejectPhotoRequest
 import pixel.cando.data.remote.dto.SendChatMessageDto
 import pixel.cando.data.remote.dto.SendChatMessageRequest
@@ -98,15 +99,20 @@ interface RemoteRepository {
     ): Either<List<ChatItem>, Throwable>
 
     suspend fun getChatMessages(
-        chatId: Long,
+        userId: Long,
         offset: Int,
         count: Int,
         sinceDate: LocalDateTime?,
     ): Either<MessageListPortion, Throwable>
 
     suspend fun sendChatMessage(
-        chatId: Long,
+        userId: Long,
         message: String,
+    ): Either<Unit, Throwable>
+
+    suspend fun readChatMessages(
+        userId: Long,
+        until: LocalDateTime,
     ): Either<Unit, Throwable>
 
 }
@@ -414,7 +420,7 @@ class RealRemoteRepository(
     }
 
     override suspend fun getChatMessages(
-        chatId: Long,
+        userId: Long,
         offset: Int,
         count: Int,
         sinceDate: LocalDateTime?
@@ -422,7 +428,7 @@ class RealRemoteRepository(
         return callApi {
             getChatMessages(
                 ChatMessageListRequest(
-                    userId = chatId,
+                    userId = userId,
                     offset = offset,
                     limit = count,
                     filters = sinceDate?.let {
@@ -449,16 +455,30 @@ class RealRemoteRepository(
     }
 
     override suspend fun sendChatMessage(
-        chatId: Long,
+        userId: Long,
         message: String
     ): Either<Unit, Throwable> {
         return callApi {
             sendChatMessage(
                 SendChatMessageRequest(
                     SendChatMessageDto(
-                        recipientId = chatId,
+                        recipientId = userId,
                         content = message,
                     )
+                )
+            )
+        }
+    }
+
+    override suspend fun readChatMessages(
+        userId: Long,
+        until: LocalDateTime
+    ): Either<Unit, Throwable> {
+        return callApi {
+            readChatMessages(
+                ReadChatMessagesRequest(
+                    patientId = userId,
+                    until = until,
                 )
             )
         }

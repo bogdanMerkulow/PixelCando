@@ -85,7 +85,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@color/blue_malibu"
-        android:paddingHorizontal="@dimen/spacing_2"
+        android:paddingHorizontal="@dimen/spacing_4"
         android:textColor="@color/white"
         android:textSize="10sp"
         app:layout_constraintBottom_toBottomOf="parent"

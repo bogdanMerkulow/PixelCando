@@ -104,7 +104,7 @@ object ChatListLogic {
                 Next.dispatch(
                     setOf(
                         ChatListEffect.NavigateToChat(
-                            chatId = event.chatId,
+                            userId = event.chatId,
                         )
                     )
                 )
@@ -192,7 +192,7 @@ object ChatListLogic {
                 is ChatListEffect.NavigateToChat -> {
                     flowRouter.navigateTo(
                         Screens.chatMessaging(
-                            chatId = effect.chatId,
+                            userId = effect.userId,
                         )
                     )
                 }
@@ -260,7 +260,7 @@ sealed class ChatListEffect {
     object LoadFolders : ChatListEffect()
 
     data class NavigateToChat(
-        val chatId: Long,
+        val userId: Long,
     ) : ChatListEffect()
 
     object ShowUnexpectedError : ChatListEffect()
