@@ -13,7 +13,7 @@ android {
         applicationId = "com.pixelcando.fityouroutfit"
         minSdk = 21
         targetSdk = 31
-        versionCode = 10
+        versionCode = 11
         versionName = "1.0"
         resourceConfigurations.add("en")
         resourceConfigurations.add("it")
