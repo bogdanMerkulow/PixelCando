@@ -11,7 +11,6 @@ import pixel.cando.ui._base.fragment.ViewBindingFragment
 import pixel.cando.ui._base.list.ListItem
 import pixel.cando.ui._base.list.createDifferAdapter
 import pixel.cando.ui._base.list.createDifferAdapterDelegate
-import pixel.cando.ui._base.list.isRefreshing
 import pixel.cando.ui._base.tea.EventSender
 import pixel.cando.ui._base.tea.EventSenderNeeder
 import pixel.cando.ui._base.tea.ViewModelRender
@@ -21,7 +20,6 @@ import pixel.cando.ui._commmon.NoDataListPlaceholder
 import pixel.cando.ui._commmon.listInitialLoader
 import pixel.cando.ui._commmon.listMoreLoader
 import pixel.cando.ui._commmon.noDataListPlaceholder
-import pixel.cando.ui._commmon.toListItems
 import pixel.cando.utils.addLoadMoreListener
 import pixel.cando.utils.context
 import pixel.cando.utils.diffuser.Diffuser
@@ -155,6 +153,21 @@ class ChatListFragment : ViewBindingFragment<FragmentChatListBinding>(
     ) {
         diffuserProvider?.invoke()?.run(viewModel)
     }
+
+    override fun onResume() {
+        super.onResume()
+        eventSender?.sendEvent(
+            ChatListEvent.ScreenGotVisible
+        )
+    }
+
+    override fun onPause() {
+        super.onPause()
+        eventSender?.sendEvent(
+            ChatListEvent.ScreenGotInvisible
+        )
+    }
+
 }
 
 private sealed class ChatListItem : ListItem {
@@ -208,3 +221,28 @@ private fun chatAdapterDelegate(
     }
 )
 
+private fun <T, R> ChatListState<T>.toListItems(
+    noDataPlaceholderProvider: () -> R,
+    initialLoaderProvider: () -> R,
+    moreLoaderProvider: () -> R,
+    itemMapper: List<T>.() -> List<R>,
+): List<R> = when (this) {
+    is ChatListState.NotInitialized,
+    is ChatListState.EmptyError -> emptyList()
+    is ChatListState.Empty -> listOf(
+        noDataPlaceholderProvider.invoke()
+    )
+    is ChatListState.EmptyProgress -> listOf(
+        initialLoaderProvider.invoke()
+    )
+    else -> {
+        val items: List<R> = itemMapper.invoke(
+            loadedItems()
+        )
+        if (this is ChatListState.NextPageLoading) {
+            items.plus(moreLoaderProvider.invoke())
+        } else {
+            items
+        }
+    }
+}

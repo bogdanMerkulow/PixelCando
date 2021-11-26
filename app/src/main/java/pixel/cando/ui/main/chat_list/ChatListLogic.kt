@@ -7,6 +7,8 @@ import com.spotify.mobius.Connectable
 import com.spotify.mobius.First
 import com.spotify.mobius.Next
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import pixel.cando.R
@@ -15,16 +17,8 @@ import pixel.cando.data.models.Folder
 import pixel.cando.data.remote.RemoteRepository
 import pixel.cando.ui.Screens
 import pixel.cando.ui._base.fragment.FlowRouter
-import pixel.cando.ui._base.list.ListAction
-import pixel.cando.ui._base.list.ListState
-import pixel.cando.ui._base.list.ParcelableListState
-import pixel.cando.ui._base.list.isLoading
-import pixel.cando.ui._base.list.listStateUpdater
-import pixel.cando.ui._base.list.map
-import pixel.cando.ui._base.list.plainState
 import pixel.cando.ui._base.tea.CoroutineScopeEffectHandler
 import pixel.cando.ui._base.tea.mapEffects
-import pixel.cando.ui._base.tea.toFirst
 import pixel.cando.utils.MessageDisplayer
 import pixel.cando.utils.ResourceProvider
 import pixel.cando.utils.logError
@@ -43,20 +37,17 @@ object ChatListLogic {
         model: ChatListDataModel
     ): First<ChatListDataModel, ChatListEffect> {
         return when {
-            model.listState is ParcelableListState.NotInitialized -> {
-                listUpdater.update(
-                    model,
-                    ChatListEvent.RefreshRequest
-                )
-                    .toFirst(model)
+            model.listState is ParcelableChatListState.NotInitialized -> {
+                model.listState.reduce(
+                    ChatListAction.Refresh()
+                ).toFirst(model)
                     .mapEffects {
                         it.plus(ChatListEffect.LoadFolders)
                     }
             }
             model.listState.isLoading -> {
-                listUpdater.update(
-                    model,
-                    ChatListEvent.StopListLoading
+                model.listState.reduce(
+                    ChatListAction.StopLoading()
                 ).toFirst(model)
             }
             else -> {
@@ -72,15 +63,47 @@ object ChatListLogic {
         event: ChatListEvent
     ): Next<ChatListDataModel, ChatListEffect> {
         return when (event) {
-            is ChatListEvent.RefreshRequest,
-            is ChatListEvent.ChatListLoadSuccess,
-            is ChatListEvent.ChatListLoadFailure,
-            is ChatListEvent.LoadNextPage,
+            is ChatListEvent.RefreshRequest -> {
+                model.listState.reduce(
+                    ChatListAction.Refresh()
+                ).toNext(model)
+            }
+            is ChatListEvent.ChatListLoadSuccess -> {
+                val next = model.listState.reduce(
+                    if (event.chats.isNotEmpty()) ChatListAction.PageLoaded(event.chats)
+                    else ChatListAction.EmptyPageLoaded()
+                ).toNext(model)
+
+                next.mapEffects {
+                    it.plus(
+                        ChatListEffect.StartPeriodicRefresh(
+                            folderId = model.currentFolderId.ignoreAllFolder(),
+                            pageCount = next.modelOrElse(model).listState.pageCount,
+                        )
+                    )
+                }
+            }
+            is ChatListEvent.ChatListLoadFailure -> {
+                model.listState.reduce(
+                    ChatListAction.PageLoadFailed(event.error)
+                ).toNext(model)
+            }
+            is ChatListEvent.LoadNextPage -> {
+                model.listState.reduce(
+                    ChatListAction.LoadMore()
+                ).toNext(model)
+            }
             is ChatListEvent.StopListLoading -> {
-                listUpdater.update(
-                    model,
-                    event
-                )
+                model.listState.reduce(
+                    ChatListAction.StopLoading()
+                ).toNext(model)
+            }
+            is ChatListEvent.ChatListRefreshed -> {
+                model.listState.reduce(
+                    ChatListAction.ContentRefreshed(
+                        items = event.chats,
+                    )
+                ).toNext(model)
             }
             is ChatListEvent.FolderListLoaded -> {
                 Next.next(
@@ -90,15 +113,14 @@ object ChatListLogic {
                 )
             }
             is ChatListEvent.PickFolder -> {
-                if (event.folderId == model.currentFolderId)
-                    return Next.noChange()
-                val newModel = model.copy(
-                    currentFolderId = event.folderId
-                )
-                listUpdater.update(
-                    newModel,
-                    event
-                )
+                if (event.folderId != model.currentFolderId) {
+                    val newModel = model.copy(
+                        currentFolderId = event.folderId
+                    )
+                    newModel.listState.reduce(
+                        ChatListAction.Restart()
+                    ).toNext(newModel)
+                } else Next.noChange()
             }
             is ChatListEvent.PickChat -> {
                 Next.dispatch(
@@ -109,40 +131,28 @@ object ChatListLogic {
                     )
                 )
             }
+            is ChatListEvent.ScreenGotVisible -> {
+                val pageCount = model.listState.pageCount
+                if (pageCount != 0) {
+                    Next.dispatch(
+                        setOf(
+                            ChatListEffect.StartPeriodicRefresh(
+                                folderId = model.currentFolderId.ignoreAllFolder(),
+                                pageCount = model.listState.pageCount,
+                            )
+                        )
+                    )
+                } else Next.noChange()
+            }
+            is ChatListEvent.ScreenGotInvisible -> {
+                Next.dispatch(
+                    setOf(
+                        ChatListEffect.StopPeriodicRefresh
+                    )
+                )
+            }
         }
     }
-
-    private val listUpdater = listStateUpdater<
-            ChatListDataModel,
-            ChatListEvent,
-            ChatListEffect,
-            ChatItemDataModel>(
-        listStateExtractor = { listState },
-        eventMapper = {
-            when (it) {
-                is ChatListEvent.RefreshRequest -> ListAction.Refresh()
-                is ChatListEvent.PickFolder -> ListAction.Restart()
-                is ChatListEvent.ChatListLoadSuccess -> {
-                    if (it.chats.isNotEmpty()) ListAction.PageLoaded(it.chats)
-                    else ListAction.EmptyPageLoaded()
-                }
-                is ChatListEvent.ChatListLoadFailure -> ListAction.PageLoadFailed(it.error)
-                is ChatListEvent.LoadNextPage -> ListAction.LoadMore()
-                is ChatListEvent.StopListLoading -> ListAction.StopLoading()
-                else -> null
-            }
-        },
-        modelUpdater = { copy(listState = it) },
-        loadPageEffectMapper = {
-            ChatListEffect.LoadPage(
-                folderId = currentFolderId.takeIf { it != ALL_FOLDER_ID },
-                page = it.page,
-            )
-        },
-        emitErrorEffectMapper = {
-            ChatListEffect.ShowUnexpectedError
-        }
-    )
 
     fun effectHandler(
         messageDisplayer: MessageDisplayer,
@@ -151,6 +161,7 @@ object ChatListLogic {
         flowRouter: FlowRouter,
     ): Connectable<ChatListEffect, ChatListEvent> {
         val loadNextPageJob = AtomicReference<Job>()
+        val refreshChatsJob = AtomicReference<Job>()
         return CoroutineScopeEffectHandler { effect, output ->
             when (effect) {
                 is ChatListEffect.LoadPage -> {
@@ -189,6 +200,32 @@ object ChatListLogic {
                         logError(it)
                     }
                 }
+                is ChatListEffect.StartPeriodicRefresh -> {
+                    refreshChatsJob.getAndSet(
+                        launch {
+                            while (isActive) {
+                                val result = remoteRepository.getChatsForPages(
+                                    folderId = effect.folderId,
+                                    pageCount = effect.pageCount,
+                                )
+                                result.onLeft {
+                                    output.accept(
+                                        ChatListEvent.ChatListRefreshed(
+                                            chats = it.map { it.dataModel }
+                                        )
+                                    )
+                                }
+                                result.onRight {
+                                    logError(it)
+                                }
+                                delay(2_000L)
+                            }
+                        }
+                    )?.cancel()
+                }
+                is ChatListEffect.StopPeriodicRefresh -> {
+                    refreshChatsJob.get()?.cancel()
+                }
                 is ChatListEffect.NavigateToChat -> {
                     flowRouter.navigateTo(
                         Screens.chatMessaging(
@@ -213,7 +250,7 @@ object ChatListLogic {
         loggedInUserId = loggedInUserId,
         currentFolderId = ALL_FOLDER_ID,
         folders = emptyList(),
-        listState = ParcelableListState.NotInitialized(),
+        listState = ParcelableChatListState.NotInitialized(),
     )
 
 }
@@ -233,12 +270,15 @@ sealed class ChatListEvent {
         val chatId: Long,
     ) : ChatListEvent()
 
+    object ScreenGotVisible : ChatListEvent()
+    object ScreenGotInvisible : ChatListEvent()
+
     // model
-    class ChatListLoadSuccess(
+    data class ChatListLoadSuccess(
         val chats: List<ChatItemDataModel>,
     ) : ChatListEvent()
 
-    class ChatListLoadFailure(
+    data class ChatListLoadFailure(
         val error: Throwable,
     ) : ChatListEvent()
 
@@ -246,6 +286,10 @@ sealed class ChatListEvent {
 
     data class FolderListLoaded(
         val folders: List<FolderDataModel>
+    ) : ChatListEvent()
+
+    data class ChatListRefreshed(
+        val chats: List<ChatItemDataModel>,
     ) : ChatListEvent()
 
 }
@@ -265,6 +309,13 @@ sealed class ChatListEffect {
 
     object ShowUnexpectedError : ChatListEffect()
 
+    data class StartPeriodicRefresh(
+        val folderId: Long?,
+        val pageCount: Int,
+    ) : ChatListEffect()
+
+    object StopPeriodicRefresh : ChatListEffect()
+
 }
 
 @Parcelize
@@ -272,7 +323,7 @@ data class ChatListDataModel(
     val loggedInUserId: Long,
     val currentFolderId: Long,
     val folders: List<FolderDataModel>,
-    val listState: ParcelableListState<ChatItemDataModel>,
+    val listState: ParcelableChatListState<ChatItemDataModel>,
 ) : Parcelable
 
 @Parcelize
@@ -302,7 +353,7 @@ data class ChatRecentMessageDataModel(
 data class ChatListViewModel(
     val folders: List<FolderViewModel>,
     val pickedFolderIndex: Int,
-    val listState: ListState<ChatItemViewModel>
+    val listState: ChatListState<ChatItemViewModel>
 )
 
 data class FolderViewModel(
@@ -405,3 +456,49 @@ private val ChatItem.dataModel: ChatItemDataModel
             )
         }
     )
+
+private fun Set<ChatListSideEffect>.mapped(
+    folderId: Long?
+) = map {
+    when (it) {
+        is ChatListSideEffect.LoadPage -> {
+            ChatListEffect.LoadPage(
+                folderId = folderId,
+                page = it.page,
+            )
+        }
+        is ChatListSideEffect.EmitError -> {
+            ChatListEffect.ShowUnexpectedError
+        }
+    }
+}.toSet()
+
+private fun Pair<ParcelableChatListState<ChatItemDataModel>, Set<ChatListSideEffect>>.toNext(
+    model: ChatListDataModel
+) = second.mapped(
+    folderId = model.currentFolderId.ignoreAllFolder(),
+).let { effects ->
+    if (model.listState == first) {
+        Next.dispatch(effects)
+    } else {
+        Next.next(
+            model.copy(
+                listState = first,
+            ),
+            effects
+        )
+    }
+}
+
+private fun Pair<ParcelableChatListState<ChatItemDataModel>, Set<ChatListSideEffect>>.toFirst(
+    model: ChatListDataModel
+) = First.first(
+    model.copy(
+        listState = first,
+    ),
+    second.mapped(
+        folderId = model.currentFolderId.ignoreAllFolder(),
+    )
+)
+
+private fun Long.ignoreAllFolder() = takeIf { it != ALL_FOLDER_ID }

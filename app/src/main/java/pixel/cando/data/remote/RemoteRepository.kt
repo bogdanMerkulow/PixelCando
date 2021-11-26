@@ -16,6 +16,7 @@ import pixel.cando.data.models.PatientSingleItemInfo
 import pixel.cando.data.models.UploadPhotoFailure
 import pixel.cando.data.remote.dto.AccountDto
 import pixel.cando.data.remote.dto.AccountUserDto
+import pixel.cando.data.remote.dto.ChatItemDto
 import pixel.cando.data.remote.dto.ChatListFilterDto
 import pixel.cando.data.remote.dto.ChatListRequest
 import pixel.cando.data.remote.dto.ChatMessageListFilterDto
@@ -96,6 +97,11 @@ interface RemoteRepository {
     suspend fun getChats(
         folderId: Long?,
         page: Int,
+    ): Either<List<ChatItem>, Throwable>
+
+    suspend fun getChatsForPages(
+        folderId: Long?,
+        pageCount: Int,
     ): Either<List<ChatItem>, Throwable>
 
     suspend fun getChatMessages(
@@ -400,21 +406,29 @@ class RealRemoteRepository(
             )
         }.mapOnlyLeft {
             it.results.map {
-                ChatItem(
-                    id = it.id,
-                    fullName = it.fullName,
-                    avatarText = it.avatar.abbr,
-                    avatarBgColor = it.avatar.color,
-                    unreadCount = it.unreadCount,
-                    recentMessage = it.recentMessage?.let {
-                        ChatRecentMessage(
-                            id = it.id,
-                            createdAt = it.createdAt,
-                            senderId = it.senderId,
-                            content = it.content,
-                        )
-                    }
+                it.model()
+            }
+        }
+    }
+
+    override suspend fun getChatsForPages(
+        folderId: Long?,
+        pageCount: Int
+    ): Either<List<ChatItem>, Throwable> {
+        return callApi {
+            getChats(
+                ChatListRequest(
+                    offset = 0,
+                    limit = pageSize * pageCount,
+                    filters = ChatListFilterDto(
+                        query = null,
+                        folderId = folderId,
+                    )
                 )
+            )
+        }.mapOnlyLeft {
+            it.results.map {
+                it.model()
             }
         }
     }
@@ -542,4 +556,21 @@ private fun AccountUserDto.model(
     country = country,
     city = city,
     postalCode = postalCode,
+)
+
+private fun ChatItemDto.model(
+) = ChatItem(
+    id = id,
+    fullName = fullName,
+    avatarText = avatar.abbr,
+    avatarBgColor = avatar.color,
+    unreadCount = unreadCount,
+    recentMessage = recentMessage?.let {
+        ChatRecentMessage(
+            id = it.id,
+            createdAt = it.createdAt,
+            senderId = it.senderId,
+            content = it.content,
+        )
+    }
 )
