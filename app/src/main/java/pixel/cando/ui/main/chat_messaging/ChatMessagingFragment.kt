@@ -157,6 +157,20 @@ class ChatMessagingFragment : ViewBindingFragment<FragmentChatMessagingBinding>(
         diffuserProvider?.invoke()?.run(viewModel)
     }
 
+    override fun onResume() {
+        super.onResume()
+        eventSender?.sendEvent(
+            ChatMessagingEvent.ScreenGotVisible
+        )
+    }
+
+    override fun onPause() {
+        super.onPause()
+        eventSender?.sendEvent(
+            ChatMessagingEvent.ScreenGotInvisible
+        )
+    }
+
     fun clearMessageInput() {
         viewBinding?.messageField?.text?.clear()
     }

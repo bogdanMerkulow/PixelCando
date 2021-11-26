@@ -14,7 +14,6 @@ import pixel.cando.data.models.ChatMessage
 import pixel.cando.data.remote.RemoteRepository
 import pixel.cando.ui._base.fragment.FlowRouter
 import pixel.cando.ui._base.tea.CoroutineScopeEffectHandler
-import pixel.cando.ui._base.tea.mapEffects
 import pixel.cando.utils.MessageDisplayer
 import pixel.cando.utils.ResourceProvider
 import pixel.cando.utils.logError
@@ -45,12 +44,6 @@ object ChatMessagingLogic {
                     model
                 )
             }
-        }.mapEffects {
-            it.plus(
-                ChatMessagingEffect.StartPeriodicCheckForNewMessages(
-                    userId = model.userId,
-                )
-            )
         }
     }
 
@@ -161,6 +154,22 @@ object ChatMessagingLogic {
                     ChatMessageListAction.LoadNewMessages()
                 ).toNext(model)
             }
+            is ChatMessagingEvent.ScreenGotVisible -> {
+                Next.dispatch(
+                    setOf(
+                        ChatMessagingEffect.StartPeriodicCheckForNewMessages(
+                            userId = model.userId,
+                        )
+                    )
+                )
+            }
+            is ChatMessagingEvent.ScreenGotInvisible -> {
+                Next.dispatch(
+                    setOf(
+                        ChatMessagingEffect.StopPeriodicCheckForNewMessages
+                    )
+                )
+            }
         }
     }
 
@@ -174,6 +183,7 @@ object ChatMessagingLogic {
         val loadPortionJob = AtomicReference<Job>()
         val readMessagesJob = AtomicReference<Job>()
         val lastReadMessageDate = AtomicReference<LocalDateTime>()
+        val periodicCheckForNewMessagesJob = AtomicReference<Job>()
         return CoroutineScopeEffectHandler { effect, output ->
             when (effect) {
                 is ChatMessagingEffect.LoadMessagesPortion -> {
@@ -261,25 +271,32 @@ object ChatMessagingLogic {
                     }
                 }
                 is ChatMessagingEffect.StartPeriodicCheckForNewMessages -> {
-                    while (isActive) {
-                        val result = remoteRepository.getChatMessages(
-                            userId = effect.userId,
-                            offset = 0,
-                            count = 0,
-                            sinceDate = null,
-                        )
-                        result.onLeft {
-                            output.accept(
-                                ChatMessagingEvent.ChatMessageCountReceived(
-                                    totalCount = it.totalCount
+                    periodicCheckForNewMessagesJob.getAndSet(
+                        launch {
+                            while (isActive) {
+                                val result = remoteRepository.getChatMessages(
+                                    userId = effect.userId,
+                                    offset = 0,
+                                    count = 0,
+                                    sinceDate = null,
                                 )
-                            )
+                                result.onLeft {
+                                    output.accept(
+                                        ChatMessagingEvent.ChatMessageCountReceived(
+                                            totalCount = it.totalCount
+                                        )
+                                    )
+                                }
+                                result.onRight {
+                                    logError(it)
+                                }
+                                delay(2_000L)
+                            }
                         }
-                        result.onRight {
-                            logError(it)
-                        }
-                        delay(2_000L)
-                    }
+                    )?.cancel()
+                }
+                is ChatMessagingEffect.StopPeriodicCheckForNewMessages -> {
+                    periodicCheckForNewMessagesJob.get()?.cancel()
                 }
                 is ChatMessagingEffect.ClearMessageInput -> {
                     messageInputClearer.invoke()
@@ -327,6 +344,9 @@ sealed class ChatMessagingEvent {
         val messageId: Long,
     ) : ChatMessagingEvent()
 
+    object ScreenGotVisible : ChatMessagingEvent()
+    object ScreenGotInvisible : ChatMessagingEvent()
+
     // model
     object RefreshRequest : ChatMessagingEvent()
 
@@ -371,6 +391,8 @@ sealed class ChatMessagingEffect {
     data class StartPeriodicCheckForNewMessages(
         val userId: Long,
     ) : ChatMessagingEffect()
+
+    object StopPeriodicCheckForNewMessages : ChatMessagingEffect()
 
     data class ReadChatMessages(
         val userId: Long,
