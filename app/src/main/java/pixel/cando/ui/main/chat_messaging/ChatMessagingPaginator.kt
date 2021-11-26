@@ -94,6 +94,16 @@ fun <T> ChatMessageListState<T>.reduce(
                     )
                 )
             }
+            is ChatMessageListAction.TotalCountChanged -> {
+                if (action.totalCount != 0) {
+                    ChatMessageListState.EmptyProgress<T>() to setOf(
+                        ChatMessageListSideEffect.LoadPortion(
+                            offset = 0,
+                            count = portionSize,
+                        )
+                    )
+                } else this to emptySet()
+            }
             else -> this to emptySet()
         }
     }
@@ -166,13 +176,29 @@ fun <T> ChatMessageListState<T>.reduce(
                 } else this to emptySet()
             }
             is ChatMessageListAction.TotalCountChanged -> {
-                val diff = action.totalCount - this.totalCount
-                val newOffset = currentOffset + diff
-                ChatMessageListState.Data(
-                    totalCount = action.totalCount,
-                    currentOffset = newOffset,
-                    items = this.items,
-                ) to setOf()
+                if (action.totalCount == this.totalCount) {
+                    this to emptySet()
+                } else if (this.totalCount < action.totalCount) {
+                    val diff = action.totalCount - this.totalCount
+                    val newOffset = currentOffset + diff
+                    ChatMessageListState.NewMessagesLoading(
+                        totalCount = action.totalCount,
+                        currentOffset = newOffset,
+                        items = this.items,
+                    ) to setOf(
+                        ChatMessageListSideEffect.LoadPortion(
+                            offset = 0,
+                            count = diff,
+                        )
+                    )
+                } else {
+                    ChatMessageListState.EmptyProgress<T>() to setOf(
+                        ChatMessageListSideEffect.LoadPortion(
+                            offset = 0,
+                            count = portionSize,
+                        )
+                    )
+                }
             }
             else -> this to emptySet()
         }

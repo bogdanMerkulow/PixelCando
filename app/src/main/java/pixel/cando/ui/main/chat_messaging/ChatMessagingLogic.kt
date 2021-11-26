@@ -158,8 +158,6 @@ object ChatMessagingLogic {
                     ChatMessageListAction.TotalCountChanged(
                         totalCount = event.totalCount
                     )
-                ).first.reduce(
-                    ChatMessageListAction.LoadNewMessages()
                 ).toNext(model)
             }
             is ChatMessagingEvent.ScreenGotVisible -> {
