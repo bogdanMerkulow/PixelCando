@@ -23,6 +23,7 @@ import pixel.cando.ui._commmon.noDataListPlaceholder
 import pixel.cando.utils.addLoadMoreListener
 import pixel.cando.utils.context
 import pixel.cando.utils.diffuser.Diffuser
+import pixel.cando.utils.diffuser.Diffuser.into
 import pixel.cando.utils.diffuser.DiffuserCreator
 import pixel.cando.utils.diffuser.DiffuserProvider
 import pixel.cando.utils.diffuser.DiffuserProviderNeeder
@@ -106,6 +107,10 @@ class ChatMessagingFragment : ViewBindingFragment<FragmentChatMessagingBinding>(
                 { it.isMessageSendingProgressVisible },
                 intoVisibleOrGone(viewBinding.messageSendingProgressBar)
             ),
+            map(
+                { it.title },
+                into { viewBinding.toolbar.title = it }
+            )
         )
     }
 
@@ -114,6 +119,13 @@ class ChatMessagingFragment : ViewBindingFragment<FragmentChatMessagingBinding>(
         savedInstanceState: Bundle?
     ) {
         super.onViewBindingCreated(viewBinding, savedInstanceState)
+
+        viewBinding.toolbar.setNavigationOnClickListener {
+            eventSender?.sendEvent(
+                ChatMessagingEvent.TapExit
+            )
+        }
+
         viewBinding.list.setHasFixedSize(true)
         viewBinding.list.layoutManager = layoutManager
         viewBinding.list.adapter = adapter

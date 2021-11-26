@@ -26,6 +26,7 @@ import pixel.cando.utils.addLoadMoreListener
 import pixel.cando.utils.context
 import pixel.cando.utils.diffuser.Diffuser
 import pixel.cando.utils.diffuser.Diffuser.into
+import pixel.cando.utils.diffuser.Diffuser.intoAlways
 import pixel.cando.utils.diffuser.DiffuserCreator
 import pixel.cando.utils.diffuser.DiffuserProvider
 import pixel.cando.utils.diffuser.DiffuserProviderNeeder
@@ -63,7 +64,7 @@ class ChatListFragment : ViewBindingFragment<FragmentChatListBinding>(
         return Diffuser(
             map(
                 { it.listState.isRefreshing },
-                into { viewBinding.swipeRefresh.isRefreshing = it }
+                intoAlways { viewBinding.swipeRefresh.isRefreshing = it }
             ),
             map(
                 { it.folders },

@@ -14,6 +14,7 @@ import pixel.cando.data.models.ChatMessage
 import pixel.cando.data.remote.RemoteRepository
 import pixel.cando.ui._base.fragment.FlowRouter
 import pixel.cando.ui._base.tea.CoroutineScopeEffectHandler
+import pixel.cando.ui._base.tea.mapEffects
 import pixel.cando.utils.MessageDisplayer
 import pixel.cando.utils.ResourceProvider
 import pixel.cando.utils.logError
@@ -33,6 +34,13 @@ object ChatMessagingLogic {
                 model.listState.reduce(
                     ChatMessageListAction.Refresh()
                 ).toFirst(model)
+                    .mapEffects {
+                        it.plus(
+                            ChatMessagingEffect.LoadPatientFullName(
+                                userId = model.userId,
+                            )
+                        )
+                    }
             }
             model.listState.isLoading -> {
                 model.listState.reduce(
@@ -170,6 +178,20 @@ object ChatMessagingLogic {
                     )
                 )
             }
+            is ChatMessagingEvent.TapExit -> {
+                Next.dispatch(
+                    setOf(
+                        ChatMessagingEffect.Exit
+                    )
+                )
+            }
+            is ChatMessagingEvent.PatientNameReceived -> {
+                Next.next(
+                    model.copy(
+                        patientFullName = event.fullName
+                    )
+                )
+            }
         }
     }
 
@@ -248,6 +270,19 @@ object ChatMessagingLogic {
                         )
                     }
                 }
+                is ChatMessagingEffect.LoadPatientFullName -> {
+                    val result = remoteRepository.getPatient(effect.userId)
+                    result.onLeft {
+                        output.accept(
+                            ChatMessagingEvent.PatientNameReceived(
+                                it.fullName
+                            )
+                        )
+                    }
+                    result.onRight {
+                        logError(it)
+                    }
+                }
                 is ChatMessagingEffect.ReadChatMessages -> {
                     val previousLastReadMessageDate = lastReadMessageDate.get()
                     if ((previousLastReadMessageDate == null || previousLastReadMessageDate < effect.until)
@@ -308,6 +343,9 @@ object ChatMessagingLogic {
                         )
                     )
                 }
+                is ChatMessagingEffect.Exit -> {
+                    flowRouter.exit()
+                }
             }
         }
     }
@@ -318,6 +356,7 @@ object ChatMessagingLogic {
     ) = ChatMessagingDataModel(
         userId = userId,
         loggedInUserId = loggedInUserId,
+        patientFullName = null,
         listState = ParcelableChatMessageListState.NotInitialized(),
         maySendMessage = false,
         isSendingMessage = false,
@@ -347,6 +386,8 @@ sealed class ChatMessagingEvent {
     object ScreenGotVisible : ChatMessagingEvent()
     object ScreenGotInvisible : ChatMessagingEvent()
 
+    object TapExit : ChatMessagingEvent()
+
     // model
     object RefreshRequest : ChatMessagingEvent()
 
@@ -369,6 +410,10 @@ sealed class ChatMessagingEvent {
         val totalCount: Int,
     ) : ChatMessagingEvent()
 
+    data class PatientNameReceived(
+        val fullName: String,
+    ) : ChatMessagingEvent()
+
 }
 
 sealed class ChatMessagingEffect {
@@ -382,6 +427,10 @@ sealed class ChatMessagingEffect {
     data class SendMessage(
         val userId: Long,
         val message: String,
+    ) : ChatMessagingEffect()
+
+    data class LoadPatientFullName(
+        val userId: Long
     ) : ChatMessagingEffect()
 
     object ShowUnexpectedError : ChatMessagingEffect()
@@ -399,12 +448,15 @@ sealed class ChatMessagingEffect {
         val until: LocalDateTime,
     ) : ChatMessagingEffect()
 
+    object Exit : ChatMessagingEffect()
+
 }
 
 @Parcelize
 data class ChatMessagingDataModel(
     val userId: Long,
     val loggedInUserId: Long,
+    val patientFullName: String?,
     val listState: ParcelableChatMessageListState<ChatMessageDataModel>,
     val maySendMessage: Boolean,
     val isSendingMessage: Boolean,
@@ -420,6 +472,7 @@ data class ChatMessageDataModel(
 ) : Parcelable
 
 data class ChatMessagingViewModel(
+    val title: String?,
     val listState: ChatMessageListState<ChatMessageViewModel>,
     val isSendButtonVisible: Boolean,
     val isMessageSendingProgressVisible: Boolean,
@@ -461,6 +514,7 @@ fun ChatMessagingDataModel.viewModel(
         .ofPattern("dd MMM, HH:mm")
         .withLocale(resourceProvider.getCurrentLocale())
     return ChatMessagingViewModel(
+        title = patientFullName,
         listState = listState.plainState.map { message, _, _ ->
             message.viewModel(
                 loggedInUserId = loggedInUserId,
