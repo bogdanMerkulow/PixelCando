@@ -8,6 +8,7 @@ import pixel.cando.data.local.UserRoleStore
 import pixel.cando.data.models.UserRole
 import pixel.cando.ui._base.tea.ControllerFragmentDelegate
 import pixel.cando.ui.main.chat_flow.ChatFlowFragment
+import pixel.cando.ui.main.chat_with_doctor.ChatWithDoctorFragment
 import pixel.cando.ui.main.home.HomeDataModel
 import pixel.cando.ui.main.home.HomeEffect
 import pixel.cando.ui.main.home.HomeEvent
@@ -49,6 +50,11 @@ fun HomeFragment.setup(
             }
             UserRole.PATIENT -> {
                 listOf(
+                    HomeTab(
+                        title = R.string.tab_title_chat,
+                        icon = R.drawable.ic_chat,
+                        fragmentProvider = { ChatWithDoctorFragment() },
+                    ),
                     HomeTab(
                         title = R.string.tab_title_photos,
                         icon = R.drawable.ic_photo_library,

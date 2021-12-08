@@ -2,8 +2,9 @@ package pixel.cando.data.remote
 
 import pixel.cando.data.remote.dto.ChatListRequest
 import pixel.cando.data.remote.dto.ChatListResponse
-import pixel.cando.data.remote.dto.ChatMessageListRequest
 import pixel.cando.data.remote.dto.ChatMessageListResponse
+import pixel.cando.data.remote.dto.ChatWithDoctorMessageListRequest
+import pixel.cando.data.remote.dto.ChatWithPatientMessageListRequest
 import pixel.cando.data.remote.dto.ConfirmPhotoRequest
 import pixel.cando.data.remote.dto.DeviceRegisterRequest
 import pixel.cando.data.remote.dto.EmptyRequest
@@ -18,9 +19,11 @@ import pixel.cando.data.remote.dto.PatientGetRequest
 import pixel.cando.data.remote.dto.PatientGetResponse
 import pixel.cando.data.remote.dto.PatientListRequest
 import pixel.cando.data.remote.dto.PatientListResponse
-import pixel.cando.data.remote.dto.ReadChatMessagesRequest
+import pixel.cando.data.remote.dto.ReadChatWithDoctorMessagesRequest
+import pixel.cando.data.remote.dto.ReadChatWithPatientMessagesRequest
 import pixel.cando.data.remote.dto.RejectPhotoRequest
-import pixel.cando.data.remote.dto.SendChatMessageRequest
+import pixel.cando.data.remote.dto.SendMessageToChatWithDoctorRequest
+import pixel.cando.data.remote.dto.SendMessageToChatWithPatientRequest
 import pixel.cando.data.remote.dto.UpdateAccountRequest
 import pixel.cando.data.remote.dto.UpdateAccountResponse
 import pixel.cando.data.remote.dto.UploadPhotoForPatientRequest
@@ -91,18 +94,33 @@ interface RestApi {
     ): Response<ChatListResponse>
 
     @POST("doctor/chat/feed")
-    suspend fun getChatMessages(
-        @Body request: ChatMessageListRequest
+    suspend fun getChatWithPatientMessages(
+        @Body request: ChatWithPatientMessageListRequest
+    ): Response<ChatMessageListResponse>
+
+    @POST("patient/chat/feed")
+    suspend fun getChatWithDoctorMessages(
+        @Body request: ChatWithDoctorMessageListRequest
     ): Response<ChatMessageListResponse>
 
     @POST("doctor/chat/send")
-    suspend fun sendChatMessage(
-        @Body request: SendChatMessageRequest
+    suspend fun sendMessageToChatWithPatient(
+        @Body request: SendMessageToChatWithPatientRequest
+    ): Response<Unit>
+
+    @POST("patient/chat/send")
+    suspend fun sendMessageToChatWithDoctor(
+        @Body request: SendMessageToChatWithDoctorRequest
     ): Response<Unit>
 
     @POST("doctor/chat/read")
-    suspend fun readChatMessages(
-        @Body request: ReadChatMessagesRequest
+    suspend fun readMessagesInChatWithPatient(
+        @Body request: ReadChatWithPatientMessagesRequest
+    ): Response<Unit>
+
+    @POST("patient/chat/read")
+    suspend fun readMessagesInChatWithDoctor(
+        @Body request: ReadChatWithDoctorMessagesRequest
     ): Response<Unit>
 
 }

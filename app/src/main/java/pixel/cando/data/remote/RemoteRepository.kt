@@ -20,7 +20,9 @@ import pixel.cando.data.remote.dto.ChatItemDto
 import pixel.cando.data.remote.dto.ChatListFilterDto
 import pixel.cando.data.remote.dto.ChatListRequest
 import pixel.cando.data.remote.dto.ChatMessageListFilterDto
-import pixel.cando.data.remote.dto.ChatMessageListRequest
+import pixel.cando.data.remote.dto.ChatMessageListResponse
+import pixel.cando.data.remote.dto.ChatWithDoctorMessageListRequest
+import pixel.cando.data.remote.dto.ChatWithPatientMessageListRequest
 import pixel.cando.data.remote.dto.ConfirmPhotoRequest
 import pixel.cando.data.remote.dto.DeviceRegisterDto
 import pixel.cando.data.remote.dto.DeviceRegisterRequest
@@ -31,10 +33,13 @@ import pixel.cando.data.remote.dto.GetExamRequest
 import pixel.cando.data.remote.dto.PatientGetRequest
 import pixel.cando.data.remote.dto.PatientListFilterDto
 import pixel.cando.data.remote.dto.PatientListRequest
-import pixel.cando.data.remote.dto.ReadChatMessagesRequest
+import pixel.cando.data.remote.dto.ReadChatWithDoctorMessagesRequest
+import pixel.cando.data.remote.dto.ReadChatWithPatientMessagesRequest
 import pixel.cando.data.remote.dto.RejectPhotoRequest
-import pixel.cando.data.remote.dto.SendChatMessageDto
-import pixel.cando.data.remote.dto.SendChatMessageRequest
+import pixel.cando.data.remote.dto.SendMessageToChatWithDoctorDto
+import pixel.cando.data.remote.dto.SendMessageToChatWithDoctorRequest
+import pixel.cando.data.remote.dto.SendMessageToChatWithPatientDto
+import pixel.cando.data.remote.dto.SendMessageToChatWithPatientRequest
 import pixel.cando.data.remote.dto.UpdateAccountRequest
 import pixel.cando.data.remote.dto.UploadPhotoForPatientRequest
 import pixel.cando.data.remote.dto.UploadPhotoForPatientWeightHeightDto
@@ -104,20 +109,34 @@ interface RemoteRepository {
         pageCount: Int,
     ): Either<List<ChatItem>, Throwable>
 
-    suspend fun getChatMessages(
+    suspend fun getChatWithPatientMessages(
         userId: Long,
         offset: Int,
         count: Int,
         sinceDate: LocalDateTime?,
     ): Either<MessageListPortion, Throwable>
 
-    suspend fun sendChatMessage(
+    suspend fun sendMessageToChatWithPatient(
         userId: Long,
         message: String,
     ): Either<Unit, Throwable>
 
-    suspend fun readChatMessages(
+    suspend fun readMessagesInChatWithPatient(
         userId: Long,
+        until: LocalDateTime,
+    ): Either<Unit, Throwable>
+
+    suspend fun getChatWithDoctorMessages(
+        offset: Int,
+        count: Int,
+        sinceDate: LocalDateTime?,
+    ): Either<MessageListPortion, Throwable>
+
+    suspend fun sendMessageToChatWithDoctor(
+        message: String,
+    ): Either<Unit, Throwable>
+
+    suspend fun readMessagesInChatWithDoctor(
         until: LocalDateTime,
     ): Either<Unit, Throwable>
 
@@ -433,15 +452,15 @@ class RealRemoteRepository(
         }
     }
 
-    override suspend fun getChatMessages(
+    override suspend fun getChatWithPatientMessages(
         userId: Long,
         offset: Int,
         count: Int,
         sinceDate: LocalDateTime?
     ): Either<MessageListPortion, Throwable> {
         return callApi {
-            getChatMessages(
-                ChatMessageListRequest(
+            getChatWithPatientMessages(
+                ChatWithPatientMessageListRequest(
                     userId = userId,
                     offset = offset,
                     limit = count,
@@ -453,29 +472,18 @@ class RealRemoteRepository(
                 )
             )
         }.mapOnlyLeft {
-            MessageListPortion(
-                totalCount = it.count,
-                messages = it.results.map {
-                    ChatMessage(
-                        id = it.id,
-                        senderId = it.senderId,
-                        senderFullName = it.sender.fullName,
-                        createdAt = it.createdAt,
-                        content = it.content,
-                    )
-                }
-            )
+            it.model()
         }
     }
 
-    override suspend fun sendChatMessage(
+    override suspend fun sendMessageToChatWithPatient(
         userId: Long,
         message: String
     ): Either<Unit, Throwable> {
         return callApi {
-            sendChatMessage(
-                SendChatMessageRequest(
-                    SendChatMessageDto(
+            sendMessageToChatWithPatient(
+                SendMessageToChatWithPatientRequest(
+                    SendMessageToChatWithPatientDto(
                         recipientId = userId,
                         content = message,
                     )
@@ -484,14 +492,62 @@ class RealRemoteRepository(
         }
     }
 
-    override suspend fun readChatMessages(
+    override suspend fun readMessagesInChatWithPatient(
         userId: Long,
         until: LocalDateTime
     ): Either<Unit, Throwable> {
         return callApi {
-            readChatMessages(
-                ReadChatMessagesRequest(
+            readMessagesInChatWithPatient(
+                ReadChatWithPatientMessagesRequest(
                     patientId = userId,
+                    until = until,
+                )
+            )
+        }
+    }
+
+    override suspend fun getChatWithDoctorMessages(
+        offset: Int,
+        count: Int,
+        sinceDate: LocalDateTime?
+    ): Either<MessageListPortion, Throwable> {
+        return callApi {
+            getChatWithDoctorMessages(
+                ChatWithDoctorMessageListRequest(
+                    offset = offset,
+                    limit = count,
+                    filters = sinceDate?.let {
+                        ChatMessageListFilterDto(
+                            since = it
+                        )
+                    }
+                )
+            )
+        }.mapOnlyLeft {
+            it.model()
+        }
+    }
+
+    override suspend fun sendMessageToChatWithDoctor(
+        message: String
+    ): Either<Unit, Throwable> {
+        return callApi {
+            sendMessageToChatWithDoctor(
+                SendMessageToChatWithDoctorRequest(
+                    SendMessageToChatWithDoctorDto(
+                        content = message,
+                    )
+                )
+            )
+        }
+    }
+
+    override suspend fun readMessagesInChatWithDoctor(
+        until: LocalDateTime
+    ): Either<Unit, Throwable> {
+        return callApi {
+            readMessagesInChatWithDoctor(
+                ReadChatWithDoctorMessagesRequest(
                     until = until,
                 )
             )
@@ -570,6 +626,20 @@ private fun ChatItemDto.model(
             id = it.id,
             createdAt = it.createdAt,
             senderId = it.senderId,
+            content = it.content,
+        )
+    }
+)
+
+private fun ChatMessageListResponse.model(
+) = MessageListPortion(
+    totalCount = this.count,
+    messages = this.results.map {
+        ChatMessage(
+            id = it.id,
+            senderId = it.senderId,
+            senderFullName = it.sender.fullName,
+            createdAt = it.createdAt,
             content = it.content,
         )
     }

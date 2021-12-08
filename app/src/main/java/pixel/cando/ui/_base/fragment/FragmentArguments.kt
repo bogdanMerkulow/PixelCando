@@ -43,20 +43,27 @@ internal inline fun <reified ARG> Fragment.setArgument(
     arguments = bundle
 }
 
-internal inline fun <reified ARG> Fragment.getArgument(
-): ARG {
-    return requireArguments().let { bundle ->
+internal inline fun <reified ARG> Fragment.getOptionalArgument(
+): ARG? {
+    return arguments?.let { bundle ->
         when {
-            Int::class.java.isAssignableFrom(ARG::class.java) -> bundle.getInt(argumentKey) as ARG
-            Long::class.java.isAssignableFrom(ARG::class.java) -> bundle.getLong(argumentKey) as ARG
-            String::class.java.isAssignableFrom(ARG::class.java) -> bundle.getString(argumentKey) as ARG
+            Int::class.java.isAssignableFrom(ARG::class.java) -> bundle.getInt(argumentKey, 0)
+                .takeIf { it != 0 } as? ARG
+            Long::class.java.isAssignableFrom(ARG::class.java) -> bundle.getLong(argumentKey, 0L)
+                .takeIf { it != 0L } as? ARG
+            String::class.java.isAssignableFrom(ARG::class.java) -> bundle.getString(argumentKey) as? ARG
             Parcelable::class.java.isAssignableFrom(ARG::class.java) -> bundle.getParcelable<Parcelable>(
                 argumentKey
-            ) as ARG
+            ) as? ARG
             Serializable::class.java.isAssignableFrom(ARG::class.java) -> bundle.getSerializable(
                 argumentKey
-            ) as ARG
+            ) as? ARG
             else -> throw IllegalArgumentException("Type ${ARG::class.java.name} is not supported")
         }
     }
+}
+
+internal inline fun <reified ARG> Fragment.getArgument(
+): ARG {
+    return requireNotNull(getOptionalArgument<ARG>())
 }

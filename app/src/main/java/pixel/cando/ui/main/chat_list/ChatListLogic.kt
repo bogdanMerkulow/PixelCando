@@ -228,8 +228,8 @@ object ChatListLogic {
                 }
                 is ChatListEffect.NavigateToChat -> {
                     flowRouter.navigateTo(
-                        Screens.chatMessaging(
-                            userId = effect.userId,
+                        Screens.chatWithPatient(
+                            patientId = effect.userId,
                         )
                     )
                 }

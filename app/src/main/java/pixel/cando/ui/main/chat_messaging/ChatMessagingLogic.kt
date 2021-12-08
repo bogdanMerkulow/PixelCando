@@ -11,10 +11,7 @@ import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import pixel.cando.R
 import pixel.cando.data.models.ChatMessage
-import pixel.cando.data.remote.RemoteRepository
-import pixel.cando.ui._base.fragment.FlowRouter
 import pixel.cando.ui._base.tea.CoroutineScopeEffectHandler
-import pixel.cando.ui._base.tea.mapEffects
 import pixel.cando.utils.MessageDisplayer
 import pixel.cando.utils.ResourceProvider
 import pixel.cando.utils.logError
@@ -34,13 +31,6 @@ object ChatMessagingLogic {
                 model.listState.reduce(
                     ChatMessageListAction.Refresh()
                 ).toFirst(model)
-                    .mapEffects {
-                        it.plus(
-                            ChatMessagingEffect.LoadPatientFullName(
-                                userId = model.userId,
-                            )
-                        )
-                    }
             }
             model.listState.isLoading -> {
                 model.listState.reduce(
@@ -112,7 +102,6 @@ object ChatMessagingLogic {
                     ),
                     setOf(
                         ChatMessagingEffect.SendMessage(
-                            userId = model.userId,
                             message = event.message,
                         )
                     )
@@ -146,7 +135,6 @@ object ChatMessagingLogic {
                     Next.dispatch(
                         setOf(
                             ChatMessagingEffect.ReadChatMessages(
-                                userId = model.userId,
                                 until = message.createdAt,
                             )
                         )
@@ -163,9 +151,7 @@ object ChatMessagingLogic {
             is ChatMessagingEvent.ScreenGotVisible -> {
                 Next.dispatch(
                     setOf(
-                        ChatMessagingEffect.StartPeriodicCheckForNewMessages(
-                            userId = model.userId,
-                        )
+                        ChatMessagingEffect.StartPeriodicCheckForNewMessages
                     )
                 )
             }
@@ -176,28 +162,13 @@ object ChatMessagingLogic {
                     )
                 )
             }
-            is ChatMessagingEvent.TapExit -> {
-                Next.dispatch(
-                    setOf(
-                        ChatMessagingEffect.Exit
-                    )
-                )
-            }
-            is ChatMessagingEvent.PatientNameReceived -> {
-                Next.next(
-                    model.copy(
-                        patientFullName = event.fullName
-                    )
-                )
-            }
         }
     }
 
     fun effectHandler(
         messageDisplayer: MessageDisplayer,
         resourceProvider: ResourceProvider,
-        remoteRepository: RemoteRepository,
-        flowRouter: FlowRouter,
+        dataSource: ChatMessagingDataSource,
         messageInputClearer: () -> Unit,
     ): Connectable<ChatMessagingEffect, ChatMessagingEvent> {
         val loadPortionJob = AtomicReference<Job>()
@@ -209,8 +180,7 @@ object ChatMessagingLogic {
                 is ChatMessagingEffect.LoadMessagesPortion -> {
                     loadPortionJob.getAndSet(
                         launch {
-                            val result = remoteRepository.getChatMessages(
-                                userId = effect.userId,
+                            val result = dataSource.getChatMessages(
                                 offset = effect.offset,
                                 count = effect.count,
                                 sinceDate = null,
@@ -233,12 +203,10 @@ object ChatMessagingLogic {
                     )?.cancel()
                 }
                 is ChatMessagingEffect.SendMessage -> {
-                    val sendMessageResult = remoteRepository.sendChatMessage(
-                        userId = effect.userId,
+                    val sendMessageResult = dataSource.sendChatMessage(
                         message = effect.message,
                     )
-                    val messageListResult = remoteRepository.getChatMessages(
-                        userId = effect.userId,
+                    val messageListResult = dataSource.getChatMessages(
                         offset = 0,
                         count = 0,
                         sinceDate = null,
@@ -268,19 +236,6 @@ object ChatMessagingLogic {
                         )
                     }
                 }
-                is ChatMessagingEffect.LoadPatientFullName -> {
-                    val result = remoteRepository.getPatient(effect.userId)
-                    result.onLeft {
-                        output.accept(
-                            ChatMessagingEvent.PatientNameReceived(
-                                it.fullName
-                            )
-                        )
-                    }
-                    result.onRight {
-                        logError(it)
-                    }
-                }
                 is ChatMessagingEffect.ReadChatMessages -> {
                     val previousLastReadMessageDate = lastReadMessageDate.get()
                     if ((previousLastReadMessageDate == null || previousLastReadMessageDate < effect.until)
@@ -292,8 +247,7 @@ object ChatMessagingLogic {
                         readMessagesJob.getAndSet(
                             launch {
                                 delay(500)
-                                val result = remoteRepository.readChatMessages(
-                                    userId = effect.userId,
+                                val result = dataSource.readChatMessages(
                                     until = effect.until,
                                 )
                                 result.onRight {
@@ -307,8 +261,7 @@ object ChatMessagingLogic {
                     periodicCheckForNewMessagesJob.getAndSet(
                         launch {
                             while (isActive) {
-                                val result = remoteRepository.getChatMessages(
-                                    userId = effect.userId,
+                                val result = dataSource.getChatMessages(
                                     offset = 0,
                                     count = 0,
                                     sinceDate = null,
@@ -341,20 +294,14 @@ object ChatMessagingLogic {
                         )
                     )
                 }
-                is ChatMessagingEffect.Exit -> {
-                    flowRouter.exit()
-                }
             }
         }
     }
 
     fun initialModel(
-        userId: Long,
         loggedInUserId: Long,
     ) = ChatMessagingDataModel(
-        userId = userId,
         loggedInUserId = loggedInUserId,
-        patientFullName = null,
         listState = ParcelableChatMessageListState.NotInitialized(),
         maySendMessage = false,
         isSendingMessage = false,
@@ -384,8 +331,6 @@ sealed class ChatMessagingEvent {
     object ScreenGotVisible : ChatMessagingEvent()
     object ScreenGotInvisible : ChatMessagingEvent()
 
-    object TapExit : ChatMessagingEvent()
-
     // model
     object RefreshRequest : ChatMessagingEvent()
 
@@ -408,53 +353,36 @@ sealed class ChatMessagingEvent {
         val totalCount: Int,
     ) : ChatMessagingEvent()
 
-    data class PatientNameReceived(
-        val fullName: String,
-    ) : ChatMessagingEvent()
-
 }
 
 sealed class ChatMessagingEffect {
 
     data class LoadMessagesPortion(
-        val userId: Long,
         val offset: Int,
         val count: Int,
     ) : ChatMessagingEffect()
 
     data class SendMessage(
-        val userId: Long,
         val message: String,
-    ) : ChatMessagingEffect()
-
-    data class LoadPatientFullName(
-        val userId: Long
     ) : ChatMessagingEffect()
 
     object ShowUnexpectedError : ChatMessagingEffect()
 
     object ClearMessageInput : ChatMessagingEffect()
 
-    data class StartPeriodicCheckForNewMessages(
-        val userId: Long,
-    ) : ChatMessagingEffect()
+    object StartPeriodicCheckForNewMessages : ChatMessagingEffect()
 
     object StopPeriodicCheckForNewMessages : ChatMessagingEffect()
 
     data class ReadChatMessages(
-        val userId: Long,
         val until: LocalDateTime,
     ) : ChatMessagingEffect()
-
-    object Exit : ChatMessagingEffect()
 
 }
 
 @Parcelize
 data class ChatMessagingDataModel(
-    val userId: Long,
     val loggedInUserId: Long,
-    val patientFullName: String?,
     val listState: ParcelableChatMessageListState<ChatMessageDataModel>,
     val maySendMessage: Boolean,
     val isSendingMessage: Boolean,
@@ -470,7 +398,6 @@ data class ChatMessageDataModel(
 ) : Parcelable
 
 data class ChatMessagingViewModel(
-    val title: String?,
     val listState: ChatMessageListState<ChatMessageViewModel>,
     val isSendButtonVisible: Boolean,
     val isMessageSendingProgressVisible: Boolean,
@@ -512,7 +439,6 @@ fun ChatMessagingDataModel.viewModel(
         .ofPattern("dd MMM, HH:mm")
         .withLocale(resourceProvider.getCurrentLocale())
     return ChatMessagingViewModel(
-        title = patientFullName,
         listState = listState.plainState.map { message, _, _ ->
             message.viewModel(
                 loggedInUserId = loggedInUserId,
@@ -543,12 +469,10 @@ private fun ChatMessageDataModel.viewModel(
 }
 
 private fun Set<ChatMessageListSideEffect>.mapped(
-    userId: Long,
 ) = map {
     when (it) {
         is ChatMessageListSideEffect.LoadPortion -> {
             ChatMessagingEffect.LoadMessagesPortion(
-                userId = userId,
                 offset = it.offset,
                 count = it.count,
             )
@@ -561,20 +485,19 @@ private fun Set<ChatMessageListSideEffect>.mapped(
 
 private fun Pair<ParcelableChatMessageListState<ChatMessageDataModel>, Set<ChatMessageListSideEffect>>.toNext(
     model: ChatMessagingDataModel
-) = second.mapped(
-    userId = model.userId,
-).let { effects ->
-    if (model.listState == first) {
-        Next.dispatch(effects)
-    } else {
-        Next.next(
-            model.copy(
-                listState = first,
-            ),
-            effects
-        )
+) = second.mapped()
+    .let { effects ->
+        if (model.listState == first) {
+            Next.dispatch(effects)
+        } else {
+            Next.next(
+                model.copy(
+                    listState = first,
+                ),
+                effects
+            )
+        }
     }
-}
 
 private fun Pair<ParcelableChatMessageListState<ChatMessageDataModel>, Set<ChatMessageListSideEffect>>.toFirst(
     model: ChatMessagingDataModel
@@ -582,7 +505,5 @@ private fun Pair<ParcelableChatMessageListState<ChatMessageDataModel>, Set<ChatM
     model.copy(
         listState = first,
     ),
-    second.mapped(
-        userId = model.userId,
-    )
+    second.mapped()
 )

@@ -30,6 +30,8 @@ import pixel.cando.ui.auth.sign_in.SignInFragment
 import pixel.cando.ui.createUnauthorizedResultEventSource
 import pixel.cando.ui.main.chat_list.ChatListFragment
 import pixel.cando.ui.main.chat_messaging.ChatMessagingFragment
+import pixel.cando.ui.main.chat_with_doctor.ChatWithDoctorFragment
+import pixel.cando.ui.main.chat_with_patient.ChatWithPatientFragment
 import pixel.cando.ui.main.exam_details.ExamDetailsFragment
 import pixel.cando.ui.main.home.HomeFragment
 import pixel.cando.ui.main.patient_details.PatientDetailsFragment
@@ -265,8 +267,16 @@ class DependencyManager(
                                         remoteRepository = remoteRepository,
                                         resourceProvider = resourceProvider,
                                         loggedInUserIdProvider = loggedInUserIdStore,
+                                    )
+                                }
+                                is ChatWithPatientFragment -> {
+                                    fragment.setup(
+                                        remoteRepository = remoteRepository,
                                         flowRouter = fragment.findImplementationOrThrow(),
                                     )
+                                }
+                                is ChatWithDoctorFragment -> {
+                                    fragment.setup()
                                 }
                             }
                         }

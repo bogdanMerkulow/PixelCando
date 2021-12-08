@@ -6,32 +6,41 @@ import com.spotify.mobius.Update
 import com.spotify.mobius.android.AndroidLogger
 import kotlinx.coroutines.launch
 import pixel.cando.data.local.LoggedInUserIdProvider
+import pixel.cando.data.models.MessageListPortion
 import pixel.cando.data.remote.RemoteRepository
-import pixel.cando.ui._base.fragment.FlowRouter
-import pixel.cando.ui._base.fragment.getArgument
+import pixel.cando.ui._base.fragment.getOptionalArgument
 import pixel.cando.ui._base.tea.ControllerFragmentDelegate
 import pixel.cando.ui.main.chat_messaging.ChatMessagingDataModel
+import pixel.cando.ui.main.chat_messaging.ChatMessagingDataSource
 import pixel.cando.ui.main.chat_messaging.ChatMessagingEffect
 import pixel.cando.ui.main.chat_messaging.ChatMessagingEvent
 import pixel.cando.ui.main.chat_messaging.ChatMessagingFragment
 import pixel.cando.ui.main.chat_messaging.ChatMessagingLogic
 import pixel.cando.ui.main.chat_messaging.ChatMessagingViewModel
 import pixel.cando.ui.main.chat_messaging.viewModel
+import pixel.cando.utils.Either
 import pixel.cando.utils.ResourceProvider
 import pixel.cando.utils.diffuser.DiffuserFragmentDelegate
 import pixel.cando.utils.messageDisplayer
+import java.time.LocalDateTime
 
 fun ChatMessagingFragment.setup(
     remoteRepository: RemoteRepository,
     resourceProvider: ResourceProvider,
     loggedInUserIdProvider: LoggedInUserIdProvider,
-    flowRouter: FlowRouter,
 ) {
     if (delegates.isNotEmpty()) {
         return
     }
 
-    val userId = getArgument<Long>()
+    val dataSource = getOptionalArgument<Long>()?.let { patientId ->
+        ChatWithPatientDataSource(
+            remoteRepository = remoteRepository,
+            patientId = patientId,
+        )
+    } ?: ChatWithDoctorDataSource(
+        remoteRepository = remoteRepository,
+    )
 
     val loggedInUserId = loggedInUserIdProvider.loggedInUserId
         ?: return
@@ -51,8 +60,7 @@ fun ChatMessagingFragment.setup(
             ChatMessagingLogic.effectHandler(
                 messageDisplayer = messageDisplayer,
                 resourceProvider = resourceProvider,
-                remoteRepository = remoteRepository,
-                flowRouter = flowRouter,
+                dataSource = dataSource,
                 messageInputClearer = {
                     lifecycleScope.launch {
                         clearMessageInput()
@@ -66,7 +74,6 @@ fun ChatMessagingFragment.setup(
         },
         defaultStateProvider = {
             ChatMessagingLogic.initialModel(
-                userId = userId,
                 loggedInUserId = loggedInUserId,
             )
         },
@@ -86,4 +93,74 @@ fun ChatMessagingFragment.setup(
         diffuserFragmentDelegate,
         controllerFragmentDelegate,
     )
+}
+
+private class ChatWithPatientDataSource(
+    val remoteRepository: RemoteRepository,
+    val patientId: Long,
+) : ChatMessagingDataSource {
+
+    override suspend fun getChatMessages(
+        offset: Int,
+        count: Int,
+        sinceDate: LocalDateTime?
+    ): Either<MessageListPortion, Throwable> {
+        return remoteRepository.getChatWithPatientMessages(
+            userId = patientId,
+            offset = offset,
+            count = count,
+            sinceDate = sinceDate,
+        )
+    }
+
+    override suspend fun sendChatMessage(
+        message: String
+    ): Either<Unit, Throwable> {
+        return remoteRepository.sendMessageToChatWithPatient(
+            userId = patientId,
+            message = message,
+        )
+    }
+
+    override suspend fun readChatMessages(
+        until: LocalDateTime
+    ): Either<Unit, Throwable> {
+        return remoteRepository.readMessagesInChatWithPatient(
+            userId = patientId,
+            until = until,
+        )
+    }
+}
+
+private class ChatWithDoctorDataSource(
+    val remoteRepository: RemoteRepository,
+) : ChatMessagingDataSource {
+
+    override suspend fun getChatMessages(
+        offset: Int,
+        count: Int,
+        sinceDate: LocalDateTime?
+    ): Either<MessageListPortion, Throwable> {
+        return remoteRepository.getChatWithDoctorMessages(
+            offset = offset,
+            count = count,
+            sinceDate = sinceDate,
+        )
+    }
+
+    override suspend fun sendChatMessage(
+        message: String
+    ): Either<Unit, Throwable> {
+        return remoteRepository.sendMessageToChatWithDoctor(
+            message = message,
+        )
+    }
+
+    override suspend fun readChatMessages(
+        until: LocalDateTime
+    ): Either<Unit, Throwable> {
+        return remoteRepository.readMessagesInChatWithDoctor(
+            until = until,
+        )
+    }
 }

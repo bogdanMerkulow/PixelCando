@@ -102,9 +102,11 @@ class RealAuthRepository(
 }
 
 private const val doctorRoleServerValue = "doctor"
+private const val patientRoleServerValue = "patient"
 
 private val String.userRole: UserRole?
     get() = when (this) {
         doctorRoleServerValue -> UserRole.DOCTOR
+        patientRoleServerValue -> UserRole.PATIENT
         else -> null
     }

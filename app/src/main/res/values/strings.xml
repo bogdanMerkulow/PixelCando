@@ -103,6 +103,8 @@
     <string name="chat_messaging_no_messages_description">There is no messages yet</string>
     <string name="chat_messaging_message_input_hint">Type a message…</string>
 
+    <string name="chat_with_doctor_screen_title">Chat</string>
+
     <string name="profile_title">Profile</string>
     <string name="profile_btn_logout">Logout</string>
     <string name="profile_section_account_info">Account Information</string>
