@@ -10,12 +10,13 @@ import pixel.cando.ui.auth.sign_in.SignInFragment
 import pixel.cando.ui.main.MainFlowFragment
 import pixel.cando.ui.main.chat_list.ChatListFragment
 import pixel.cando.ui.main.chat_with_patient.ChatWithPatientFragment
+import pixel.cando.ui.main.doctor_profile.DoctorProfileFragment
 import pixel.cando.ui.main.exam_details.ExamDetailsFragment
 import pixel.cando.ui.main.home.HomeFragment
 import pixel.cando.ui.main.patient_details.PatientDetailsFragment
 import pixel.cando.ui.main.patient_info.PatientInfoFragment
 import pixel.cando.ui.main.patient_list.PatientListFragment
-import pixel.cando.ui.main.profile.ProfileFragment
+import pixel.cando.ui.main.patient_profile.PatientProfileFragment
 import pixel.cando.ui.root.RootFragment
 import pixel.cando.ui.splash.SplashFragment
 
@@ -65,8 +66,12 @@ object Screens {
             )
     }
 
-    fun profile() = FragmentScreen {
-        ProfileFragment()
+    fun doctorProfile() = FragmentScreen {
+        DoctorProfileFragment()
+    }
+
+    fun patientProfile() = FragmentScreen {
+        PatientProfileFragment()
     }
 
     fun chatList() = FragmentScreen {

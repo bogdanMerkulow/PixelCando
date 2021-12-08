@@ -7,19 +7,19 @@ import pixel.cando.data.local.SessionWiper
 import pixel.cando.data.remote.RemoteRepository
 import pixel.cando.ui._base.fragment.RootRouter
 import pixel.cando.ui._base.tea.ControllerFragmentDelegate
-import pixel.cando.ui.main.profile.ProfileDataModel
-import pixel.cando.ui.main.profile.ProfileEffect
-import pixel.cando.ui.main.profile.ProfileEvent
-import pixel.cando.ui.main.profile.ProfileFragment
-import pixel.cando.ui.main.profile.ProfileLogic
-import pixel.cando.ui.main.profile.ProfileViewModel
-import pixel.cando.ui.main.profile.viewModel
+import pixel.cando.ui.main.patient_profile.PatientProfileDataModel
+import pixel.cando.ui.main.patient_profile.PatientProfileEffect
+import pixel.cando.ui.main.patient_profile.PatientProfileEvent
+import pixel.cando.ui.main.patient_profile.PatientProfileFragment
+import pixel.cando.ui.main.patient_profile.PatientProfileLogic
+import pixel.cando.ui.main.patient_profile.PatientProfileViewModel
+import pixel.cando.ui.main.patient_profile.viewModel
 import pixel.cando.utils.ResourceProvider
 import pixel.cando.utils.diffuser.DiffuserFragmentDelegate
 import pixel.cando.utils.messageDisplayer
 
 
-fun ProfileFragment.setup(
+fun PatientProfileFragment.setup(
     sessionWiper: SessionWiper,
     rootRouter: RootRouter,
     resourceProvider: ResourceProvider,
@@ -29,18 +29,18 @@ fun ProfileFragment.setup(
         return
     }
     val controllerFragmentDelegate = ControllerFragmentDelegate<
-            ProfileViewModel,
-            ProfileDataModel,
-            ProfileEvent,
-            ProfileEffect>(
+            PatientProfileViewModel,
+            PatientProfileDataModel,
+            PatientProfileEvent,
+            PatientProfileEffect>(
         loop = Mobius.loop(
-            Update<ProfileDataModel, ProfileEvent, ProfileEffect> { model, event ->
-                ProfileLogic.update(
+            Update<PatientProfileDataModel, PatientProfileEvent, PatientProfileEffect> { model, event ->
+                PatientProfileLogic.update(
                     model,
                     event
                 )
             },
-            ProfileLogic.effectHandler(
+            PatientProfileLogic.effectHandler(
                 sessionWiper = sessionWiper,
                 rootRouter = rootRouter,
                 remoteRepository = remoteRepository,
@@ -48,12 +48,12 @@ fun ProfileFragment.setup(
                 resourceProvider = resourceProvider,
             )
         )
-            .logger(AndroidLogger.tag("Profile")),
+            .logger(AndroidLogger.tag("PatientProfile")),
         initialState = {
-            ProfileLogic.init(it)
+            PatientProfileLogic.init(it)
         },
         defaultStateProvider = {
-            ProfileLogic.initialModel()
+            PatientProfileLogic.initialModel()
         },
         modelMapper = {
             it.viewModel(

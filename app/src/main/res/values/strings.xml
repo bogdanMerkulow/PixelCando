@@ -59,6 +59,7 @@
     <string name="country">Country</string>
     <string name="city">City</string>
     <string name="zip">ZIP</string>
+    <string name="patient_code">Patient Code</string>
 
     <string name="photo_preview_title">Enter height and weight</string>
     <string name="photo_preview_subtitle">Height and weight params are required for proper calculations</string>

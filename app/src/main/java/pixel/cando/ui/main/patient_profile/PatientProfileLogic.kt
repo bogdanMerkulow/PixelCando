@@ -1,4 +1,4 @@
-package pixel.cando.ui.main.profile
+package pixel.cando.ui.main.patient_profile
 
 import android.os.Parcelable
 import android.util.Patterns
@@ -8,7 +8,7 @@ import com.spotify.mobius.Next
 import kotlinx.parcelize.Parcelize
 import pixel.cando.R
 import pixel.cando.data.local.SessionWiper
-import pixel.cando.data.models.Account
+import pixel.cando.data.models.PatientAccount
 import pixel.cando.data.remote.RemoteRepository
 import pixel.cando.ui.Screens
 import pixel.cando.ui._base.fragment.RootRouter
@@ -19,18 +19,18 @@ import pixel.cando.utils.logError
 import pixel.cando.utils.onLeft
 import pixel.cando.utils.onRight
 
-object ProfileLogic {
+object PatientProfileLogic {
 
     fun init(
-        model: ProfileDataModel
-    ): First<ProfileDataModel, ProfileEffect> {
+        model: PatientProfileDataModel
+    ): First<PatientProfileDataModel, PatientProfileEffect> {
         if (model.account == null) {
             return First.first(
                 model.copy(
                     isLoading = true,
                 ),
                 setOf(
-                    ProfileEffect.LoadAccount
+                    PatientProfileEffect.LoadAccount
                 )
             )
         }
@@ -38,12 +38,12 @@ object ProfileLogic {
     }
 
     fun update(
-        model: ProfileDataModel,
-        event: ProfileEvent
-    ): Next<ProfileDataModel, ProfileEffect> {
+        model: PatientProfileDataModel,
+        event: PatientProfileEvent
+    ): Next<PatientProfileDataModel, PatientProfileEffect> {
         return when (event) {
             // ui
-            is ProfileEvent.FullNameChanged -> {
+            is PatientProfileEvent.FullNameChanged -> {
                 Next.next(
                     model.copy(
                         account = model.account?.copy(
@@ -52,7 +52,7 @@ object ProfileLogic {
                     )
                 )
             }
-            is ProfileEvent.EmailChanged -> {
+            is PatientProfileEvent.EmailChanged -> {
                 Next.next(
                     model.copy(
                         account = model.account?.copy(
@@ -61,7 +61,7 @@ object ProfileLogic {
                     )
                 )
             }
-            is ProfileEvent.PhoneNumberChanged -> {
+            is PatientProfileEvent.PhoneNumberChanged -> {
                 Next.next(
                     model.copy(
                         account = model.account?.copy(
@@ -70,7 +70,7 @@ object ProfileLogic {
                     )
                 )
             }
-            is ProfileEvent.ContactEmailChanged -> {
+            is PatientProfileEvent.ContactEmailChanged -> {
                 Next.next(
                     model.copy(
                         account = model.account?.copy(
@@ -79,7 +79,7 @@ object ProfileLogic {
                     )
                 )
             }
-            is ProfileEvent.AddressChanged -> {
+            is PatientProfileEvent.AddressChanged -> {
                 Next.next(
                     model.copy(
                         account = model.account?.copy(
@@ -88,7 +88,7 @@ object ProfileLogic {
                     )
                 )
             }
-            is ProfileEvent.CityChanged -> {
+            is PatientProfileEvent.CityChanged -> {
                 Next.next(
                     model.copy(
                         account = model.account?.copy(
@@ -97,7 +97,7 @@ object ProfileLogic {
                     )
                 )
             }
-            is ProfileEvent.PostalCodeChanged -> {
+            is PatientProfileEvent.PostalCodeChanged -> {
                 Next.next(
                     model.copy(
                         account = model.account?.copy(
@@ -106,7 +106,7 @@ object ProfileLogic {
                     )
                 )
             }
-            is ProfileEvent.SaveTap -> {
+            is PatientProfileEvent.SaveTap -> {
                 val account = model.account
                 if (account != null
                     && model.isLoading.not()
@@ -116,20 +116,20 @@ object ProfileLogic {
                             isLoading = true,
                         ),
                         setOf(
-                            ProfileEffect.UpdateAccount(account)
+                            PatientProfileEffect.UpdateAccount(account)
                         )
                     )
                 } else Next.noChange()
             }
-            is ProfileEvent.LogoutTap -> {
+            is PatientProfileEvent.LogoutTap -> {
                 Next.dispatch(
                     setOf(
-                        ProfileEffect.Logout
+                        PatientProfileEffect.Logout
                     )
                 )
             }
             // model
-            is ProfileEvent.LoadAccountSuccess -> {
+            is PatientProfileEvent.LoadAccountSuccess -> {
                 Next.next(
                     model.copy(
                         account = event.account,
@@ -137,17 +137,17 @@ object ProfileLogic {
                     )
                 )
             }
-            is ProfileEvent.LoadAccountFailure -> {
+            is PatientProfileEvent.LoadAccountFailure -> {
                 Next.next(
                     model.copy(
                         isLoading = false,
                     ),
                     setOf(
-                        ProfileEffect.ShowUnexpectedError
+                        PatientProfileEffect.ShowUnexpectedError
                     )
                 )
             }
-            is ProfileEvent.UpdateAccountSuccess -> {
+            is PatientProfileEvent.UpdateAccountSuccess -> {
                 Next.next(
                     model.copy(
                         account = event.account,
@@ -155,13 +155,13 @@ object ProfileLogic {
                     )
                 )
             }
-            is ProfileEvent.UpdateAccountFailure -> {
+            is PatientProfileEvent.UpdateAccountFailure -> {
                 Next.next(
                     model.copy(
                         isLoading = false,
                     ),
                     setOf(
-                        ProfileEffect.ShowUnexpectedError
+                        PatientProfileEffect.ShowUnexpectedError
                     )
                 )
             }
@@ -174,14 +174,14 @@ object ProfileLogic {
         remoteRepository: RemoteRepository,
         messageDisplayer: MessageDisplayer,
         resourceProvider: ResourceProvider,
-    ): Connectable<ProfileEffect, ProfileEvent> =
+    ): Connectable<PatientProfileEffect, PatientProfileEvent> =
         CoroutineScopeEffectHandler { effect, output ->
             when (effect) {
-                is ProfileEffect.LoadAccount -> {
-                    val result = remoteRepository.getAccount()
+                is PatientProfileEffect.LoadAccount -> {
+                    val result = remoteRepository.getPatientAccount()
                     result.onLeft {
                         output.accept(
-                            ProfileEvent.LoadAccountSuccess(
+                            PatientProfileEvent.LoadAccountSuccess(
                                 it.dataModel
                             )
                         )
@@ -189,17 +189,17 @@ object ProfileLogic {
                     result.onRight {
                         logError(it)
                         output.accept(
-                            ProfileEvent.LoadAccountFailure
+                            PatientProfileEvent.LoadAccountFailure
                         )
                     }
                 }
-                is ProfileEffect.UpdateAccount -> {
-                    val result = remoteRepository.updateAccount(
+                is PatientProfileEffect.UpdateAccount -> {
+                    val result = remoteRepository.updatePatientAccount(
                         effect.account.model
                     )
                     result.onLeft {
                         output.accept(
-                            ProfileEvent.UpdateAccountSuccess(
+                            PatientProfileEvent.UpdateAccountSuccess(
                                 it.dataModel
                             )
                         )
@@ -207,16 +207,16 @@ object ProfileLogic {
                     result.onRight {
                         logError(it)
                         output.accept(
-                            ProfileEvent.UpdateAccountFailure
+                            PatientProfileEvent.UpdateAccountFailure
                         )
                     }
                 }
-                is ProfileEffect.ShowUnexpectedError -> {
+                is PatientProfileEffect.ShowUnexpectedError -> {
                     messageDisplayer.showMessage(
                         resourceProvider.getString(R.string.something_went_wrong)
                     )
                 }
-                is ProfileEffect.Logout -> {
+                is PatientProfileEffect.Logout -> {
                     sessionWiper.wipe()
                     rootRouter.replaceScreen(
                         Screens.authFlow()
@@ -226,75 +226,75 @@ object ProfileLogic {
         }
 
     fun initialModel(
-    ) = ProfileDataModel(
+    ) = PatientProfileDataModel(
         account = null,
         isLoading = false,
     )
 
 }
 
-sealed class ProfileEvent {
+sealed class PatientProfileEvent {
     // ui
     data class FullNameChanged(
         val value: String
-    ) : ProfileEvent()
+    ) : PatientProfileEvent()
 
     data class EmailChanged(
         val value: String
-    ) : ProfileEvent()
+    ) : PatientProfileEvent()
 
     data class PhoneNumberChanged(
         val value: String
-    ) : ProfileEvent()
+    ) : PatientProfileEvent()
 
     data class ContactEmailChanged(
         val value: String
-    ) : ProfileEvent()
+    ) : PatientProfileEvent()
 
     data class AddressChanged(
         val value: String
-    ) : ProfileEvent()
+    ) : PatientProfileEvent()
 
     data class CityChanged(
         val value: String
-    ) : ProfileEvent()
+    ) : PatientProfileEvent()
 
     data class PostalCodeChanged(
         val value: String
-    ) : ProfileEvent()
+    ) : PatientProfileEvent()
 
-    object SaveTap : ProfileEvent()
+    object SaveTap : PatientProfileEvent()
 
-    object LogoutTap : ProfileEvent()
+    object LogoutTap : PatientProfileEvent()
 
     // model
     data class LoadAccountSuccess(
         val account: AccountDataModel
-    ) : ProfileEvent()
+    ) : PatientProfileEvent()
 
-    object LoadAccountFailure : ProfileEvent()
+    object LoadAccountFailure : PatientProfileEvent()
 
     data class UpdateAccountSuccess(
         val account: AccountDataModel
-    ) : ProfileEvent()
+    ) : PatientProfileEvent()
 
-    object UpdateAccountFailure : ProfileEvent()
+    object UpdateAccountFailure : PatientProfileEvent()
 
 }
 
-sealed class ProfileEffect {
-    object Logout : ProfileEffect()
-    object LoadAccount : ProfileEffect()
+sealed class PatientProfileEffect {
+    object Logout : PatientProfileEffect()
+    object LoadAccount : PatientProfileEffect()
 
     data class UpdateAccount(
         val account: AccountDataModel
-    ) : ProfileEffect()
+    ) : PatientProfileEffect()
 
-    object ShowUnexpectedError : ProfileEffect()
+    object ShowUnexpectedError : PatientProfileEffect()
 }
 
 @Parcelize
-data class ProfileDataModel(
+data class PatientProfileDataModel(
     val account: AccountDataModel?,
     val isLoading: Boolean,
 ) : Parcelable
@@ -303,6 +303,7 @@ data class ProfileDataModel(
 data class AccountDataModel(
     val fullName: String,
     val email: String,
+    val patientCode: String,
     val phoneNumber: String?,
     val contactEmail: String?,
     val address: String?,
@@ -311,7 +312,7 @@ data class AccountDataModel(
     val postalCode: String?,
 ) : Parcelable
 
-data class ProfileViewModel(
+data class PatientProfileViewModel(
     val fields: ProfileFieldListViewModel?,
     val isLoaderVisible: Boolean,
     val isContentVisible: Boolean,
@@ -321,6 +322,7 @@ data class ProfileViewModel(
 data class ProfileFieldListViewModel(
     val fullNameField: ProfileFieldViewModel,
     val emailField: ProfileFieldViewModel,
+    val patientCodeField: ProfileFieldViewModel,
     val phoneNumberField: ProfileFieldViewModel,
     val contactEmailField: ProfileFieldViewModel,
     val addressField: ProfileFieldViewModel,
@@ -334,9 +336,9 @@ data class ProfileFieldViewModel(
     val error: String?
 )
 
-fun ProfileDataModel.viewModel(
+fun PatientProfileDataModel.viewModel(
     resourceProvider: ResourceProvider,
-) = ProfileViewModel(
+) = PatientProfileViewModel(
     fields = account?.let {
         ProfileFieldListViewModel(
             fullNameField = ProfileFieldViewModel(
@@ -348,6 +350,10 @@ fun ProfileDataModel.viewModel(
                 value = it.email,
                 error = if (it.isEmailValid) null
                 else resourceProvider.getString(R.string.invalid_email)
+            ),
+            patientCodeField = ProfileFieldViewModel(
+                value = it.patientCode,
+                error = null
             ),
             phoneNumberField = ProfileFieldViewModel(
                 value = it.phoneNumber,
@@ -397,10 +403,11 @@ private val AccountDataModel.maySave: Boolean
             && isEmailValid
             && isContactEmailValid
 
-private val Account.dataModel: AccountDataModel
+private val PatientAccount.dataModel: AccountDataModel
     get() = AccountDataModel(
         fullName = fullName,
         email = email,
+        patientCode = patientCode,
         phoneNumber = phoneNumber,
         contactEmail = contactEmail,
         address = address,
@@ -409,10 +416,11 @@ private val Account.dataModel: AccountDataModel
         postalCode = postalCode,
     )
 
-private val AccountDataModel.model: Account
-    get() = Account(
+private val AccountDataModel.model: PatientAccount
+    get() = PatientAccount(
         fullName = fullName,
         email = email,
+        patientCode = patientCode,
         phoneNumber = phoneNumber,
         contactEmail = contactEmail,
         address = address,

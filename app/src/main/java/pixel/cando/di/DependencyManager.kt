@@ -32,14 +32,15 @@ import pixel.cando.ui.main.chat_list.ChatListFragment
 import pixel.cando.ui.main.chat_messaging.ChatMessagingFragment
 import pixel.cando.ui.main.chat_with_doctor.ChatWithDoctorFragment
 import pixel.cando.ui.main.chat_with_patient.ChatWithPatientFragment
+import pixel.cando.ui.main.doctor_profile.DoctorProfileFragment
 import pixel.cando.ui.main.exam_details.ExamDetailsFragment
 import pixel.cando.ui.main.home.HomeFragment
 import pixel.cando.ui.main.patient_details.PatientDetailsFragment
 import pixel.cando.ui.main.patient_info.PatientInfoFragment
 import pixel.cando.ui.main.patient_list.PatientListFragment
+import pixel.cando.ui.main.patient_profile.PatientProfileFragment
 import pixel.cando.ui.main.photo_list.PhotoListFragment
 import pixel.cando.ui.main.photo_preview.PhotoPreviewFragment
-import pixel.cando.ui.main.profile.ProfileFragment
 import pixel.cando.ui.root.RootEvent
 import pixel.cando.ui.root.RootFragment
 import pixel.cando.utils.OneSignalPushNotificationsSubscriber
@@ -246,7 +247,15 @@ class DependencyManager(
                                 is PhotoPreviewFragment -> {
                                     fragment.setup()
                                 }
-                                is ProfileFragment -> {
+                                is DoctorProfileFragment -> {
+                                    fragment.setup(
+                                        sessionWiper = sessionWiper,
+                                        rootRouter = fragment.findImplementationOrThrow(),
+                                        resourceProvider = resourceProvider,
+                                        remoteRepository = remoteRepository,
+                                    )
+                                }
+                                is PatientProfileFragment -> {
                                     fragment.setup(
                                         sessionWiper = sessionWiper,
                                         rootRouter = fragment.findImplementationOrThrow(),
