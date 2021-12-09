@@ -124,6 +124,13 @@ object PatientProfileLogic {
             is PatientProfileEvent.LogoutTap -> {
                 Next.dispatch(
                     setOf(
+                        PatientProfileEffect.AskToConfirmLogout
+                    )
+                )
+            }
+            is PatientProfileEvent.LogoutConfirmed -> {
+                Next.dispatch(
+                    setOf(
                         PatientProfileEffect.Logout
                     )
                 )
@@ -174,6 +181,7 @@ object PatientProfileLogic {
         remoteRepository: RemoteRepository,
         messageDisplayer: MessageDisplayer,
         resourceProvider: ResourceProvider,
+        logoutConfirmationAsker: () -> Unit,
     ): Connectable<PatientProfileEffect, PatientProfileEvent> =
         CoroutineScopeEffectHandler { effect, output ->
             when (effect) {
@@ -221,6 +229,9 @@ object PatientProfileLogic {
                     messageDisplayer.showMessage(
                         resourceProvider.getString(R.string.something_went_wrong)
                     )
+                }
+                is PatientProfileEffect.AskToConfirmLogout -> {
+                    logoutConfirmationAsker.invoke()
                 }
                 is PatientProfileEffect.Logout -> {
                     sessionWiper.wipe()
@@ -273,6 +284,8 @@ sealed class PatientProfileEvent {
 
     object LogoutTap : PatientProfileEvent()
 
+    object LogoutConfirmed : PatientProfileEvent()
+
     // model
     data class LoadAccountSuccess(
         val account: AccountDataModel
@@ -289,6 +302,7 @@ sealed class PatientProfileEvent {
 }
 
 sealed class PatientProfileEffect {
+    object AskToConfirmLogout : PatientProfileEffect()
     object Logout : PatientProfileEffect()
     object LoadAccount : PatientProfileEffect()
 

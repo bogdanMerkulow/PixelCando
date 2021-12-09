@@ -101,6 +101,9 @@
     <string name="delete_photo_dialog_title">Recall</string>
     <string name="delete_photo_dialog_message">Are you sure you want to recall the photo?</string>
     <string name="delete_photo_dialog_confirm_btn_title">Recall</string>
+    <string name="logout_dialog_title">Esci</string>
+    <string name="logout_dialog_message">Vuoi effettuare il logout?</string>
+    <string name="logout_dialog_logout_btn_title">Esci</string>
 
     <!-- Camera -->
     <string name="camera_move_devices_top_closer_to_you">Inclina il telefono all\'indietro</string>
