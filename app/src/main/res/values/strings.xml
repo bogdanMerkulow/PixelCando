@@ -33,7 +33,9 @@
 
     <string name="something_went_wrong">Something went wrong</string>
 
-    <string name="list_placeholder_no_photos">No photos created yet\nPlease upload an image</string>
+    <string name="photo_list_screen_title">Photos</string>
+    <string name="photo_list_no_photos_title">No photos yet</string>
+    <string name="photo_list_no_photos_description">There are no photos made. Please add one by clicking the Plus floating button below</string>
     <string name="upload">Upload</string>
 
     <string name="cancel">Cancel</string>
@@ -117,6 +119,9 @@
 
     <string name="gallery">Gallery</string>
     <string name="camera">Camera</string>
+
+    <string name="photo_list_photo_was_accepted">The photo was accepted</string>
+    <string name="photo_list_photo_wait_for_review">Please wait while your photo is being reviewed and processed</string>
 
     <!-- Camera -->
     <string name="camera_move_devices_top_closer_to_you">Tilt the top of device backward</string>

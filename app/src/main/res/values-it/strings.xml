@@ -33,7 +33,9 @@
 
     <string name="something_went_wrong">Si è verificato un problema</string>
 
-    <string name="list_placeholder_no_photos">No photos created yet\nPlease upload an image</string>
+    <string name="photo_list_screen_title">Foto</string>
+    <string name="photo_list_no_photos_title">No photos yet</string>
+    <string name="photo_list_no_photos_description">There are no photos made. Please add one by clicking the Plus floating button below</string>
     <string name="upload">Carica</string>
 
     <string name="cancel">Annulla</string>
@@ -117,6 +119,9 @@
 
     <string name="gallery">Galleria</string>
     <string name="camera">Camera</string>
+
+    <string name="photo_list_photo_was_accepted">La foto è stata accettata</string>
+    <string name="photo_list_photo_wait_for_review">La foto è in attesa di verifica. Per favore attendi. Grazie</string>
 
     <!-- Camera -->
     <string name="camera_move_devices_top_closer_to_you">Inclina il telefono all\'indietro</string>
