@@ -1,143 +1,117 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <string name="locale_language">"it"</string>
+    <string name="locale_country">"IT"</string>
+    <string name="sign_in_email_placeholder">"Indirizzo email"</string>
+    <string name="sign_in_password_placeholder">"Password"</string>
+    <string name="sign_in_access_account_hint">"Accesso all'account"</string>
+    <string name="sing_in_password_hint">"La password deve contenere almeno 6 caratteri"</string>
+    <string name="sing_in_btn_title">"Login"</string>
+    <string name="sing_in_btn_recover_password">"Password dimenticata?"</string>
+    <string name="sing_in_take_photo_success_title">"Foto salvata nel rullino fotografico del device"</string>
+    <string name="sing_in_take_photo_success_message">"Puoi visualizzare la foto, inviarla e condividerla."</string>
+    <string name="password_recovery_title">"Password dimenticata"</string>
+    <string name="password_recovery_hint">"Per favore inserisci la tua email per ricevere le istruzioni per il recupero della password"</string>
+    <string name="password_recovery_email_placeholder">"Indirizzo email"</string>
+    <string name="password_recovery_btn_title">"Recupera"</string>
+    <string name="password_recovery_success_message">"TI abbiamo inviato le istruzioni. Per favore verifica nella tua casella di posta. Grazie"</string>
+    <string name="tab_title_chat">"Chat"</string>
+    <string name="tab_title_photos">"Foto"</string>
+    <string name="tab_title_patients">"Pazienti"</string>
+    <string name="tab_title_profile">"Profilo"</string>
+    <string name="patient_list_screen_title">"Pazienti"</string>
+    <string name="no_patients_title">"Nessun paziente"</string>
+    <string name="no_patients_description">"Nessun paziente in questa cartella"</string>
+    <string name="exams_header_title">"Esami"</string>
+    <string name="no_exams_title">"Nessun esame"</string>
+    <string name="no_exams_description">"Non ci sono ancora esami effettuati per il paziente. Si prega di fotografare il paziente di profilo ed inviare la foto alla piattaforma"</string>
+    <string name="something_went_wrong">"Si è verificato un problema"</string>
+    <string name="photo_list_screen_title">"Foto"</string>
+    <string name="photo_list_no_photos_title">"Nessuna foto"</string>
+    <string name="photo_list_no_photos_description">"Nessuna foto presente. Puoi caricarne una cliccando sul pulsante + in basso a destra"</string>
+    <string name="photo_state_pending">"In attesa"</string>
+    <string name="photo_state_accepted">"Accettata"</string>
+    <string name="photo_state_rejected">"Rifiutata"</string>
+    <string name="upload">"Carica"</string>
+    <string name="cancel">"Annulla"</string>
+    <string name="male">"Uomo"</string>
+    <string name="female">"Donna"</string>
+    <string name="weight">"Peso"</string>
+    <string name="height">"Altezza"</string>
+    <string name="all">"Tutti"</string>
+    <string name="patient_info_section_general">"Generale"</string>
+    <string name="patient_info_section_contacts">"Contatti"</string>
+    <string name="age">"Età"</string>
+    <string name="gender">"Sesso"</string>
+    <string name="full_name">"Nome completo"</string>
+    <string name="phone">"Telefono"</string>
+    <string name="email">"Email"</string>
+    <string name="address">"Indirizzo"</string>
+    <string name="country">"Paese"</string>
+    <string name="city">"Città"</string>
+    <string name="zip">"CAP"</string>
+    <string name="patient_code">"Codice Paziente"</string>
+    <string name="photo_preview_title">"Inserire peso"</string>
+    <string name="photo_preview_subtitle">"Altezza e peso devono essere definiti per un corretto esame"</string>
+    <string name="photo_preview_weight_field_hint">"Peso, kg"</string>
+    <string name="photo_preview_height_field_hint">"Altezza, cm"</string>
+    <string name="exam_details_screen_title">"%s, Esame #%d"</string>
+    <string name="exam_details_tab_details">"Dettagli"</string>
+    <string name="exam_details_tab_silhouette">"Silhouette"</string>
+    <string name="exam_details_measurement_values_section_params">"Parametri"</string>
+    <string name="exam_details_measurement_values_section_measures">"Le misure"</string>
+    <string name="created_at">"Creato il"</string>
+    <string name="bmi">"Indice di Massa Corporea (BMI)"</string>
+    <string name="bmr">"Metabolismo Basale (BMR)"</string>
+    <string name="fat_mass">"Massa grassa (FM)"</string>
+    <string name="fat_free_mass">"Massa magra (FFM)"</string>
+    <string name="abdominal_fat_mass">"Massa grassa addominale"</string>
+    <string name="tbw">"Acqua totale (TBW)"</string>
+    <string name="hip">"Fianchi"</string>
+    <string name="belly">"Addome"</string>
+    <string name="waist_to_height">"Rapporto vita/altezza"</string>
+    <string name="kg_m2">"kg/m2"</string>
+    <string name="kg">"kg"</string>
+    <string name="kcal">"kcal"</string>
+    <string name="cm">"cm"</string>
+    <string name="percent" formatted="false">"%"</string>
+    <string name="patient_photo_review_ask_text">"Per favore, verificare la foto per accettarla o rifiutarla"</string>
+    <string name="patient_photo_review_start_btn_title">"Verifica"</string>
+    <string name="patient_photo_review_reject_dialog_title">"Rifiutata"</string>
+    <string name="patient_photo_review_reject_dialog_subtitle">"Inserire una motivazione per il rifiuto della foto"</string>
+    <string name="patient_photo_review_reject_dialog_btn_title">"Rifiuta"</string>
+    <string name="chat_list_screen_title">"Chat"</string>
+    <string name="chat_list_my_message">"Tu:"</string>
+    <string name="chat_messaging_my_message">"Tu"</string>
+    <string name="chat_messaging_no_messages_title">"Nessun messaggio"</string>
+    <string name="chat_messaging_no_messages_description">"Non ci sono messaggi"</string>
+    <string name="chat_messaging_message_input_hint">"Inserisci messaggio…"</string>
+    <string name="chat_with_doctor_screen_title">"Chat"</string>
+    <string name="profile_title">"Profilo"</string>
+    <string name="profile_btn_logout">"Esci"</string>
+    <string name="profile_section_account_info">"Dettaglio account"</string>
+    <string name="profile_section_contacts">"Contatti"</string>
+    <string name="profile_full_name_cannot_be_empty">"Il nome non può essere nullo"</string>
+    <string name="profile_btn_save">"Salva"</string>
+    <string name="invalid_email">"Email non valida"</string>
+    <string name="gallery">"Galleria"</string>
+    <string name="camera">"Camera"</string>
+    <string name="photo_list_photo_was_accepted">"La foto è stata accettata"</string>
+    <string name="photo_list_photo_wait_for_review">"La foto è in attesa di verifica. Per favore attendi. Grazie"</string>
 
-	<string name="locale_language">it</string>
-	<string name="locale_country">IT</string>
-
-	<string name="sign_in_email_placeholder">Indirizzo email</string>
-	<string name="sign_in_password_placeholder">Password</string>
-	<string name="sign_in_access_account_hint">Accesso all\'account</string>
-	<string name="sing_in_password_hint">La password deve contenere almeno 6 caratteri</string>
-	<string name="sing_in_btn_title">Login</string>
-	<string name="sing_in_btn_recover_password">Password dimenticata?</string>
-	<string name="sing_in_take_photo_success_title">Foto salvata nel rullino fotografico del device</string>
-	<string name="sing_in_take_photo_success_message">Puoi visualizzare la foto, inviarla e condividerla.</string>
-
-	<string name="password_recovery_title">Password dimenticata</string>
-	<string name="password_recovery_hint">Per favore inserisci la tua email per ricevere le istruzioni per il recupero della password</string>
-	<string name="password_recovery_email_placeholder">Indirizzo email</string>
-	<string name="password_recovery_btn_title">Recupera</string>
-	<string name="password_recovery_success_message">TI abbiamo inviato le istruzioni. Per favore verifica nella tua casella di posta. Grazie</string>
-
-	<string name="tab_title_chat">Chat</string>
-	<string name="tab_title_photos">Foto</string>
-	<string name="tab_title_patients">Pazienti</string>
-	<string name="tab_title_profile">Profilo</string>
-
-	<string name="patient_list_screen_title">Pazienti</string>
-	<string name="no_patients_title">Nessun paziente</string>
-	<string name="no_patients_description">Nessun paziente in questa cartella</string>
-
-    <string name="exams_header_title">Esami</string>
-    <string name="no_exams_title">Nessun esame</string>
-    <string name="no_exams_description">Non ci sono ancora esami effettuati per il paziente. Si prega di fotografare il paziente di profilo ed inviare la foto alla piattaforma</string>
-
-    <string name="something_went_wrong">Si è verificato un problema</string>
-
-    <string name="photo_list_screen_title">Foto</string>
-    <string name="photo_list_no_photos_title">No photos yet</string>
-    <string name="photo_list_no_photos_description">There are no photos made. Please add one by clicking the Plus floating button below</string>
-    <string name="photo_state_pending">In attesa</string>
-    <string name="photo_state_accepted">Accettata</string>
-    <string name="photo_state_rejected">Rifiutata</string>
-    <string name="upload">Carica</string>
-
-    <string name="cancel">Annulla</string>
-
-    <string name="male">Uomo</string>
-    <string name="female">Donna</string>
-
-    <string name="weight">Peso</string>
-    <string name="height">Altezza</string>
-
-    <string name="all">Tutti</string>
-
-	<string name="patient_info_section_general">Generale</string>
-	<string name="patient_info_section_contacts">Contatti</string>
-
-	<string name="age">Età</string>
-	<string name="gender">Sesso</string>
-
-	<string name="full_name">Nome completo</string>
-	<string name="phone">Telefono</string>
-	<string name="email">Email</string>
-	<string name="address">Indirizzo</string>
-	<string name="country">Paese</string>
-	<string name="city">Città</string>
-	<string name="zip">CAP</string>
-    <string name="patient_code">Codice Paziente</string>
-
-	<string name="photo_preview_title">Inserire peso</string>
-	<string name="photo_preview_subtitle">Altezza e peso devono essere definiti per un corretto esame</string>
-	<string name="photo_preview_weight_field_hint">Peso, kg</string>
-	<string name="photo_preview_height_field_hint">Altezza, cm</string>
-
-	<string name="exam_details_screen_title">%s, Esame #%d</string>
-	<string name="exam_details_tab_details">Dettagli</string>
-	<string name="exam_details_tab_silhouette">Silhouette</string>
-
-	<string name="exam_details_measurement_values_section_params">Parametri</string>
-	<string name="exam_details_measurement_values_section_measures">Le misure</string>
-
-	<string name="created_at">Creato il</string>
-	<string name="bmi">Indice di Massa Corporea (BMI)</string>
-	<string name="bmr">Metabolismo Basale (BMR)</string>
-	<string name="fat_mass">Massa grassa (FM)</string>
-	<string name="fat_free_mass">Massa magra (FFM)</string>
-	<string name="abdominal_fat_mass">Massa grassa addominale</string>
-	<string name="tbw">Acqua totale (TBW)</string>
-	<string name="hip">Fianchi</string>
-	<string name="belly">Addome</string>
-	<string name="waist_to_height">Rapporto vita/altezza</string>
-
-	<string name="kg_m2">kg/m2</string>
-	<string name="kg">kg</string>
-	<string name="kcal">kcal</string>
-	<string name="cm">cm</string>
-	<string name="percent" formatted="false">%</string>
-
-	<string name="patient_photo_review_ask_text">Per favore, verificare la foto per accettarla o rifiutarla</string>
-	<string name="patient_photo_review_start_btn_title">Verifica</string>
-	<string name="patient_photo_review_reject_dialog_title">Rifiutando la foto</string>
-	<string name="patient_photo_review_reject_dialog_subtitle">Inserire una motivazione per il rifiuto della foto</string>
-	<string name="patient_photo_review_reject_dialog_btn_title">Rifiuta</string>
-
-	<string name="chat_list_screen_title">Chat</string>
-	<string name="chat_list_my_message">Tu:</string>
-
-	<string name="chat_messaging_my_message">Tu</string>
-	<string name="chat_messaging_no_messages_title">Nessun messaggio</string>
-	<string name="chat_messaging_no_messages_description">Non ci sono messaggi</string>
-	<string name="chat_messaging_message_input_hint">Inserisci messaggio…</string>
-
-	<string name="profile_title">Profilo</string>
-	<string name="profile_btn_logout">Esci</string>
-	<string name="profile_section_account_info">Dettaglio account</string>
-	<string name="profile_section_contacts">Contatti</string>
-	<string name="profile_full_name_cannot_be_empty">Il nome non può essere nullo</string>
-	<string name="profile_btn_save">Salva</string>
-
-	<string name="invalid_email">Email non valida</string>
-
-	<string name="gallery">Galleria</string>
-	<string name="camera">Camera</string>
-
-    <string name="photo_list_photo_was_accepted">La foto è stata accettata</string>
-    <string name="photo_list_photo_wait_for_review">La foto è in attesa di verifica. Per favore attendi. Grazie</string>
-
-	<!-- Camera -->
-	<string name="camera_move_devices_top_closer_to_you">Inclina il telefono all\'indietro</string>
-	<string name="camera_move_devices_top_away_from_you">Inclina il telefono in avanti</string>
-	<string name="camera_rotate_device_right">Ruota il telefono verso destra</string>
-	<string name="camera_rotate_device_left">Ruota il telefono verso sinistra</string>
-	<string name="camera_device_position_ok">Ora puoi scattare la foto</string>
-	<plurals name="camera_seconds_remain">
-		<item quantity="one">%d secondo</item>
-		<item quantity="other">%d secondi</item>
-	</plurals>
-	<string name="camera_rotation_check_not_available_title">Attenzione</string>
-	<string name="camera_rotation_check_not_available_message">La funzionalità giroscopio non è presente sul device. Per una guida su come effettuare correttamente la foto, clicca su GUIDA</string>
-	<string name="camera_rotation_check_not_available_skip_instructions">Continua</string>
-	<string name="camera_rotation_check_not_available_open_instructions">Guida</string>
-	<string name="camera_help_link">https://www.pixelcando.com/camera-hint?lang=it</string>
-
+    <!-- Camera -->
+    <string name="camera_move_devices_top_closer_to_you">"Inclina il telefono all'indietro"</string>
+    <string name="camera_move_devices_top_away_from_you">"Inclina il telefono in avanti"</string>
+    <string name="camera_rotate_device_right">"Ruota il telefono verso destra"</string>
+    <string name="camera_rotate_device_left">"Ruota il telefono verso sinistra"</string>
+    <string name="camera_device_position_ok">"Ora puoi scattare la foto"</string>
+    <plurals name="camera_seconds_remain">
+        <item quantity="one">"%d secondo"</item>
+        <item quantity="other">"%d secondi"</item>
+    </plurals>
+    <string name="camera_rotation_check_not_available_title">"Attenzione"</string>
+    <string name="camera_rotation_check_not_available_message">"La funzionalità giroscopio non è presente sul device. Per una guida su come effettuare correttamente la foto, clicca su GUIDA"</string>
+    <string name="camera_rotation_check_not_available_skip_instructions">"Continua"</string>
+    <string name="camera_rotation_check_not_available_open_instructions">"Guida"</string>
+    <string name="camera_help_link">"https://www.pixelcando.com/camera-hint?lang=it"</string>
 </resources>
