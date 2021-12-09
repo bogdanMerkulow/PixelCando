@@ -20,6 +20,7 @@ import pixel.cando.data.remote.dto.PatientGetRequest
 import pixel.cando.data.remote.dto.PatientGetResponse
 import pixel.cando.data.remote.dto.PatientListRequest
 import pixel.cando.data.remote.dto.PatientListResponse
+import pixel.cando.data.remote.dto.PhotoListResponse
 import pixel.cando.data.remote.dto.ReadChatWithDoctorMessagesRequest
 import pixel.cando.data.remote.dto.ReadChatWithPatientMessagesRequest
 import pixel.cando.data.remote.dto.RejectPhotoRequest
@@ -29,7 +30,8 @@ import pixel.cando.data.remote.dto.UpdateDoctorAccountRequest
 import pixel.cando.data.remote.dto.UpdateDoctorAccountResponse
 import pixel.cando.data.remote.dto.UpdatePatientAccountRequest
 import pixel.cando.data.remote.dto.UpdatePatientAccountResponse
-import pixel.cando.data.remote.dto.UploadPhotoForPatientRequest
+import pixel.cando.data.remote.dto.UploadPhotoByDoctorRequest
+import pixel.cando.data.remote.dto.UploadPhotoByPatientRequest
 import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.POST
@@ -62,8 +64,13 @@ interface RestApi {
     ): Response<GetExamResponse>
 
     @POST("doctor/photos/upload")
-    suspend fun uploadPhoto(
-        @Body request: UploadPhotoForPatientRequest
+    suspend fun uploadPhotoByDoctor(
+        @Body request: UploadPhotoByDoctorRequest
+    ): Response<Unit>
+
+    @POST("patient/photos/upload")
+    suspend fun uploadPhotoByPatient(
+        @Body request: UploadPhotoByPatientRequest
     ): Response<Unit>
 
     @POST("doctor/account/get")
@@ -135,5 +142,10 @@ interface RestApi {
     suspend fun readMessagesInChatWithDoctor(
         @Body request: ReadChatWithDoctorMessagesRequest
     ): Response<Unit>
+
+    @POST("patient/photos/list")
+    suspend fun getPatientPhotos(
+        @Body request: EmptyRequest
+    ): Response<PhotoListResponse>
 
 }

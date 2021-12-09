@@ -195,7 +195,13 @@ object PatientProfileLogic {
                 }
                 is PatientProfileEffect.UpdateAccount -> {
                     val result = remoteRepository.updatePatientAccount(
-                        effect.account.model
+                        fullName = effect.account.fullName,
+                        email = effect.account.email,
+                        phoneNumber = effect.account.phoneNumber,
+                        contactEmail = effect.account.contactEmail,
+                        address = effect.account.address,
+                        city = effect.account.city,
+                        postalCode = effect.account.postalCode,
                     )
                     result.onLeft {
                         output.accept(
@@ -405,19 +411,6 @@ private val AccountDataModel.maySave: Boolean
 
 private val PatientAccount.dataModel: AccountDataModel
     get() = AccountDataModel(
-        fullName = fullName,
-        email = email,
-        patientCode = patientCode,
-        phoneNumber = phoneNumber,
-        contactEmail = contactEmail,
-        address = address,
-        country = country,
-        city = city,
-        postalCode = postalCode,
-    )
-
-private val AccountDataModel.model: PatientAccount
-    get() = PatientAccount(
         fullName = fullName,
         email = email,
         patientCode = patientCode,

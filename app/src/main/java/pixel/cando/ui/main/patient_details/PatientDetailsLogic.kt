@@ -457,7 +457,7 @@ object PatientDetailsLogic {
                     }
                     val base64 = bitmap.base64ForSending
                     if (base64 != null) {
-                        val result = remoteRepository.uploadPhoto(
+                        val result = remoteRepository.uploadPhotoByDoctor(
                             patientId = effect.patientId,
                             weight = effect.weight,
                             height = effect.height,

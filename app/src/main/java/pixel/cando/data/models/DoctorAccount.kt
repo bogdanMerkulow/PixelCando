@@ -15,6 +15,8 @@ data class PatientAccount(
     val fullName: String,
     val email: String,
     val patientCode: String,
+    val weight: Float,
+    val height: Float,
     val phoneNumber: String?,
     val contactEmail: String?,
     val address: String?,

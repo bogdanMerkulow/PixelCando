@@ -237,8 +237,7 @@ class DependencyManager(
                                     )
                                 }
                                 is PhotoListFragment -> {
-                                    setup(
-                                        fragment = fragment,
+                                    fragment.setup(
                                         remoteRepository = remoteRepository,
                                         resourceProvider = resourceProvider,
                                         context = app,

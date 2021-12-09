@@ -36,6 +36,9 @@
     <string name="photo_list_screen_title">Photos</string>
     <string name="photo_list_no_photos_title">No photos yet</string>
     <string name="photo_list_no_photos_description">There are no photos made. Please add one by clicking the Plus floating button below</string>
+    <string name="photo_state_pending">Waiting</string>
+    <string name="photo_state_accepted">Confirmed</string>
+    <string name="photo_state_rejected">Declined</string>
     <string name="upload">Upload</string>
 
     <string name="cancel">Cancel</string>

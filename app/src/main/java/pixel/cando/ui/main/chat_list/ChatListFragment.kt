@@ -115,6 +115,7 @@ class ChatListFragment : ViewBindingFragment<FragmentChatListBinding>(
         savedInstanceState: Bundle?
     ) {
         super.onViewBindingCreated(viewBinding, savedInstanceState)
+        viewBinding.list.setHasFixedSize(true)
         viewBinding.list.adapter = adapter
         viewBinding.list.addItemDecoration(
             DividerItemDecoration(

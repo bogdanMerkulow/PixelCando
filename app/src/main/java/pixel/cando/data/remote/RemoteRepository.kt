@@ -14,6 +14,8 @@ import pixel.cando.data.models.PatientAccount
 import pixel.cando.data.models.PatientListItemInfo
 import pixel.cando.data.models.PatientPhotoToReview
 import pixel.cando.data.models.PatientSingleItemInfo
+import pixel.cando.data.models.Photo
+import pixel.cando.data.models.PhotoState
 import pixel.cando.data.models.UploadPhotoFailure
 import pixel.cando.data.remote.dto.ChatItemDto
 import pixel.cando.data.remote.dto.ChatListFilterDto
@@ -32,7 +34,6 @@ import pixel.cando.data.remote.dto.ExamListRequest
 import pixel.cando.data.remote.dto.FolderListRequest
 import pixel.cando.data.remote.dto.GetExamRequest
 import pixel.cando.data.remote.dto.PatientAccountDto
-import pixel.cando.data.remote.dto.PatientAccountUserDto
 import pixel.cando.data.remote.dto.PatientGetRequest
 import pixel.cando.data.remote.dto.PatientListFilterDto
 import pixel.cando.data.remote.dto.PatientListRequest
@@ -44,10 +45,14 @@ import pixel.cando.data.remote.dto.SendMessageToChatWithDoctorRequest
 import pixel.cando.data.remote.dto.SendMessageToChatWithPatientDto
 import pixel.cando.data.remote.dto.SendMessageToChatWithPatientRequest
 import pixel.cando.data.remote.dto.UpdateDoctorAccountRequest
+import pixel.cando.data.remote.dto.UpdatePatientAccountDto
 import pixel.cando.data.remote.dto.UpdatePatientAccountRequest
-import pixel.cando.data.remote.dto.UploadPhotoForPatientRequest
+import pixel.cando.data.remote.dto.UpdatePatientAccountUserDto
+import pixel.cando.data.remote.dto.UploadPhotoByDoctorRequest
+import pixel.cando.data.remote.dto.UploadPhotoByPatientRequest
 import pixel.cando.data.remote.dto.UploadPhotoForPatientWeightHeightDto
 import pixel.cando.utils.Either
+import pixel.cando.utils.logError
 import pixel.cando.utils.mapOnlyLeft
 import retrofit2.Response
 import java.io.IOException
@@ -76,10 +81,15 @@ interface RemoteRepository {
         id: Long
     ): Either<ExamSingleItemInfo, Throwable>
 
-    suspend fun uploadPhoto(
+    suspend fun uploadPhotoByDoctor(
         patientId: Long,
         weight: Float,
         height: Float,
+        photo: String
+    ): Either<Unit, UploadPhotoFailure>
+
+    suspend fun uploadPhotoByPatient(
+        weight: Float,
         photo: String
     ): Either<Unit, UploadPhotoFailure>
 
@@ -94,7 +104,13 @@ interface RemoteRepository {
     ): Either<PatientAccount, Throwable>
 
     suspend fun updatePatientAccount(
-        account: PatientAccount
+        fullName: String,
+        email: String,
+        phoneNumber: String?,
+        contactEmail: String?,
+        address: String?,
+        city: String?,
+        postalCode: String?,
     ): Either<PatientAccount, Throwable>
 
     suspend fun subscribeForPushNotifications(
@@ -150,6 +166,9 @@ interface RemoteRepository {
     suspend fun readMessagesInChatWithDoctor(
         until: LocalDateTime,
     ): Either<Unit, Throwable>
+
+    suspend fun getPatientPhotos(
+    ): Either<List<Photo>, Throwable>
 
 }
 
@@ -301,7 +320,7 @@ class RealRemoteRepository(
         }
     }
 
-    override suspend fun uploadPhoto(
+    override suspend fun uploadPhotoByDoctor(
         patientId: Long,
         weight: Float,
         height: Float,
@@ -309,13 +328,48 @@ class RealRemoteRepository(
     ): Either<Unit, UploadPhotoFailure> {
         return callApi(
             action = {
-                uploadPhoto(
-                    UploadPhotoForPatientRequest(
+                uploadPhotoByDoctor(
+                    UploadPhotoByDoctorRequest(
                         patientId = patientId,
                         weightHeight = UploadPhotoForPatientWeightHeightDto(
                             weight = weight,
                             height = height,
                         ),
+                        photo = photo,
+                    )
+                )
+            },
+            unsuccessfulResponseMapper = {
+                val errorMessage = it.errorMessage(moshi)
+                Either.Right(
+                    if (errorMessage != null) UploadPhotoFailure.ErrorMessage(errorMessage)
+                    else UploadPhotoFailure.UnknownError(
+                        IllegalArgumentException()
+                    )
+                )
+            },
+            notAuthorizedHandler = {
+                Either.Right(
+                    UploadPhotoFailure.UnknownError(it)
+                )
+            },
+            unknownErrorHandler = {
+                Either.Right(
+                    UploadPhotoFailure.UnknownError(it)
+                )
+            },
+        )
+    }
+
+    override suspend fun uploadPhotoByPatient(
+        weight: Float,
+        photo: String
+    ): Either<Unit, UploadPhotoFailure> {
+        return callApi(
+            action = {
+                uploadPhotoByPatient(
+                    UploadPhotoByPatientRequest(
+                        weight = weight,
                         photo = photo,
                     )
                 )
@@ -390,23 +444,27 @@ class RealRemoteRepository(
     }
 
     override suspend fun updatePatientAccount(
-        account: PatientAccount
+        fullName: String,
+        email: String,
+        phoneNumber: String?,
+        contactEmail: String?,
+        address: String?,
+        city: String?,
+        postalCode: String?,
     ): Either<PatientAccount, Throwable> {
         return callApi {
             updatePatientAccount(
                 UpdatePatientAccountRequest(
-                    PatientAccountDto(
-                        user = PatientAccountUserDto(
-                            fullName = account.fullName,
-                            email = account.email,
-                            contactPhone = account.phoneNumber,
-                            contactEmail = account.contactEmail,
-                            address = account.address,
-                            country = account.country,
-                            city = account.city,
-                            postalCode = account.postalCode,
+                    UpdatePatientAccountDto(
+                        user = UpdatePatientAccountUserDto(
+                            fullName = fullName,
+                            email = email,
+                            contactPhone = phoneNumber,
+                            contactEmail = contactEmail,
+                            address = address,
+                            city = city,
+                            postalCode = postalCode,
                         ),
-                        code = account.patientCode,
                     )
                 )
             )
@@ -602,6 +660,36 @@ class RealRemoteRepository(
         }
     }
 
+    override suspend fun getPatientPhotos(
+    ): Either<List<Photo>, Throwable> {
+        return callApi {
+            getPatientPhotos(
+                EmptyRequest()
+            )
+        }.mapOnlyLeft {
+            it.results.mapNotNull {
+                val state = when (it.status) {
+                    "accepted" -> PhotoState.ACCEPTED
+                    "rejected" -> PhotoState.REJECTED
+                    "pending" -> PhotoState.PENDING
+                    else -> {
+                        logError("Received an unsupported photo status = ${it.status}")
+                        null
+                    }
+                }
+                if (state != null) {
+                    Photo(
+                        id = it.id,
+                        imageUrl = it.file.original,
+                        createdAt = it.createdAt,
+                        state = state,
+                        note = it.notes,
+                    )
+                } else null
+            }
+        }
+    }
+
     private suspend fun <R> callApi(
         action: suspend RestApi.() -> Response<R>
     ): Either<R, Throwable> {
@@ -667,6 +755,8 @@ private fun PatientAccountDto.model(
     fullName = user.fullName,
     email = user.email,
     patientCode = code,
+    weight = weight,
+    height = height,
     phoneNumber = user.contactPhone,
     contactEmail = user.contactEmail,
     address = user.address,
