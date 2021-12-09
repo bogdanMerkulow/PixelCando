@@ -24,12 +24,12 @@
     <string name="tab_title_profile">Profile</string>
 
     <string name="patient_list_screen_title">Patients</string>
-    <string name="no_patients_title">No patients yet</string>
-    <string name="no_patients_description">There is no patient in this folder</string>
+    <string name="no_patients_title">No subject yet</string>
+    <string name="no_patients_description">There is no subject in this folder</string>
 
     <string name="exams_header_title">Exams</string>
     <string name="no_exams_title">No exams yet</string>
-    <string name="no_exams_description">There are no exams made yet for the patient. Please shoot the patient half-face and upload the photo to the engine</string>
+    <string name="no_exams_description">There are no exams made yet for the subject. Please shoot the subject half-face and upload the photo to the engine</string>
 
     <string name="something_went_wrong">Something went wrong</string>
 
