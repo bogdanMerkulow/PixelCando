@@ -39,6 +39,11 @@
     <string name="photo_state_pending">In attesa</string>
     <string name="photo_state_accepted">Accettata</string>
     <string name="photo_state_rejected">Rifiutata</string>
+
+    <string name="delete_photo_dialog_title">Recall</string>
+    <string name="delete_photo_dialog_message">Are you sure you want to recall the photo?</string>
+    <string name="delete_photo_dialog_confirm_btn_title">Recall</string>
+
     <string name="upload">Carica</string>
 
     <string name="cancel">Annulla</string>
@@ -99,26 +104,28 @@
 	<string name="patient_photo_review_start_btn_title">Verifica</string>
 	<string name="patient_photo_review_reject_dialog_title">Rifiutando la foto</string>
 	<string name="patient_photo_review_reject_dialog_subtitle">Inserire una motivazione per il rifiuto della foto</string>
-	<string name="patient_photo_review_reject_dialog_btn_title">Rifiuta</string>
+    <string name="patient_photo_review_reject_dialog_btn_title">Rifiuta</string>
 
-	<string name="chat_list_screen_title">Chat</string>
-	<string name="chat_list_my_message">Tu:</string>
+    <string name="chat_list_screen_title">Chat</string>
+    <string name="chat_list_my_message">Tu:</string>
 
-	<string name="chat_messaging_my_message">Tu</string>
-	<string name="chat_messaging_no_messages_title">Nessun messaggio</string>
-	<string name="chat_messaging_no_messages_description">Non ci sono messaggi</string>
-	<string name="chat_messaging_message_input_hint">Inserisci messaggio…</string>
+    <string name="chat_messaging_my_message">Tu</string>
+    <string name="chat_messaging_no_messages_title">Nessun messaggio</string>
+    <string name="chat_messaging_no_messages_description">Non ci sono messaggi</string>
+    <string name="chat_messaging_message_input_hint">Inserisci messaggio…</string>
 
-	<string name="profile_title">Profilo</string>
-	<string name="profile_btn_logout">Esci</string>
-	<string name="profile_section_account_info">Dettaglio account</string>
-	<string name="profile_section_contacts">Contatti</string>
-	<string name="profile_full_name_cannot_be_empty">Il nome non può essere nullo</string>
-	<string name="profile_btn_save">Salva</string>
+    <string name="chat_with_doctor_screen_title">Chat</string>
 
-	<string name="invalid_email">Email non valida</string>
+    <string name="profile_title">Profilo</string>
+    <string name="profile_btn_logout">Esci</string>
+    <string name="profile_section_account_info">Dettaglio account</string>
+    <string name="profile_section_contacts">Contatti</string>
+    <string name="profile_full_name_cannot_be_empty">Il nome non può essere nullo</string>
+    <string name="profile_btn_save">Salva</string>
 
-	<string name="gallery">Galleria</string>
+    <string name="invalid_email">Email non valida</string>
+
+    <string name="gallery">Galleria</string>
 	<string name="camera">Camera</string>
 
     <string name="photo_list_photo_was_accepted">La foto è stata accettata</string>

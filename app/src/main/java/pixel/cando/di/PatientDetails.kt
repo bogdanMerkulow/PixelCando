@@ -1,9 +1,9 @@
 package pixel.cando.di
 
 import android.Manifest
-import android.app.AlertDialog
 import android.content.Context
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.spotify.mobius.Mobius
 import com.spotify.mobius.Update
 import com.spotify.mobius.android.AndroidLogger
@@ -135,7 +135,7 @@ fun PatientDetailsFragment.setup(
                 },
                 howToGetPhotoAsker = {
                     lifecycleScope.launch {
-                        AlertDialog.Builder(requireContext())
+                        MaterialAlertDialogBuilder(requireContext())
                             .setItems(
                                 arrayOf(
                                     resourceProvider.getString(R.string.camera),

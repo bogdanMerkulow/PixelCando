@@ -25,6 +25,7 @@ import pixel.cando.data.remote.dto.ChatMessageListResponse
 import pixel.cando.data.remote.dto.ChatWithDoctorMessageListRequest
 import pixel.cando.data.remote.dto.ChatWithPatientMessageListRequest
 import pixel.cando.data.remote.dto.ConfirmPhotoRequest
+import pixel.cando.data.remote.dto.DeletePhotoRequest
 import pixel.cando.data.remote.dto.DeviceRegisterDto
 import pixel.cando.data.remote.dto.DeviceRegisterRequest
 import pixel.cando.data.remote.dto.DoctorAccountDto
@@ -169,6 +170,10 @@ interface RemoteRepository {
 
     suspend fun getPatientPhotos(
     ): Either<List<Photo>, Throwable>
+
+    suspend fun deletePhoto(
+        photoId: Long
+    ): Either<Unit, Throwable>
 
 }
 
@@ -687,6 +692,18 @@ class RealRemoteRepository(
                     )
                 } else null
             }
+        }
+    }
+
+    override suspend fun deletePhoto(
+        photoId: Long
+    ): Either<Unit, Throwable> {
+        return callApi {
+            deletePhoto(
+                DeletePhotoRequest(
+                    id = photoId
+                )
+            )
         }
     }
 

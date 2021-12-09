@@ -39,6 +39,11 @@
     <string name="photo_state_pending">Waiting</string>
     <string name="photo_state_accepted">Confirmed</string>
     <string name="photo_state_rejected">Declined</string>
+
+    <string name="delete_photo_dialog_title">Recall</string>
+    <string name="delete_photo_dialog_message">Are you sure you want to recall the photo?</string>
+    <string name="delete_photo_dialog_confirm_btn_title">Recall</string>
+
     <string name="upload">Upload</string>
 
     <string name="cancel">Cancel</string>

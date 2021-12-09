@@ -2,6 +2,8 @@ package pixel.cando.ui.main.photo_list
 
 import android.net.Uri
 import android.os.Bundle
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import pixel.cando.R
 import pixel.cando.data.models.PhotoState
@@ -42,7 +44,11 @@ class PhotoListFragment : ViewBindingFragment<FragmentPhotoListBinding>(
     private val adapter by lazy {
         createDifferAdapter(
             noPhotosAdapterDelegate(),
-            photoAdapterDelegate(),
+            photoAdapterDelegate {
+                eventSender?.sendEvent(
+                    PhotoListEvent.DeletePhotoTap(it)
+                )
+            },
         )
     }
 
@@ -76,6 +82,21 @@ class PhotoListFragment : ViewBindingFragment<FragmentPhotoListBinding>(
         super.onViewBindingCreated(viewBinding, savedInstanceState)
         viewBinding.list.setHasFixedSize(true)
         viewBinding.list.adapter = adapter
+        adapter.registerAdapterDataObserver(object : RecyclerView.AdapterDataObserver() {
+            override fun onItemRangeInserted(
+                positionStart: Int,
+                itemCount: Int
+            ) {
+                if (positionStart == 0) {
+                    val firstVisibleItemPosition =
+                        (viewBinding.list.layoutManager as LinearLayoutManager)
+                            .findFirstVisibleItemPosition()
+                    if (firstVisibleItemPosition == 0) {
+                        viewBinding.list.smoothScrollToPosition(0)
+                    }
+                }
+            }
+        })
         viewBinding.takePhotoButton.setOnClickListener {
             eventSender?.sendEvent(
                 PhotoListEvent.AddPhotoClick
@@ -115,13 +136,16 @@ private fun noPhotosAdapterDelegate(
         PhotoListItem>()
 
 private fun photoAdapterDelegate(
-
+    onDeleteClick: (Long) -> Unit,
 ) = createDifferAdapterDelegate<
         PhotoListItem.Photo,
         PhotoListItem,
         ListItemPhotoBinding>(
     viewBindingCreator = ListItemPhotoBinding::inflate,
     viewHolderBinding = {
+        binding.deleteIcon.setOnClickListener {
+            onDeleteClick.invoke(item.photo.id)
+        }
         bind {
             val photo = item.photo
             binding.photoImageView.load(photo.imageUrl)

@@ -67,6 +67,25 @@ object PhotoListLogic {
                     )
                 } else Next.noChange()
             }
+            is PhotoListEvent.DeletePhotoTap -> {
+                Next.dispatch(
+                    setOf(
+                        PhotoListEffect.AskToConfirmPhotoRemovalAndDeleteIfAgree(
+                            photoId = event.photoId
+                        )
+                    )
+                )
+            }
+            is PhotoListEvent.PhotoDeletionConfirmed -> {
+                Next.next(
+                    model.copy(
+                        loadingState = PhotoListLoadingState.LOADING,
+                    ),
+                    setOf(
+                        PhotoListEffect.DeletePhoto(event.photoId)
+                    )
+                )
+            }
             is PhotoListEvent.AddPhotoClick -> {
                 Next.dispatch(
                     setOf(
@@ -169,6 +188,23 @@ object PhotoListLogic {
                     )
                 )
             }
+            is PhotoListEvent.PhotoRemovalSuccess -> {
+                Next.dispatch(
+                    setOf(
+                        PhotoListEffect.LoadPhotos
+                    )
+                )
+            }
+            is PhotoListEvent.PhotoRemovalFailure -> {
+                Next.next(
+                    model.copy(
+                        loadingState = PhotoListLoadingState.NONE,
+                    ),
+                    setOf(
+                        PhotoListEffect.ShowUnexpectedError
+                    )
+                )
+            }
             is PhotoListEvent.LoadPatientDataSuccess -> {
                 Next.next(
                     model.copy(
@@ -211,6 +247,7 @@ object PhotoListLogic {
         photoTakerOpener: () -> Unit,
         photoConfirmationAsker: (PhotoPreviewArguments) -> Unit,
         howToGetPhotoAsker: () -> Unit,
+        photoRemovalConfirmationAsker: (Long) -> Unit,
         remoteRepository: RemoteRepository,
         messageDisplayer: MessageDisplayer,
         resourceProvider: ResourceProvider,
@@ -294,6 +331,20 @@ object PhotoListLogic {
                         )
                     }
                 }
+                is PhotoListEffect.DeletePhoto -> {
+                    val result = remoteRepository.deletePhoto(effect.photoId)
+                    result.onLeft {
+                        output.accept(
+                            PhotoListEvent.PhotoRemovalSuccess
+                        )
+                    }
+                    result.onRight {
+                        logError(it)
+                        output.accept(
+                            PhotoListEvent.PhotoRemovalFailure
+                        )
+                    }
+                }
                 is PhotoListEffect.OpenPhotoTaker -> {
                     photoTakerOpener.invoke()
                 }
@@ -330,6 +381,9 @@ object PhotoListLogic {
                         )
                     )
                 }
+                is PhotoListEffect.AskToConfirmPhotoRemovalAndDeleteIfAgree -> {
+                    photoRemovalConfirmationAsker.invoke(effect.photoId)
+                }
                 is PhotoListEffect.ShowUnexpectedError -> {
                     messageDisplayer.showMessage(
                         resourceProvider.getString(R.string.something_went_wrong)
@@ -357,6 +411,14 @@ sealed class PhotoListEvent {
     object RefreshRequest : PhotoListEvent()
 
     object AddPhotoClick : PhotoListEvent()
+
+    data class DeletePhotoTap(
+        val photoId: Long
+    ) : PhotoListEvent()
+
+    data class PhotoDeletionConfirmed(
+        val photoId: Long
+    ) : PhotoListEvent()
 
     object PhotoTakingChosen : PhotoListEvent()
     object ImagePickingChosen : PhotoListEvent()
@@ -386,6 +448,9 @@ sealed class PhotoListEvent {
         val message: String? = null,
     ) : PhotoListEvent()
 
+    object PhotoRemovalSuccess : PhotoListEvent()
+    object PhotoRemovalFailure : PhotoListEvent()
+
     object CameraPermissionGranted : PhotoListEvent()
     object CameraPermissionDenied : PhotoListEvent()
 
@@ -403,6 +468,14 @@ sealed class PhotoListEffect {
     object LoadPhotos : PhotoListEffect()
 
     object LoadPatientData : PhotoListEffect()
+
+    data class AskToConfirmPhotoRemovalAndDeleteIfAgree(
+        val photoId: Long
+    ) : PhotoListEffect()
+
+    data class DeletePhoto(
+        val photoId: Long
+    ) : PhotoListEffect()
 
     object OpenPhotoTaker : PhotoListEffect()
 

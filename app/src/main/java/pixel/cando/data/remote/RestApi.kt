@@ -6,6 +6,7 @@ import pixel.cando.data.remote.dto.ChatMessageListResponse
 import pixel.cando.data.remote.dto.ChatWithDoctorMessageListRequest
 import pixel.cando.data.remote.dto.ChatWithPatientMessageListRequest
 import pixel.cando.data.remote.dto.ConfirmPhotoRequest
+import pixel.cando.data.remote.dto.DeletePhotoRequest
 import pixel.cando.data.remote.dto.DeviceRegisterRequest
 import pixel.cando.data.remote.dto.EmptyRequest
 import pixel.cando.data.remote.dto.ExamListRequest
@@ -147,5 +148,10 @@ interface RestApi {
     suspend fun getPatientPhotos(
         @Body request: EmptyRequest
     ): Response<PhotoListResponse>
+
+    @POST("patient/photos/delete")
+    suspend fun deletePhoto(
+        @Body request: DeletePhotoRequest
+    ): Response<Unit>
 
 }

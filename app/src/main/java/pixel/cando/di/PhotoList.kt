@@ -1,9 +1,9 @@
 package pixel.cando.di
 
 import android.Manifest
-import android.app.AlertDialog
 import android.content.Context
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.spotify.mobius.Mobius
 import com.spotify.mobius.Update
 import com.spotify.mobius.android.AndroidLogger
@@ -91,6 +91,10 @@ fun PhotoListFragment.setup(
         }
     }
 
+    val photoRemovalConfirmationResultEventSource = ResultEventSource<Long, PhotoListEvent> {
+        PhotoListEvent.PhotoDeletionConfirmed(it)
+    }
+
     val controllerFragmentDelegate = ControllerFragmentDelegate<
             PhotoListViewModel,
             PhotoListDataModel,
@@ -129,7 +133,7 @@ fun PhotoListFragment.setup(
                 },
                 howToGetPhotoAsker = {
                     lifecycleScope.launch {
-                        AlertDialog.Builder(requireContext())
+                        MaterialAlertDialogBuilder(requireContext())
                             .setItems(
                                 arrayOf(
                                     resourceProvider.getString(R.string.camera),
@@ -137,6 +141,24 @@ fun PhotoListFragment.setup(
                                 )
                             ) { _, index ->
                                 howToGetPhotoResultEventSource.emit(index)
+                            }
+                            .create()
+                            .show()
+                    }
+                },
+                photoRemovalConfirmationAsker = { photoId ->
+                    lifecycleScope.launch {
+                        MaterialAlertDialogBuilder(requireContext())
+                            .setTitle(R.string.delete_photo_dialog_title)
+                            .setMessage(R.string.delete_photo_dialog_message)
+                            .setPositiveButton(
+                                R.string.delete_photo_dialog_confirm_btn_title
+                            ) { _, _ ->
+                                photoRemovalConfirmationResultEventSource.emit(photoId)
+                            }
+                            .setNegativeButton(
+                                R.string.cancel
+                            ) { _, _ ->
                             }
                             .create()
                             .show()
@@ -157,6 +179,7 @@ fun PhotoListFragment.setup(
                 imagePickerResultEventSource,
                 photoPreviewDependencies.resultEmitter,
                 howToGetPhotoResultEventSource,
+                photoRemovalConfirmationResultEventSource,
             )
             .logger(AndroidLogger.tag("PhotoList")),
         initialState = {

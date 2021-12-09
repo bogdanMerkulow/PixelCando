@@ -52,3 +52,9 @@ data class PhotoDto(
 data class PhotoFileDto(
     @Json(name = "original") val original: String,
 )
+
+
+@JsonClass(generateAdapter = true)
+data class DeletePhotoRequest(
+    @Json(name = "id") val id: Long,
+)
