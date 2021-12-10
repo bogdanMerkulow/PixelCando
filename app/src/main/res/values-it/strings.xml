@@ -28,7 +28,7 @@
     <string name="something_went_wrong">Si è verificato un problema</string>
     <string name="photo_list_screen_title">Foto</string>
     <string name="photo_list_no_photos_title">Nessuna foto</string>
-    <string name="photo_list_no_photos_description">Nessuna foto presente. Puoi caricarne una cliccando sul pulsante + in basso a destra</string>
+    <string name="photo_list_no_photos_description">Nessuna foto presente. Puoi caricarne una cliccando sul pulsante (+) in basso a destra</string>
     <string name="photo_state_pending">In attesa</string>
     <string name="photo_state_accepted">Accettata</string>
     <string name="photo_state_rejected">Rifiutata</string>
@@ -98,9 +98,6 @@
     <string name="camera">Camera</string>
     <string name="photo_list_photo_was_accepted">La foto è stata accettata</string>
     <string name="photo_list_photo_wait_for_review">La foto è in attesa di verifica. Per favore attendi. Grazie</string>
-    <string name="logout_dialog_title">Esci</string>
-    <string name="logout_dialog_message">Vuoi effettuare il logout?</string>
-    <string name="logout_dialog_logout_btn_title">Esci</string>
 
     <!-- Camera -->
     <string name="camera_move_devices_top_closer_to_you">Inclina il telefono all\'indietro</string>
@@ -117,4 +114,10 @@
     <string name="camera_rotation_check_not_available_skip_instructions">Continua</string>
     <string name="camera_rotation_check_not_available_open_instructions">Guida</string>
     <string name="camera_help_link">https://www.pixelcando.com/camera-hint?lang=it</string>
+    <string name="delete_photo_dialog_title">Annulla</string>
+    <string name="delete_photo_dialog_message">Vuoi annullare la richiesta di approvazione della foto? La foto sarà cancellata</string>
+    <string name="delete_photo_dialog_confirm_btn_title">Annulla</string>
+    <string name="logout_dialog_title">Esci</string>
+    <string name="logout_dialog_message">Vuoi effettuare il logout?</string>
+    <string name="logout_dialog_logout_btn_title">Esci</string>
 </resources>

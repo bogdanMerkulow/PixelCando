@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <string name="locale_language">en</string>
     <string name="locale_country">US</string>
-
     <string name="sign_in_email_placeholder">Email Address</string>
     <string name="sign_in_password_placeholder">Password</string>
     <string name="sign_in_access_account_hint">Login to access your Account</string>
@@ -12,57 +10,42 @@
     <string name="sing_in_btn_recover_password">Forgot password?</string>
     <string name="sing_in_take_photo_success_title">Photo saved in camera roll</string>
     <string name="sing_in_take_photo_success_message">You can open it and share in the way you need.</string>
-
     <string name="password_recovery_title">Restore password</string>
     <string name="password_recovery_hint">Please enter your email and we will send instructions to restore your password</string>
     <string name="password_recovery_email_placeholder">Email Address</string>
     <string name="password_recovery_btn_title">Restore</string>
     <string name="password_recovery_success_message">Instructions have been sent. Please check your inbox and follow instructions</string>
-
     <string name="tab_title_chat">Chat</string>
     <string name="tab_title_photos">Photos</string>
     <string name="tab_title_patients">Patients</string>
     <string name="tab_title_profile">Profile</string>
-
     <string name="patient_list_screen_title">Patients</string>
     <string name="no_patients_title">No subject yet</string>
     <string name="no_patients_description">There is no subject in this folder</string>
-
     <string name="exams_header_title">Exams</string>
     <string name="no_exams_title">No exams yet</string>
     <string name="no_exams_description">There are no exams made yet for the subject. Please shoot the subject half-face and upload the photo to the engine</string>
-
     <string name="something_went_wrong">Something went wrong</string>
-
     <string name="photo_list_screen_title">Photos</string>
     <string name="photo_list_no_photos_title">No photos yet</string>
-    <string name="photo_list_no_photos_description">There are no photos made. Please add one by clicking the Plus floating button below</string>
+    <string name="photo_list_no_photos_description">There are no photos made. Please add one by clicking the (+) button below</string>
     <string name="photo_state_pending">Waiting</string>
     <string name="photo_state_accepted">Confirmed</string>
     <string name="photo_state_rejected">Declined</string>
-
-    <string name="delete_photo_dialog_title">Recall</string>
-    <string name="delete_photo_dialog_message">Are you sure you want to recall the photo?</string>
-    <string name="delete_photo_dialog_confirm_btn_title">Recall</string>
-
+    <string name="delete_photo_dialog_title">Cancel</string>
+    <string name="delete_photo_dialog_message">Do you want to cancel approval request? Photo will be deleted</string>
+    <string name="delete_photo_dialog_confirm_btn_title">Cancel</string>
     <string name="upload">Upload</string>
-
     <string name="cancel">Cancel</string>
-
     <string name="male">Male</string>
     <string name="female">Female</string>
-
     <string name="weight">Weight</string>
     <string name="height">Height</string>
-
     <string name="all">All</string>
-
     <string name="patient_info_section_general">General</string>
     <string name="patient_info_section_contacts">Contacts</string>
-
     <string name="age">Age</string>
     <string name="gender">Gender</string>
-
     <string name="full_name">Full Name</string>
     <string name="phone">Phone</string>
     <string name="email">Email</string>
@@ -71,19 +54,15 @@
     <string name="city">City</string>
     <string name="zip">ZIP</string>
     <string name="patient_code">Patient Code</string>
-
     <string name="photo_preview_title">Enter height and weight</string>
     <string name="photo_preview_subtitle">Height and weight params are required for proper calculations</string>
     <string name="photo_preview_weight_field_hint">Weight, kg</string>
     <string name="photo_preview_height_field_hint">Height, cm</string>
-
     <string name="exam_details_screen_title">%s, Exam #%d</string>
     <string name="exam_details_tab_details">Details</string>
     <string name="exam_details_tab_silhouette">Silhouette</string>
-
     <string name="exam_details_measurement_values_section_params">Params</string>
     <string name="exam_details_measurement_values_section_measures">Measures</string>
-
     <string name="created_at">Created At</string>
     <string name="bmi">Body Mass Index (BMI)</string>
     <string name="bmr">Basal Metabolic Rate (BMR)</string>
@@ -94,45 +73,35 @@
     <string name="hip">Hip</string>
     <string name="belly">Belly</string>
     <string name="waist_to_height">Waist to Height Ratio</string>
-
     <string name="kg_m2">kg/m2</string>
     <string name="kg">kg</string>
     <string name="kcal">kcal</string>
     <string name="cm">cm</string>
     <string name="percent" formatted="false">%</string>
-
     <string name="patient_photo_review_ask_text">Please review the photo and accept or reject it</string>
     <string name="patient_photo_review_start_btn_title">Review</string>
     <string name="patient_photo_review_reject_dialog_title">Rejecting</string>
     <string name="patient_photo_review_reject_dialog_subtitle">Please describe why you are rejecting the photo</string>
     <string name="patient_photo_review_reject_dialog_btn_title">Reject</string>
-
     <string name="chat_list_screen_title">Chat</string>
     <string name="chat_list_my_message">You:</string>
-
     <string name="chat_messaging_my_message">You</string>
     <string name="chat_messaging_no_messages_title">No messages yet</string>
     <string name="chat_messaging_no_messages_description">There is no messages yet</string>
     <string name="chat_messaging_message_input_hint">Type a message…</string>
-
     <string name="chat_with_doctor_screen_title">Chat</string>
-
     <string name="profile_title">Profile</string>
     <string name="profile_btn_logout">Logout</string>
     <string name="profile_section_account_info">Account Information</string>
     <string name="profile_section_contacts">Contacts</string>
     <string name="profile_full_name_cannot_be_empty">Full name cannot be empty</string>
     <string name="profile_btn_save">Save</string>
-
     <string name="logout_dialog_title">Logout</string>
     <string name="logout_dialog_message">Are you sure you want to logout?</string>
     <string name="logout_dialog_logout_btn_title">Logout</string>
-
     <string name="invalid_email">Invalid email</string>
-
     <string name="gallery">Gallery</string>
     <string name="camera">Camera</string>
-
     <string name="photo_list_photo_was_accepted">The photo was accepted</string>
     <string name="photo_list_photo_wait_for_review">Please wait while your photo is being reviewed and processed</string>
 
