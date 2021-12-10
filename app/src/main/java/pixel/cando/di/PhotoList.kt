@@ -152,12 +152,12 @@ fun PhotoListFragment.setup(
                             .setTitle(R.string.delete_photo_dialog_title)
                             .setMessage(R.string.delete_photo_dialog_message)
                             .setPositiveButton(
-                                R.string.delete_photo_dialog_confirm_btn_title
+                                R.string.delete_photo_dialog_positive_btn_title
                             ) { _, _ ->
                                 photoRemovalConfirmationResultEventSource.emit(photoId)
                             }
                             .setNegativeButton(
-                                R.string.cancel
+                                R.string.delete_photo_dialog_negative_btn_title
                             ) { _, _ ->
                             }
                             .create()

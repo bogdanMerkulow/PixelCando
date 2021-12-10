@@ -34,7 +34,8 @@
     <string name="photo_state_rejected">Declined</string>
     <string name="delete_photo_dialog_title">Cancel</string>
     <string name="delete_photo_dialog_message">Do you want to cancel approval request? Photo will be deleted</string>
-    <string name="delete_photo_dialog_confirm_btn_title">Cancel</string>
+    <string name="delete_photo_dialog_positive_btn_title">Cancel</string>
+    <string name="delete_photo_dialog_negative_btn_title">Keep</string>
     <string name="upload">Upload</string>
     <string name="cancel">Cancel</string>
     <string name="male">Male</string>
