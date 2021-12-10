@@ -172,6 +172,30 @@ fun View.setListRoundedBg(
     }
 }
 
+fun View.setListRoundedBgWithDividers(
+    isFirst: Boolean,
+    isLast: Boolean
+) {
+    background = when {
+        isFirst && isLast -> ContextCompat.getDrawable(
+            context,
+            R.drawable.bg_rounded_list_item
+        )
+        isFirst -> ContextCompat.getDrawable(
+            context,
+            R.drawable.bg_rounded_list_top_item_with_divider
+        )
+        isLast -> ContextCompat.getDrawable(
+            context,
+            R.drawable.bg_rounded_list_bottom_item_with_divider
+        )
+        else -> ContextCompat.getDrawable(
+            context,
+            R.drawable.bg_rounded_list_indeterminate_item_with_divider
+        )
+    }
+}
+
 fun Fragment.hideKeyboard() {
     (context?.getSystemService(Activity.INPUT_METHOD_SERVICE) as? InputMethodManager)?.let { inputMethodService ->
         view?.findFocus()?.let { view ->

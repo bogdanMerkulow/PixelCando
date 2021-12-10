@@ -46,6 +46,7 @@ class RealAuthRepository(
                         Either.Left(
                             SignInSuccess(
                                 accessToken = userDto.accessToken,
+                                userId = userDto.id,
                                 userRole = userRole
                             )
                         )
@@ -101,9 +102,11 @@ class RealAuthRepository(
 }
 
 private const val doctorRoleServerValue = "doctor"
+private const val patientRoleServerValue = "patient"
 
 private val String.userRole: UserRole?
     get() = when (this) {
         doctorRoleServerValue -> UserRole.DOCTOR
+        patientRoleServerValue -> UserRole.PATIENT
         else -> null
     }

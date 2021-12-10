@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/Toolbar"
-        app:title="@string/screen_title_patients"
+        app:title="@string/patient_list_screen_title"
         />
 
     <com.google.android.material.tabs.TabLayout

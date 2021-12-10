@@ -5,7 +5,7 @@ import com.squareup.moshi.Moshi
 import com.squareup.moshi.ToJson
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatterBuilder
+import java.time.format.DateTimeFormatter
 
 fun assembleMoshi() = Moshi.Builder()
     .add(LocalDateAdapter())
@@ -32,13 +32,7 @@ private class LocalDateAdapter {
 
 private class LocalDateTimeAdapter {
 
-    private val dateTimeFormatter = DateTimeFormatterBuilder()
-        .appendPattern("yyyy-MM-dd HH:mm:ss")
-        .appendOffset(
-            "+HH",
-            ""
-        )
-        .toFormatter()
+    private val dateTimeFormatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
 
     @FromJson
     fun fromJson(

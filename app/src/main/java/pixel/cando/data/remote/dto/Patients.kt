@@ -13,6 +13,12 @@ data class PatientListRequest(
 )
 
 @JsonClass(generateAdapter = true)
+data class PatientListFilterDto(
+    @Json(name = "query") val query: String?,
+    @Json(name = "folderId") val folderId: Long?,
+)
+
+@JsonClass(generateAdapter = true)
 data class PatientListResponse(
     @Json(name = "results") val results: List<PatientDto>,
 )
@@ -36,6 +42,7 @@ data class PatientDto(
     @Json(name = "weight") val weight: Float,
     @Json(name = "age") val age: Int,
     @Json(name = "user") val user: PatientUserDto,
+    @Json(name = "photo") val photo: PatientPhotoDto?,
     @Json(name = "lastExamAt") val lastExamAt: LocalDateTime?,
 )
 
@@ -55,4 +62,16 @@ data class PatientUserDto(
 data class PatientUserAvatarDto(
     @Json(name = "color") val color: String,
     @Json(name = "abbr") val text: String,
+)
+
+@JsonClass(generateAdapter = true)
+data class PatientPhotoDto(
+    @Json(name = "id") val id: Long,
+    @Json(name = "createdAt") val createdAt: LocalDateTime,
+    @Json(name = "file") val file: PatientPhotoFileDto,
+)
+
+@JsonClass(generateAdapter = true)
+data class PatientPhotoFileDto(
+    @Json(name = "original") val original: String
 )

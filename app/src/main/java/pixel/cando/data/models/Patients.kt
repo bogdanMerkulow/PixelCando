@@ -25,4 +25,11 @@ data class PatientSingleItemInfo(
     val country: String?,
     val city: String?,
     val postalCode: String?,
+    val photoToReview: PatientPhotoToReview?
+)
+
+data class PatientPhotoToReview(
+    val id: Long,
+    val createdAt: LocalDateTime,
+    val url: String,
 )

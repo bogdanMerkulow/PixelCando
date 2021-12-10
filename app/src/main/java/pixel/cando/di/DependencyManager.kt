@@ -9,8 +9,10 @@ import androidx.fragment.app.FragmentActivity
 import androidx.fragment.app.FragmentManager
 import pixel.cando.data.local.AccessTokenStore
 import pixel.cando.data.local.AuthStateChecker
+import pixel.cando.data.local.LoggedInUserIdStore
 import pixel.cando.data.local.RealAccessTokenStore
 import pixel.cando.data.local.RealAuthStateChecker
+import pixel.cando.data.local.RealLoggedInUserIdStore
 import pixel.cando.data.local.RealSessionWiper
 import pixel.cando.data.local.RealUserRoleStore
 import pixel.cando.data.local.SessionWiper
@@ -26,14 +28,19 @@ import pixel.cando.ui._base.fragment.findImplementationOrThrow
 import pixel.cando.ui.auth.password_recovery.PasswordRecoveryFragment
 import pixel.cando.ui.auth.sign_in.SignInFragment
 import pixel.cando.ui.createUnauthorizedResultEventSource
+import pixel.cando.ui.main.chat_list.ChatListFragment
+import pixel.cando.ui.main.chat_messaging.ChatMessagingFragment
+import pixel.cando.ui.main.chat_with_doctor.ChatWithDoctorFragment
+import pixel.cando.ui.main.chat_with_patient.ChatWithPatientFragment
+import pixel.cando.ui.main.doctor_profile.DoctorProfileFragment
 import pixel.cando.ui.main.exam_details.ExamDetailsFragment
 import pixel.cando.ui.main.home.HomeFragment
 import pixel.cando.ui.main.patient_details.PatientDetailsFragment
 import pixel.cando.ui.main.patient_info.PatientInfoFragment
 import pixel.cando.ui.main.patient_list.PatientListFragment
+import pixel.cando.ui.main.patient_profile.PatientProfileFragment
 import pixel.cando.ui.main.photo_list.PhotoListFragment
 import pixel.cando.ui.main.photo_preview.PhotoPreviewFragment
-import pixel.cando.ui.main.profile.ProfileFragment
 import pixel.cando.ui.root.RootEvent
 import pixel.cando.ui.root.RootFragment
 import pixel.cando.utils.OneSignalPushNotificationsSubscriber
@@ -63,6 +70,12 @@ class DependencyManager(
 
     private val accessTokenStore: AccessTokenStore by lazy {
         RealAccessTokenStore(
+            sharedPreferences = sharedPreferences
+        )
+    }
+
+    private val loggedInUserIdStore: LoggedInUserIdStore by lazy {
+        RealLoggedInUserIdStore(
             sharedPreferences = sharedPreferences
         )
     }
@@ -174,6 +187,7 @@ class DependencyManager(
                                         authRepository = authRepository,
                                         accessTokenStore = accessTokenStore,
                                         userRoleStore = userRoleStore,
+                                        loggedInUserIdStore = loggedInUserIdStore,
                                         pushNotificationsSubscriber = pushNotificationsSubscriber,
                                         resourceProvider = resourceProvider,
                                         context = context,
@@ -223,8 +237,7 @@ class DependencyManager(
                                     )
                                 }
                                 is PhotoListFragment -> {
-                                    setup(
-                                        fragment = fragment,
+                                    fragment.setup(
                                         remoteRepository = remoteRepository,
                                         resourceProvider = resourceProvider,
                                         context = app,
@@ -233,13 +246,45 @@ class DependencyManager(
                                 is PhotoPreviewFragment -> {
                                     fragment.setup()
                                 }
-                                is ProfileFragment -> {
+                                is DoctorProfileFragment -> {
                                     fragment.setup(
                                         sessionWiper = sessionWiper,
                                         rootRouter = fragment.findImplementationOrThrow(),
                                         resourceProvider = resourceProvider,
                                         remoteRepository = remoteRepository,
                                     )
+                                }
+                                is PatientProfileFragment -> {
+                                    fragment.setup(
+                                        sessionWiper = sessionWiper,
+                                        rootRouter = fragment.findImplementationOrThrow(),
+                                        resourceProvider = resourceProvider,
+                                        remoteRepository = remoteRepository,
+                                    )
+                                }
+                                is ChatListFragment -> {
+                                    fragment.setup(
+                                        remoteRepository = remoteRepository,
+                                        resourceProvider = resourceProvider,
+                                        loggedInUserIdProvider = loggedInUserIdStore,
+                                        flowRouter = fragment.findImplementationOrThrow(),
+                                    )
+                                }
+                                is ChatMessagingFragment -> {
+                                    fragment.setup(
+                                        remoteRepository = remoteRepository,
+                                        resourceProvider = resourceProvider,
+                                        loggedInUserIdProvider = loggedInUserIdStore,
+                                    )
+                                }
+                                is ChatWithPatientFragment -> {
+                                    fragment.setup(
+                                        remoteRepository = remoteRepository,
+                                        flowRouter = fragment.findImplementationOrThrow(),
+                                    )
+                                }
+                                is ChatWithDoctorFragment -> {
+                                    fragment.setup()
                                 }
                             }
                         }

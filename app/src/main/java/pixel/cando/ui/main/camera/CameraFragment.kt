@@ -1,6 +1,5 @@
 package pixel.cando.ui.main.camera
 
-import android.app.AlertDialog
 import android.content.ContentValues
 import android.content.Context
 import android.content.Context.SENSOR_SERVICE
@@ -37,6 +36,7 @@ import androidx.core.net.toUri
 import androidx.exifinterface.media.ExifInterface
 import androidx.fragment.app.FragmentManager
 import androidx.lifecycle.lifecycleScope
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -427,7 +427,7 @@ class CameraFragment : ViewBindingFullscreenDialogFragment<FragmentCameraBinding
     }
 
     private fun showInstructionsDialog() {
-        AlertDialog.Builder(requireContext())
+        MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.camera_rotation_check_not_available_title)
             .setMessage(R.string.camera_rotation_check_not_available_message)
             .setPositiveButton(R.string.camera_rotation_check_not_available_open_instructions) { _, _ ->

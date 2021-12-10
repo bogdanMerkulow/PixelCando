@@ -1,32 +1,63 @@
 package pixel.cando.data.remote
 
 import com.squareup.moshi.Moshi
-import pixel.cando.data.models.Account
+import pixel.cando.data.models.ChatItem
+import pixel.cando.data.models.ChatMessage
+import pixel.cando.data.models.ChatRecentMessage
+import pixel.cando.data.models.DoctorAccount
 import pixel.cando.data.models.ExamListItemInfo
 import pixel.cando.data.models.ExamSingleItemInfo
 import pixel.cando.data.models.Folder
 import pixel.cando.data.models.Gender
+import pixel.cando.data.models.MessageListPortion
+import pixel.cando.data.models.PatientAccount
 import pixel.cando.data.models.PatientListItemInfo
+import pixel.cando.data.models.PatientPhotoToReview
 import pixel.cando.data.models.PatientSingleItemInfo
+import pixel.cando.data.models.Photo
+import pixel.cando.data.models.PhotoState
 import pixel.cando.data.models.UploadPhotoFailure
-import pixel.cando.data.remote.dto.AccountDto
-import pixel.cando.data.remote.dto.AccountUserDto
+import pixel.cando.data.remote.dto.ChatItemDto
+import pixel.cando.data.remote.dto.ChatListFilterDto
+import pixel.cando.data.remote.dto.ChatListRequest
+import pixel.cando.data.remote.dto.ChatMessageListFilterDto
+import pixel.cando.data.remote.dto.ChatMessageListResponse
+import pixel.cando.data.remote.dto.ChatWithDoctorMessageListRequest
+import pixel.cando.data.remote.dto.ChatWithPatientMessageListRequest
+import pixel.cando.data.remote.dto.ConfirmPhotoRequest
+import pixel.cando.data.remote.dto.DeletePhotoRequest
 import pixel.cando.data.remote.dto.DeviceRegisterDto
 import pixel.cando.data.remote.dto.DeviceRegisterRequest
+import pixel.cando.data.remote.dto.DoctorAccountDto
+import pixel.cando.data.remote.dto.DoctorAccountUserDto
 import pixel.cando.data.remote.dto.EmptyRequest
 import pixel.cando.data.remote.dto.ExamListRequest
 import pixel.cando.data.remote.dto.FolderListRequest
 import pixel.cando.data.remote.dto.GetExamRequest
+import pixel.cando.data.remote.dto.PatientAccountDto
 import pixel.cando.data.remote.dto.PatientGetRequest
 import pixel.cando.data.remote.dto.PatientListFilterDto
 import pixel.cando.data.remote.dto.PatientListRequest
-import pixel.cando.data.remote.dto.UpdateAccountRequest
-import pixel.cando.data.remote.dto.UploadPhotoForPatientRequest
+import pixel.cando.data.remote.dto.ReadChatWithDoctorMessagesRequest
+import pixel.cando.data.remote.dto.ReadChatWithPatientMessagesRequest
+import pixel.cando.data.remote.dto.RejectPhotoRequest
+import pixel.cando.data.remote.dto.SendMessageToChatWithDoctorDto
+import pixel.cando.data.remote.dto.SendMessageToChatWithDoctorRequest
+import pixel.cando.data.remote.dto.SendMessageToChatWithPatientDto
+import pixel.cando.data.remote.dto.SendMessageToChatWithPatientRequest
+import pixel.cando.data.remote.dto.UpdateDoctorAccountRequest
+import pixel.cando.data.remote.dto.UpdatePatientAccountDto
+import pixel.cando.data.remote.dto.UpdatePatientAccountRequest
+import pixel.cando.data.remote.dto.UpdatePatientAccountUserDto
+import pixel.cando.data.remote.dto.UploadPhotoByDoctorRequest
+import pixel.cando.data.remote.dto.UploadPhotoByPatientRequest
 import pixel.cando.data.remote.dto.UploadPhotoForPatientWeightHeightDto
 import pixel.cando.utils.Either
+import pixel.cando.utils.logError
 import pixel.cando.utils.mapOnlyLeft
 import retrofit2.Response
 import java.io.IOException
+import java.time.LocalDateTime
 
 interface RemoteRepository {
 
@@ -51,22 +82,97 @@ interface RemoteRepository {
         id: Long
     ): Either<ExamSingleItemInfo, Throwable>
 
-    suspend fun uploadPhoto(
+    suspend fun uploadPhotoByDoctor(
         patientId: Long,
         weight: Float,
         height: Float,
         photo: String
     ): Either<Unit, UploadPhotoFailure>
 
-    suspend fun getAccount(
-    ): Either<Account, Throwable>
+    suspend fun uploadPhotoByPatient(
+        weight: Float,
+        photo: String
+    ): Either<Unit, UploadPhotoFailure>
 
-    suspend fun updateAccount(
-        account: Account
-    ): Either<Account, Throwable>
+    suspend fun getDoctorAccount(
+    ): Either<DoctorAccount, Throwable>
+
+    suspend fun updateDoctorAccount(
+        account: DoctorAccount
+    ): Either<DoctorAccount, Throwable>
+
+    suspend fun getPatientAccount(
+    ): Either<PatientAccount, Throwable>
+
+    suspend fun updatePatientAccount(
+        fullName: String,
+        email: String,
+        phoneNumber: String?,
+        contactEmail: String?,
+        address: String?,
+        city: String?,
+        postalCode: String?,
+    ): Either<PatientAccount, Throwable>
 
     suspend fun subscribeForPushNotifications(
         identifier: String
+    ): Either<Unit, Throwable>
+
+    suspend fun confirmPhoto(
+        id: Long,
+    ): Either<Unit, Throwable>
+
+    suspend fun rejectPhoto(
+        id: Long,
+        reason: String,
+    ): Either<Unit, Throwable>
+
+    suspend fun getChats(
+        folderId: Long?,
+        page: Int,
+    ): Either<List<ChatItem>, Throwable>
+
+    suspend fun getChatsForPages(
+        folderId: Long?,
+        pageCount: Int,
+    ): Either<List<ChatItem>, Throwable>
+
+    suspend fun getChatWithPatientMessages(
+        userId: Long,
+        offset: Int,
+        count: Int,
+        sinceDate: LocalDateTime?,
+    ): Either<MessageListPortion, Throwable>
+
+    suspend fun sendMessageToChatWithPatient(
+        userId: Long,
+        message: String,
+    ): Either<Unit, Throwable>
+
+    suspend fun readMessagesInChatWithPatient(
+        userId: Long,
+        until: LocalDateTime,
+    ): Either<Unit, Throwable>
+
+    suspend fun getChatWithDoctorMessages(
+        offset: Int,
+        count: Int,
+        sinceDate: LocalDateTime?,
+    ): Either<MessageListPortion, Throwable>
+
+    suspend fun sendMessageToChatWithDoctor(
+        message: String,
+    ): Either<Unit, Throwable>
+
+    suspend fun readMessagesInChatWithDoctor(
+        until: LocalDateTime,
+    ): Either<Unit, Throwable>
+
+    suspend fun getPatientPhotos(
+    ): Either<List<Photo>, Throwable>
+
+    suspend fun deletePhoto(
+        photoId: Long
     ): Either<Unit, Throwable>
 
 }
@@ -132,6 +238,13 @@ class RealRemoteRepository(
                 country = it.patient.user.country,
                 city = it.patient.user.city,
                 postalCode = it.patient.user.postalCode,
+                photoToReview = it.patient.photo?.let {
+                    PatientPhotoToReview(
+                        id = it.id,
+                        createdAt = it.createdAt,
+                        url = it.file.original
+                    )
+                }
             )
         }
     }
@@ -212,7 +325,7 @@ class RealRemoteRepository(
         }
     }
 
-    override suspend fun uploadPhoto(
+    override suspend fun uploadPhotoByDoctor(
         patientId: Long,
         weight: Float,
         height: Float,
@@ -220,8 +333,8 @@ class RealRemoteRepository(
     ): Either<Unit, UploadPhotoFailure> {
         return callApi(
             action = {
-                uploadPhoto(
-                    UploadPhotoForPatientRequest(
+                uploadPhotoByDoctor(
+                    UploadPhotoByDoctorRequest(
                         patientId = patientId,
                         weightHeight = UploadPhotoForPatientWeightHeightDto(
                             weight = weight,
@@ -253,10 +366,45 @@ class RealRemoteRepository(
         )
     }
 
-    override suspend fun getAccount(
-    ): Either<Account, Throwable> {
+    override suspend fun uploadPhotoByPatient(
+        weight: Float,
+        photo: String
+    ): Either<Unit, UploadPhotoFailure> {
+        return callApi(
+            action = {
+                uploadPhotoByPatient(
+                    UploadPhotoByPatientRequest(
+                        weight = weight,
+                        photo = photo,
+                    )
+                )
+            },
+            unsuccessfulResponseMapper = {
+                val errorMessage = it.errorMessage(moshi)
+                Either.Right(
+                    if (errorMessage != null) UploadPhotoFailure.ErrorMessage(errorMessage)
+                    else UploadPhotoFailure.UnknownError(
+                        IllegalArgumentException()
+                    )
+                )
+            },
+            notAuthorizedHandler = {
+                Either.Right(
+                    UploadPhotoFailure.UnknownError(it)
+                )
+            },
+            unknownErrorHandler = {
+                Either.Right(
+                    UploadPhotoFailure.UnknownError(it)
+                )
+            },
+        )
+    }
+
+    override suspend fun getDoctorAccount(
+    ): Either<DoctorAccount, Throwable> {
         return callApi {
-            getAccount(
+            getDoctorAccount(
                 EmptyRequest()
             )
         }.mapOnlyLeft {
@@ -264,14 +412,14 @@ class RealRemoteRepository(
         }
     }
 
-    override suspend fun updateAccount(
-        account: Account
-    ): Either<Account, Throwable> {
+    override suspend fun updateDoctorAccount(
+        account: DoctorAccount
+    ): Either<DoctorAccount, Throwable> {
         return callApi {
-            updateAccount(
-                UpdateAccountRequest(
-                    AccountDto(
-                        AccountUserDto(
+            updateDoctorAccount(
+                UpdateDoctorAccountRequest(
+                    DoctorAccountDto(
+                        DoctorAccountUserDto(
                             fullName = account.fullName,
                             email = account.email,
                             contactPhone = account.phoneNumber,
@@ -289,6 +437,47 @@ class RealRemoteRepository(
         }
     }
 
+    override suspend fun getPatientAccount(
+    ): Either<PatientAccount, Throwable> {
+        return callApi {
+            getPatientAccount(
+                EmptyRequest()
+            )
+        }.mapOnlyLeft {
+            it.patient.model()
+        }
+    }
+
+    override suspend fun updatePatientAccount(
+        fullName: String,
+        email: String,
+        phoneNumber: String?,
+        contactEmail: String?,
+        address: String?,
+        city: String?,
+        postalCode: String?,
+    ): Either<PatientAccount, Throwable> {
+        return callApi {
+            updatePatientAccount(
+                UpdatePatientAccountRequest(
+                    UpdatePatientAccountDto(
+                        user = UpdatePatientAccountUserDto(
+                            fullName = fullName,
+                            email = email,
+                            contactPhone = phoneNumber,
+                            contactEmail = contactEmail,
+                            address = address,
+                            city = city,
+                            postalCode = postalCode,
+                        ),
+                    )
+                )
+            )
+        }.mapOnlyLeft {
+            it.patient.model()
+        }
+    }
+
     override suspend fun subscribeForPushNotifications(
         identifier: String
     ): Either<Unit, Throwable> {
@@ -299,6 +488,220 @@ class RealRemoteRepository(
                         platform = "android",
                         identifier = identifier,
                     )
+                )
+            )
+        }
+    }
+
+    override suspend fun confirmPhoto(
+        id: Long
+    ): Either<Unit, Throwable> {
+        return callApi {
+            confirmPhoto(
+                ConfirmPhotoRequest(
+                    id = id,
+                )
+            )
+        }
+    }
+
+    override suspend fun rejectPhoto(
+        id: Long,
+        reason: String
+    ): Either<Unit, Throwable> {
+        return callApi {
+            rejectPhoto(
+                RejectPhotoRequest(
+                    id = id,
+                    reason = reason,
+                )
+            )
+        }
+    }
+
+    override suspend fun getChats(
+        folderId: Long?,
+        page: Int,
+    ): Either<List<ChatItem>, Throwable> {
+        return callApi {
+            getChats(
+                ChatListRequest(
+                    offset = page * pageSize,
+                    limit = pageSize,
+                    filters = ChatListFilterDto(
+                        query = null,
+                        folderId = folderId,
+                    )
+                )
+            )
+        }.mapOnlyLeft {
+            it.results.map {
+                it.model()
+            }
+        }
+    }
+
+    override suspend fun getChatsForPages(
+        folderId: Long?,
+        pageCount: Int
+    ): Either<List<ChatItem>, Throwable> {
+        return callApi {
+            getChats(
+                ChatListRequest(
+                    offset = 0,
+                    limit = pageSize * pageCount,
+                    filters = ChatListFilterDto(
+                        query = null,
+                        folderId = folderId,
+                    )
+                )
+            )
+        }.mapOnlyLeft {
+            it.results.map {
+                it.model()
+            }
+        }
+    }
+
+    override suspend fun getChatWithPatientMessages(
+        userId: Long,
+        offset: Int,
+        count: Int,
+        sinceDate: LocalDateTime?
+    ): Either<MessageListPortion, Throwable> {
+        return callApi {
+            getChatWithPatientMessages(
+                ChatWithPatientMessageListRequest(
+                    userId = userId,
+                    offset = offset,
+                    limit = count,
+                    filters = sinceDate?.let {
+                        ChatMessageListFilterDto(
+                            since = it
+                        )
+                    }
+                )
+            )
+        }.mapOnlyLeft {
+            it.model()
+        }
+    }
+
+    override suspend fun sendMessageToChatWithPatient(
+        userId: Long,
+        message: String
+    ): Either<Unit, Throwable> {
+        return callApi {
+            sendMessageToChatWithPatient(
+                SendMessageToChatWithPatientRequest(
+                    SendMessageToChatWithPatientDto(
+                        recipientId = userId,
+                        content = message,
+                    )
+                )
+            )
+        }
+    }
+
+    override suspend fun readMessagesInChatWithPatient(
+        userId: Long,
+        until: LocalDateTime
+    ): Either<Unit, Throwable> {
+        return callApi {
+            readMessagesInChatWithPatient(
+                ReadChatWithPatientMessagesRequest(
+                    patientId = userId,
+                    until = until,
+                )
+            )
+        }
+    }
+
+    override suspend fun getChatWithDoctorMessages(
+        offset: Int,
+        count: Int,
+        sinceDate: LocalDateTime?
+    ): Either<MessageListPortion, Throwable> {
+        return callApi {
+            getChatWithDoctorMessages(
+                ChatWithDoctorMessageListRequest(
+                    offset = offset,
+                    limit = count,
+                    filters = sinceDate?.let {
+                        ChatMessageListFilterDto(
+                            since = it
+                        )
+                    }
+                )
+            )
+        }.mapOnlyLeft {
+            it.model()
+        }
+    }
+
+    override suspend fun sendMessageToChatWithDoctor(
+        message: String
+    ): Either<Unit, Throwable> {
+        return callApi {
+            sendMessageToChatWithDoctor(
+                SendMessageToChatWithDoctorRequest(
+                    SendMessageToChatWithDoctorDto(
+                        content = message,
+                    )
+                )
+            )
+        }
+    }
+
+    override suspend fun readMessagesInChatWithDoctor(
+        until: LocalDateTime
+    ): Either<Unit, Throwable> {
+        return callApi {
+            readMessagesInChatWithDoctor(
+                ReadChatWithDoctorMessagesRequest(
+                    until = until,
+                )
+            )
+        }
+    }
+
+    override suspend fun getPatientPhotos(
+    ): Either<List<Photo>, Throwable> {
+        return callApi {
+            getPatientPhotos(
+                EmptyRequest()
+            )
+        }.mapOnlyLeft {
+            it.results.mapNotNull {
+                val state = when (it.status) {
+                    "accepted" -> PhotoState.ACCEPTED
+                    "rejected" -> PhotoState.REJECTED
+                    "pending" -> PhotoState.PENDING
+                    else -> {
+                        logError("Received an unsupported photo status = ${it.status}")
+                        null
+                    }
+                }
+                if (state != null) {
+                    Photo(
+                        id = it.id,
+                        imageUrl = it.file.original,
+                        createdAt = it.createdAt,
+                        state = state,
+                        note = it.notes,
+                    )
+                } else null
+            }
+        }
+    }
+
+    override suspend fun deletePhoto(
+        photoId: Long
+    ): Either<Unit, Throwable> {
+        return callApi {
+            deletePhoto(
+                DeletePhotoRequest(
+                    id = photoId
                 )
             )
         }
@@ -352,8 +755,8 @@ private fun String.toGender() = when (this) {
     else -> Gender.MALE
 }
 
-private fun AccountUserDto.model(
-) = Account(
+private fun DoctorAccountUserDto.model(
+) = DoctorAccount(
     fullName = fullName,
     email = email,
     phoneNumber = contactPhone,
@@ -362,4 +765,50 @@ private fun AccountUserDto.model(
     country = country,
     city = city,
     postalCode = postalCode,
+)
+
+private fun PatientAccountDto.model(
+) = PatientAccount(
+    fullName = user.fullName,
+    email = user.email,
+    patientCode = code,
+    weight = weight,
+    height = height,
+    phoneNumber = user.contactPhone,
+    contactEmail = user.contactEmail,
+    address = user.address,
+    country = user.country,
+    city = user.city,
+    postalCode = user.postalCode,
+)
+
+private fun ChatItemDto.model(
+) = ChatItem(
+    id = id,
+    fullName = fullName,
+    avatarText = avatar.abbr,
+    avatarBgColor = avatar.color,
+    unreadCount = unreadCount,
+    recentMessage = recentMessage?.let {
+        ChatRecentMessage(
+            id = it.id,
+            createdAt = it.createdAt,
+            senderId = it.senderId,
+            content = it.content,
+        )
+    }
+)
+
+private fun ChatMessageListResponse.model(
+) = MessageListPortion(
+    totalCount = this.count,
+    messages = this.results.map {
+        ChatMessage(
+            id = it.id,
+            senderId = it.senderId,
+            senderFullName = it.sender.fullName,
+            createdAt = it.createdAt,
+            content = it.content,
+        )
+    }
 )

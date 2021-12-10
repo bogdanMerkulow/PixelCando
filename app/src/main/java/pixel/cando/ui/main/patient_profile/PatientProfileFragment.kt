@@ -1,10 +1,10 @@
-package pixel.cando.ui.main.profile
+package pixel.cando.ui.main.patient_profile
 
 import android.os.Bundle
 import android.view.MenuItem
 import com.google.android.material.textfield.TextInputLayout
 import pixel.cando.R
-import pixel.cando.databinding.FragmentProfileBinding
+import pixel.cando.databinding.FragmentPatientProfileBinding
 import pixel.cando.ui._base.fragment.ViewBindingFragment
 import pixel.cando.ui._base.tea.EventSender
 import pixel.cando.ui._base.tea.EventSenderNeeder
@@ -21,20 +21,20 @@ import pixel.cando.utils.diffuser.ViewDiffusers.intoVisibleOrGone
 import pixel.cando.utils.diffuser.map
 import pixel.cando.utils.doAfterTextChanged
 
-class ProfileFragment : ViewBindingFragment<FragmentProfileBinding>(
-    FragmentProfileBinding::inflate
-), ViewModelRender<ProfileViewModel>,
-    EventSenderNeeder<ProfileEvent>,
-    DiffuserCreator<ProfileViewModel, FragmentProfileBinding>,
-    DiffuserProviderNeeder<ProfileViewModel> {
+class PatientProfileFragment : ViewBindingFragment<FragmentPatientProfileBinding>(
+    FragmentPatientProfileBinding::inflate
+), ViewModelRender<PatientProfileViewModel>,
+    EventSenderNeeder<PatientProfileEvent>,
+    DiffuserCreator<PatientProfileViewModel, FragmentPatientProfileBinding>,
+    DiffuserProviderNeeder<PatientProfileViewModel> {
 
-    override var eventSender: EventSender<ProfileEvent>? = null
+    override var eventSender: EventSender<PatientProfileEvent>? = null
 
-    override var diffuserProvider: DiffuserProvider<ProfileViewModel>? = null
+    override var diffuserProvider: DiffuserProvider<PatientProfileViewModel>? = null
 
     override fun createDiffuser(
-        viewBinding: FragmentProfileBinding
-    ): Diffuser<ProfileViewModel> {
+        viewBinding: FragmentPatientProfileBinding
+    ): Diffuser<PatientProfileViewModel> {
         return Diffuser(
             map(
                 { it.isLoaderVisible },
@@ -59,6 +59,10 @@ class ProfileFragment : ViewBindingFragment<FragmentProfileBinding>(
                         map(
                             { it?.emailField },
                             fieldDiffuser(viewBinding.emailFieldParent)
+                        ),
+                        map(
+                            { it?.patientCodeField },
+                            fieldDiffuser(viewBinding.patientCodeFieldParent)
                         ),
                         map(
                             { it?.phoneNumberField },
@@ -91,7 +95,7 @@ class ProfileFragment : ViewBindingFragment<FragmentProfileBinding>(
     }
 
     override fun onViewBindingCreated(
-        viewBinding: FragmentProfileBinding,
+        viewBinding: FragmentPatientProfileBinding,
         savedInstanceState: Bundle?
     ) {
         super.onViewBindingCreated(
@@ -104,58 +108,61 @@ class ProfileFragment : ViewBindingFragment<FragmentProfileBinding>(
             .setShowAsActionFlags(MenuItem.SHOW_AS_ACTION_ALWAYS)
             .setOnMenuItemClickListener {
                 eventSender?.sendEvent(
-                    ProfileEvent.LogoutTap
+                    PatientProfileEvent.LogoutTap
                 )
                 true
             }
 
         viewBinding.saveButton.setOnClickListener {
             eventSender?.sendEvent(
-                ProfileEvent.SaveTap
+                PatientProfileEvent.SaveTap
             )
         }
 
         viewBinding.fullNameField.doAfterTextChanged {
             eventSender?.sendEvent(
-                ProfileEvent.FullNameChanged(it)
+                PatientProfileEvent.FullNameChanged(it)
             )
         }
         viewBinding.emailField.doAfterTextChanged {
             eventSender?.sendEvent(
-                ProfileEvent.EmailChanged(it)
+                PatientProfileEvent.EmailChanged(it)
             )
         }
         viewBinding.phoneNumberField.doAfterTextChanged {
             eventSender?.sendEvent(
-                ProfileEvent.PhoneNumberChanged(it)
+                PatientProfileEvent.PhoneNumberChanged(it)
             )
         }
         viewBinding.contactEmailField.doAfterTextChanged {
             eventSender?.sendEvent(
-                ProfileEvent.ContactEmailChanged(it)
+                PatientProfileEvent.ContactEmailChanged(it)
             )
         }
         viewBinding.addressField.doAfterTextChanged {
             eventSender?.sendEvent(
-                ProfileEvent.AddressChanged(it)
+                PatientProfileEvent.AddressChanged(it)
             )
         }
+
         viewBinding.countryField.isEnabled = false
+        viewBinding.patientCodeField.isEnabled = false
+
         viewBinding.cityField.doAfterTextChanged {
             eventSender?.sendEvent(
-                ProfileEvent.CityChanged(it)
+                PatientProfileEvent.CityChanged(it)
             )
         }
         viewBinding.zipField.doAfterTextChanged {
             eventSender?.sendEvent(
-                ProfileEvent.PostalCodeChanged(it)
+                PatientProfileEvent.PostalCodeChanged(it)
             )
         }
 
     }
 
     override fun renderViewModel(
-        viewModel: ProfileViewModel
+        viewModel: PatientProfileViewModel
     ) {
         diffuserProvider?.invoke()?.run(viewModel)
     }

@@ -17,11 +17,12 @@ data class SignInResponse(
 
 @JsonClass(generateAdapter = true)
 data class SignedInUserWrapperDto(
-    @Json(name = "user") val user: SignedInUserDto
+    @Json(name = "user") val user: SignedInUserDto,
 )
 
 @JsonClass(generateAdapter = true)
 data class SignedInUserDto(
+    @Json(name = "id") val id: Long,
     @Json(name = "accessToken") val accessToken: String,
     @Json(name = "role") val role: String,
 )

@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    >
+
+    <androidx.appcompat.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:theme="@style/Toolbar"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:menu="@menu/menu_patient_photo_preview"
+        app:navigationIcon="?attr/homeAsUpIndicator"
+        />
+
+    <ImageView
+        android:id="@+id/photoImageView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:scaleType="centerCrop"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        tools:src="@color/black"
+        />
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:visibility="gone"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <View
+        android:id="@+id/dialogBg"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginHorizontal="@dimen/spacing_20"
+        android:background="@color/white"
+        app:layout_constraintBottom_toBottomOf="@+id/bottomDialogPadding"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/topDialogPadding"
+        />
+
+    <Space
+        android:id="@+id/topDialogPadding"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/spacing_16"
+        app:layout_constraintBottom_toTopOf="@+id/titleLabel"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/titleLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/spacing_20"
+        android:fontFamily="sans-serif-medium"
+        android:text="@string/patient_photo_review_reject_dialog_title"
+        android:textColor="@color/black_mine_shaft"
+        android:textSize="20sp"
+        app:layout_constraintBottom_toTopOf="@+id/subtitleLabel"
+        app:layout_constraintEnd_toEndOf="@+id/dialogBg"
+        app:layout_constraintStart_toStartOf="@+id/dialogBg"
+        app:layout_constraintTop_toTopOf="@+id/photoImageView"
+        app:layout_constraintVertical_chainStyle="packed"
+        />
+
+    <TextView
+        android:id="@+id/subtitleLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_24"
+        android:text="@string/patient_photo_review_reject_dialog_subtitle"
+        android:textColor="@color/black_mine_shaft"
+        android:textSize="16sp"
+        app:layout_constraintBottom_toTopOf="@+id/reasonFieldParent"
+        app:layout_constraintEnd_toEndOf="@id/titleLabel"
+        app:layout_constraintStart_toStartOf="@id/titleLabel"
+        app:layout_constraintTop_toBottomOf="@+id/titleLabel"
+        />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/reasonFieldParent"
+        style="@style/InputField"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_16"
+        app:layout_constraintBottom_toTopOf="@+id/rejectButton"
+        app:layout_constraintEnd_toEndOf="@id/titleLabel"
+        app:layout_constraintStart_toStartOf="@id/titleLabel"
+        app:layout_constraintTop_toBottomOf="@+id/subtitleLabel"
+        >
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/reasonField"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <Button
+        android:id="@+id/rejectButton"
+        style="@style/PositiveTextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_40"
+        android:layout_marginEnd="@dimen/spacing_16"
+        android:text="@string/patient_photo_review_reject_dialog_btn_title"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="@+id/dialogBg"
+        app:layout_constraintTop_toBottomOf="@+id/reasonFieldParent"
+        />
+
+    <Button
+        android:id="@+id/cancelButton"
+        style="@style/NeutralTextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/spacing_16"
+        android:text="@string/cancel"
+        app:layout_constraintBottom_toBottomOf="@+id/rejectButton"
+        app:layout_constraintEnd_toStartOf="@+id/rejectButton"
+        app:layout_constraintTop_toTopOf="@+id/rejectButton"
+        />
+
+    <Space
+        android:id="@+id/bottomDialogPadding"
+        android:layout_width="0dp"
+        android:layout_height="@dimen/spacing_16"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/rejectButton"
+        />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/dialogGroup"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:constraint_referenced_ids="dialogBg,topDialogPadding,titleLabel,subtitleLabel,reasonFieldParent,rejectButton,cancelButton,bottomDialogPadding"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -38,6 +38,86 @@
 
     </androidx.appcompat.widget.Toolbar>
 
+
+    <View
+        android:id="@+id/reviewPhotoBg"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:background="@color/white"
+        app:layout_constraintBottom_toBottomOf="@+id/reviewPhotoSeparator"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        />
+
+    <ImageView
+        android:id="@+id/reviewPhotoIcon"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="@dimen/spacing_16"
+        android:layout_marginTop="@dimen/spacing_24"
+        android:src="@drawable/ic_hourglass"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        />
+
+    <TextView
+        android:id="@+id/reviewPhotoText"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/spacing_16"
+        android:text="@string/patient_photo_review_ask_text"
+        android:textColor="@color/gray_dove"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@+id/reviewPhotoIcon"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/reviewPhotoIcon"
+        app:layout_constraintTop_toTopOf="@+id/reviewPhotoIcon"
+        />
+
+    <Button
+        android:id="@+id/reviewPhotoButton"
+        style="@style/PositiveTextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_12"
+        android:layout_marginEnd="@dimen/spacing_8"
+        android:text="@string/patient_photo_review_start_btn_title"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/reviewPhotoIcon"
+        />
+
+    <TextView
+        android:id="@+id/reviewPhotoDate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-medium"
+        android:textColor="@color/gray_boulder"
+        android:textSize="14sp"
+        app:layout_constraintBottom_toBottomOf="@+id/reviewPhotoButton"
+        app:layout_constraintStart_toStartOf="@+id/reviewPhotoText"
+        app:layout_constraintTop_toTopOf="@+id/reviewPhotoButton"
+        tools:text="15 minutes ago"
+        />
+
+    <View
+        android:id="@+id/reviewPhotoSeparator"
+        android:layout_width="0dp"
+        android:layout_height="1dp"
+        android:layout_marginTop="@dimen/spacing_8"
+        android:background="@color/gray_mercury"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/reviewPhotoButton"
+        />
+
+    <androidx.constraintlayout.widget.Group
+        android:id="@+id/reviewPhotoGroup"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:constraint_referenced_ids="reviewPhotoBg,reviewPhotoIcon,reviewPhotoText,reviewPhotoButton,reviewPhotoDate,reviewPhotoSeparator"
+        />
+
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefresh"
         android:layout_width="0dp"
@@ -45,7 +125,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/toolbar"
+        app:layout_constraintTop_toBottomOf="@+id/reviewPhotoBg"
         >
 
         <androidx.recyclerview.widget.RecyclerView

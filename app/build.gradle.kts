@@ -13,10 +13,11 @@ android {
         applicationId = "com.pixelcando.fityouroutfit"
         minSdk = 21
         targetSdk = 31
-        versionCode = 10
-        versionName = "1.0"
+        versionCode = 16
+        versionName = "1.0.1"
         resourceConfigurations.add("en")
         resourceConfigurations.add("it")
+        resourceConfigurations.add("es")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     signingConfigs {

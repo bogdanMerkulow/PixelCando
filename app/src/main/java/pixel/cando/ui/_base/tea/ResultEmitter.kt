@@ -52,4 +52,4 @@ class ResultEventSource<R, E>(
 
 }
 
-fun ResultEmitter<Unit>.emit() = emit(Unit)
+fun ResultEmitter<Unit>.emitUnit() = emit(Unit)

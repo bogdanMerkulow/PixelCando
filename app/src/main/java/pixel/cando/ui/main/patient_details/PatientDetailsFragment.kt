@@ -23,6 +23,7 @@ import pixel.cando.ui._commmon.listMoreLoader
 import pixel.cando.ui._commmon.noDataListPlaceholder
 import pixel.cando.ui._commmon.toListItems
 import pixel.cando.ui.main.camera.CameraFragment
+import pixel.cando.ui.main.patient_photo_review.PatientPhotoReviewFragment
 import pixel.cando.utils.addLoadMoreListener
 import pixel.cando.utils.context
 import pixel.cando.utils.diffuser.Diffuser
@@ -31,6 +32,7 @@ import pixel.cando.utils.diffuser.DiffuserCreator
 import pixel.cando.utils.diffuser.DiffuserProvider
 import pixel.cando.utils.diffuser.DiffuserProviderNeeder
 import pixel.cando.utils.diffuser.ViewDiffusers.intoEnabled
+import pixel.cando.utils.diffuser.ViewDiffusers.intoText
 import pixel.cando.utils.diffuser.ViewDiffusers.intoVisibleOrGone
 import pixel.cando.utils.diffuser.intoListDifferAdapter
 import pixel.cando.utils.diffuser.intoSwipeRefresh
@@ -43,7 +45,8 @@ class PatientDetailsFragment : ViewBindingFragment<FragmentPatientDetailsBinding
     EventSenderNeeder<PatientDetailsEvent>,
     DiffuserCreator<PatientDetailsViewModel, FragmentPatientDetailsBinding>,
     DiffuserProviderNeeder<PatientDetailsViewModel>,
-    CameraFragment.Callback {
+    CameraFragment.Callback,
+    PatientPhotoReviewFragment.Listener {
 
     override var eventSender: EventSender<PatientDetailsEvent>? = null
 
@@ -113,6 +116,16 @@ class PatientDetailsFragment : ViewBindingFragment<FragmentPatientDetailsBinding
                 },
                 intoListDifferAdapter(adapter)
             ),
+            map(
+                { it.photoToReview != null },
+                intoVisibleOrGone(
+                    viewBinding.reviewPhotoGroup
+                )
+            ),
+            map(
+                { it.photoToReview?.date },
+                intoText(viewBinding.reviewPhotoDate)
+            )
         )
     }
 
@@ -141,6 +154,11 @@ class PatientDetailsFragment : ViewBindingFragment<FragmentPatientDetailsBinding
         viewBinding.patientInfoIcon.setOnClickListener {
             eventSender?.sendEvent(
                 PatientDetailsEvent.PatientInfoTap
+            )
+        }
+        viewBinding.reviewPhotoButton.setOnClickListener {
+            eventSender?.sendEvent(
+                PatientDetailsEvent.ReviewPatientTap
             )
         }
         viewBinding.examList.setHasFixedSize(true)
@@ -172,6 +190,19 @@ class PatientDetailsFragment : ViewBindingFragment<FragmentPatientDetailsBinding
     override fun onCameraCancel() {
     }
 
+    override fun onAcceptPatientPhoto() {
+        eventSender?.sendEvent(
+            PatientDetailsEvent.PhotoConfirmed
+        )
+    }
+
+    override fun onRejectPatientPhoto(
+        reason: String
+    ) {
+        eventSender?.sendEvent(
+            PatientDetailsEvent.PhotoRejected(reason)
+        )
+    }
 }
 
 private sealed class ExamListItem : ListItem {

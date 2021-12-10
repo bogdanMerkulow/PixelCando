@@ -1,8 +1,8 @@
 package pixel.cando.ui.auth.sign_in
 
-import android.app.AlertDialog
 import android.net.Uri
 import android.os.Bundle
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import pixel.cando.R
 import pixel.cando.databinding.FragmentSignInBinding
 import pixel.cando.ui._base.fragment.ViewBindingFragment
@@ -98,7 +98,7 @@ class SignInFragment : ViewBindingFragment<FragmentSignInBinding>(
     }
 
     override fun onCameraResult(uri: Uri) {
-        AlertDialog.Builder(requireContext())
+        MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.sing_in_take_photo_success_title)
             .setMessage(R.string.sing_in_take_photo_success_message)
             .setPositiveButton(

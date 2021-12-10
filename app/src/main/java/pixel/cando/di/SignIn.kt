@@ -8,6 +8,7 @@ import com.spotify.mobius.Update
 import com.spotify.mobius.android.AndroidLogger
 import kotlinx.coroutines.launch
 import pixel.cando.data.local.AccessTokenStore
+import pixel.cando.data.local.LoggedInUserIdStore
 import pixel.cando.data.local.UserRoleStore
 import pixel.cando.data.remote.AuthRepository
 import pixel.cando.ui._base.fragment.FlowRouter
@@ -35,6 +36,7 @@ fun SignInFragment.setup(
     authRepository: AuthRepository,
     accessTokenStore: AccessTokenStore,
     userRoleStore: UserRoleStore,
+    loggedInUserIdStore: LoggedInUserIdStore,
     pushNotificationsSubscriber: PushNotificationsSubscriber,
     resourceProvider: ResourceProvider,
     context: Context,
@@ -85,6 +87,7 @@ fun SignInFragment.setup(
                 authRepository = authRepository,
                 accessTokenStore = accessTokenStore,
                 userRoleStore = userRoleStore,
+                loggedInUserIdStore = loggedInUserIdStore,
                 messageDisplayer = messageDisplayer,
                 pushNotificationsSubscriber = pushNotificationsSubscriber,
                 resourceProvider = resourceProvider,

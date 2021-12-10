@@ -15,6 +15,7 @@
         <item name="android:statusBarColor" tools:targetApi="l">?attr/colorPrimaryVariant</item>
         <!--<item name="toolbarStyle">@style/Toolbar</item> -->
         <item name="bottomNavigationStyle">@style/BottomNavigation</item>
+        <item name="materialAlertDialogTheme">@style/MaterialAlertDialog</item>
         <item name="android:forceDarkAllowed" tools:targetApi="q">false</item>
     </style>
 
@@ -27,6 +28,19 @@
     <style name="BottomNavigation" parent="Widget.MaterialComponents.BottomNavigationView">
         <item name="itemIconTint">@color/bottom_navigation_tint</item>
         <item name="itemTextColor">@color/bottom_navigation_tint</item>
+    </style>
+
+    <style name="MaterialAlertDialog" parent="ThemeOverlay.MaterialComponents.MaterialAlertDialog">
+        <item name="buttonBarPositiveButtonStyle">@style/PositiveDialogButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/NegativeDialogButton</item>
+    </style>
+
+    <style name="PositiveDialogButton" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/orange_tulip_tree</item>
+    </style>
+
+    <style name="NegativeDialogButton" parent="Widget.MaterialComponents.Button.TextButton.Dialog">
+        <item name="android:textColor">@color/gray_dove</item>
     </style>
 
     <style name="InputField">
