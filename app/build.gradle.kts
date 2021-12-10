@@ -17,6 +17,7 @@ android {
         versionName = "1.0"
         resourceConfigurations.add("en")
         resourceConfigurations.add("it")
+        resourceConfigurations.add("es")
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
     signingConfigs {
