@@ -17,14 +17,14 @@
     <string name="password_recovery_success_message">Te hemos enviado las instrucciones. Por favor revise su bandeja de entrada. Gracias</string>
     <string name="tab_title_chat">Chat</string>
     <string name="tab_title_photos">Fotos</string>
-    <string name="tab_title_patients">Pacientes</string>
+    <string name="tab_title_patients">Personas</string>
     <string name="tab_title_profile">Perfil</string>
     <string name="patient_list_screen_title">Sujetos</string>
-    <string name="no_patients_title">Sin paciente</string>
-    <string name="no_patients_description">No hay pacientes en este archivo</string>
+    <string name="no_patients_title">Sin persona</string>
+    <string name="no_patients_description">No hay personas en este archivo</string>
     <string name="exams_header_title">Exámenes</string>
     <string name="no_exams_title">Sin examen</string>
-    <string name="no_exams_description">Aún no se han realizado pruebas para el paciente. Tome una foto del paciente en el perfil y envíe la foto a la plataforma.</string>
+    <string name="no_exams_description">Aún no se han realizado pruebas para la persona. Tome una foto de la persona en el perfil y envíe la foto a la plataforma.</string>
     <string name="something_went_wrong">Había un problema</string>
     <string name="photo_list_screen_title">Fotos</string>
     <string name="photo_list_no_photos_title">No hay fotos todavía </string>
@@ -49,7 +49,7 @@
     <string name="address">Dirección</string>
     <string name="country">País</string>
     <string name="city">Ciudad</string>
-    <string name="zip">CÓDIGO POSTAL</string>
+    <string name="zip">CP</string>
     <string name="patient_code">Código de Sujeto</string>
     <string name="photo_preview_title">Ingrese el peso</string>
     <string name="photo_preview_subtitle">La altura y el peso deben definirse para un examen adecuado.</string>
