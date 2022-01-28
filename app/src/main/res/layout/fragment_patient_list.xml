@@ -12,6 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:theme="@style/Toolbar"
+        app:menu="@menu/menu_search"
         app:title="@string/patient_list_screen_title"
         />
 

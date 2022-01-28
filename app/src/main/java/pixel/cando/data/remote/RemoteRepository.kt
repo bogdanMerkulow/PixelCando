@@ -63,6 +63,7 @@ interface RemoteRepository {
 
     suspend fun getPatients(
         folderId: Long?,
+        searchQuery: String?,
         page: Int,
     ): Either<List<PatientListItemInfo>, Throwable>
 
@@ -187,6 +188,7 @@ class RealRemoteRepository(
 
     override suspend fun getPatients(
         folderId: Long?,
+        searchQuery: String?,
         page: Int,
     ): Either<List<PatientListItemInfo>, Throwable> {
         return callApi {
@@ -195,7 +197,7 @@ class RealRemoteRepository(
                     offset = page * pageSize,
                     limit = pageSize,
                     filter = PatientListFilterDto(
-                        query = "",
+                        query = searchQuery,
                         folderId = folderId,
                     )
                 )

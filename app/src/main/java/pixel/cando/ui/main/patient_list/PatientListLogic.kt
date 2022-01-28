@@ -7,6 +7,7 @@ import com.spotify.mobius.Connectable
 import com.spotify.mobius.First
 import com.spotify.mobius.Next
 import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.parcelize.Parcelize
 import pixel.cando.R
@@ -116,6 +117,17 @@ object PatientListLogic {
                     event
                 )
             }
+            is PatientListEvent.SearchQueryChanged -> {
+                if (event.searchQuery == model.searchQuery)
+                    return Next.noChange()
+                val newModel = model.copy(
+                    searchQuery = event.searchQuery
+                )
+                listUpdater.update(
+                    newModel,
+                    event
+                )
+            }
         }
     }
 
@@ -129,6 +141,7 @@ object PatientListLogic {
             when (it) {
                 is PatientListEvent.RefreshRequest -> ListAction.Refresh()
                 is PatientListEvent.PickFolder -> ListAction.Restart()
+                is PatientListEvent.SearchQueryChanged -> ListAction.Restart()
                 is PatientListEvent.PatientListLoaded -> {
                     if (it.patients.isNotEmpty()) ListAction.PageLoaded(it.patients)
                     else ListAction.EmptyPageLoaded()
@@ -143,6 +156,7 @@ object PatientListLogic {
         loadPageEffectMapper = {
             PatientListEffect.LoadPage(
                 folderId = currentFolderId.takeIf { it != ALL_FOLDER_ID },
+                searchQuery = searchQuery,
                 page = it.page,
             )
         },
@@ -164,8 +178,10 @@ object PatientListLogic {
                 is PatientListEffect.LoadPage -> {
                     loadNextPageJob.getAndSet(
                         launch {
+                            delay(200)
                             val result = remoteRepository.getPatients(
                                 folderId = effect.folderId,
+                                searchQuery = effect.searchQuery,
                                 page = effect.page,
                             )
                             result.onLeft {
@@ -210,6 +226,7 @@ object PatientListLogic {
     fun initialModel(
     ) = PatientListDataModel(
         currentFolderId = ALL_FOLDER_ID,
+        searchQuery = null,
         folders = emptyList(),
         listState = ParcelableListState.NotInitialized()
     )
@@ -226,6 +243,10 @@ sealed class PatientListEvent {
 
     data class PickFolder(
         val folderId: Long,
+    ) : PatientListEvent()
+
+    data class SearchQueryChanged(
+        val searchQuery: String,
     ) : PatientListEvent()
 
     // model
@@ -248,6 +269,7 @@ sealed class PatientListEvent {
 sealed class PatientListEffect {
     data class LoadPage(
         val folderId: Long?,
+        val searchQuery: String?,
         val page: Int,
     ) : PatientListEffect()
 
@@ -279,6 +301,7 @@ data class FolderDataModel(
 @Parcelize
 data class PatientListDataModel(
     val currentFolderId: Long,
+    val searchQuery: String?,
     val folders: List<FolderDataModel>,
     val listState: ParcelableListState<PatientDataModel>
 ) : Parcelable

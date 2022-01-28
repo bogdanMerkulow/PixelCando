@@ -2,6 +2,7 @@ package pixel.cando.ui.main.patient_list
 
 import android.graphics.drawable.GradientDrawable
 import android.os.Bundle
+import androidx.appcompat.widget.SearchView
 import androidx.recyclerview.widget.DividerItemDecoration
 import com.google.android.material.tabs.TabLayout
 import pixel.cando.R
@@ -145,6 +146,21 @@ class PatientListFragment : ViewBindingFragment<FragmentPatientListBinding>(
 
                 override fun onTabUnselected(tab: TabLayout.Tab) {}
                 override fun onTabReselected(tab: TabLayout.Tab) {}
+            }
+        )
+        (viewBinding.toolbar.menu.findItem(R.id.search).actionView as SearchView).setOnQueryTextListener(
+            object : SearchView.OnQueryTextListener {
+
+                override fun onQueryTextSubmit(query: String) = false
+
+                override fun onQueryTextChange(newText: String): Boolean {
+                    eventSender?.sendEvent(
+                        PatientListEvent.SearchQueryChanged(
+                            searchQuery = newText
+                        )
+                    )
+                    return true
+                }
             }
         )
     }
