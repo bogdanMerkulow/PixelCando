@@ -8,6 +8,7 @@ import pixel.cando.data.models.UserRole
 import pixel.cando.data.remote.dto.PasswordRecoveryRequest
 import pixel.cando.data.remote.dto.SignInRequest
 import pixel.cando.utils.Either
+import pixel.cando.utils.handleSkippingCancellation
 
 interface AuthRepository {
 
@@ -63,10 +64,12 @@ class RealAuthRepository(
                     )
                 )
             }
-        } catch (ex: Throwable) {
-            Either.Right(
-                SignInFailure.UnknownError(ex)
-            )
+        } catch (t: Throwable) {
+            t.handleSkippingCancellation {
+                Either.Right(
+                    SignInFailure.UnknownError(t)
+                )
+            }
         }
     }
 
@@ -92,10 +95,12 @@ class RealAuthRepository(
                     )
                 )
             }
-        } catch (ex: Throwable) {
-            Either.Right(
-                PasswordRecoveryFailure.UnknownError(ex)
-            )
+        } catch (t: Throwable) {
+            t.handleSkippingCancellation {
+                Either.Right(
+                    PasswordRecoveryFailure.UnknownError(t)
+                )
+            }
         }
     }
 

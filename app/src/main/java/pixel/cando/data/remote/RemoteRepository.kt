@@ -53,6 +53,7 @@ import pixel.cando.data.remote.dto.UploadPhotoByDoctorRequest
 import pixel.cando.data.remote.dto.UploadPhotoByPatientRequest
 import pixel.cando.data.remote.dto.UploadPhotoForPatientWeightHeightDto
 import pixel.cando.utils.Either
+import pixel.cando.utils.handleSkippingCancellation
 import pixel.cando.utils.logError
 import pixel.cando.utils.mapOnlyLeft
 import retrofit2.Response
@@ -742,8 +743,10 @@ class RealRemoteRepository(
         } catch (ex: NotAuthorizedException) {
             unauthorizedHandler.invoke()
             notAuthorizedHandler.invoke(ex)
-        } catch (ex: Throwable) {
-            unknownErrorHandler.invoke(ex)
+        } catch (t: Throwable) {
+            t.handleSkippingCancellation {
+                unknownErrorHandler.invoke(t)
+            }
         }
     }
 
