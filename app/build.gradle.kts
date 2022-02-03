@@ -14,7 +14,7 @@ android {
         minSdk = 21
         targetSdk = 31
         versionCode = 22
-        versionName = "1.1.0"
+        versionName = "1.2.0"
         resourceConfigurations.add("en")
         resourceConfigurations.add("it")
         resourceConfigurations.add("es")
