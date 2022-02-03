@@ -32,6 +32,7 @@ import pixel.cando.utils.diffuser.DiffuserProvider
 import pixel.cando.utils.diffuser.DiffuserProviderNeeder
 import pixel.cando.utils.diffuser.intoListDifferAdapter
 import pixel.cando.utils.diffuser.map
+import pixel.cando.utils.hideKeyboard
 
 class PatientListFragment : ViewBindingFragment<FragmentPatientListBinding>(
     FragmentPatientListBinding::inflate
@@ -151,7 +152,10 @@ class PatientListFragment : ViewBindingFragment<FragmentPatientListBinding>(
         (viewBinding.toolbar.menu.findItem(R.id.search).actionView as SearchView).setOnQueryTextListener(
             object : SearchView.OnQueryTextListener {
 
-                override fun onQueryTextSubmit(query: String) = false
+                override fun onQueryTextSubmit(query: String): Boolean {
+                    hideKeyboard()
+                    return true
+                }
 
                 override fun onQueryTextChange(newText: String): Boolean {
                     eventSender?.sendEvent(
