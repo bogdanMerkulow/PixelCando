@@ -1,6 +1,7 @@
 package pixel.cando.ui.main.photo_preview
 
 import android.os.Bundle
+import coil.load
 import pixel.cando.databinding.FragmentPhotoPreviewBinding
 import pixel.cando.ui._base.fragment.OnBackPressedListener
 import pixel.cando.ui._base.fragment.ViewBindingFullscreenDialogFragment
@@ -36,7 +37,7 @@ class PhotoPreviewFragment : ViewBindingFullscreenDialogFragment<FragmentPhotoPr
             map(
                 { it.uri },
                 intoOnce {
-                    viewBinding.photoImageView.setImageURI(it)
+                    viewBinding.photoImageView.load(it)
                 }
             ),
             map(
