@@ -15,7 +15,7 @@ import pixel.cando.ui._base.list.createDifferAdapterDelegate
 import pixel.cando.ui._base.tea.EventSender
 import pixel.cando.ui._base.tea.EventSenderNeeder
 import pixel.cando.ui._base.tea.ViewModelRender
-import pixel.cando.ui._commmon.noDataListPlaceholder
+import pixel.cando.ui._common.noDataListPlaceholder
 import pixel.cando.ui.main.camera.CameraFragment
 import pixel.cando.utils.diffuser.Diffuser
 import pixel.cando.utils.diffuser.DiffuserCreator

@@ -1,4 +1,4 @@
-package pixel.cando.ui._commmon
+package pixel.cando.ui._common
 
 import pixel.cando.databinding.ListItemInitialLoaderBinding
 import pixel.cando.databinding.ListItemMoreLoaderBinding

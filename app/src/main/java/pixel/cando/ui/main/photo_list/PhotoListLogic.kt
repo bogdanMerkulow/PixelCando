@@ -18,7 +18,7 @@ import pixel.cando.data.remote.RemoteRepository
 import pixel.cando.di.PhotoPreviewArguments
 import pixel.cando.ui._base.list.ListItem
 import pixel.cando.ui._base.tea.CoroutineScopeEffectHandler
-import pixel.cando.ui._commmon.NoDataListPlaceholder
+import pixel.cando.ui._common.NoDataListPlaceholder
 import pixel.cando.utils.ImagePicker
 import pixel.cando.utils.MessageDisplayer
 import pixel.cando.utils.PermissionChecker
