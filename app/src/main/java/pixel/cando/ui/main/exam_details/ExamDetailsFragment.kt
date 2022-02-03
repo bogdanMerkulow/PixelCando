@@ -1,6 +1,7 @@
 package pixel.cando.ui.main.exam_details
 
 import android.os.Bundle
+import androidx.fragment.app.Fragment
 import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.google.android.material.tabs.TabLayoutMediator
 import pixel.cando.databinding.FragmentExamDetailsBinding
@@ -27,54 +28,7 @@ class ExamDetailsFragment : ViewBindingFragment<FragmentExamDetailsBinding>(
 
     override var diffuserProvider: DiffuserProvider<ExamDetailsViewModel>? = null
 
-    private val pagerAdapter by lazy {
-        object : FragmentStateAdapter(this) {
-
-            private val items = mutableListOf<ExamDetailsTabViewModel>()
-
-            fun setItems(
-                items: List<ExamDetailsTabViewModel>
-            ) {
-                this.items.clear()
-                this.items.addAll(items)
-                notifyDataSetChanged()
-            }
-
-            override fun getItemCount() = items.size
-
-            override fun createFragment(
-                position: Int
-            ) = when (val item = items[position]) {
-                is ExamDetailsTabViewModel.NumericMeasurementValues -> {
-                    ExamNumericMeasurementValuesFragment.newInstance(
-                        ExamNumericMeasurementValuesFragment.Arguments(
-                            createdAt = item.createdAt,
-                            weight = item.weight,
-                            bmi = item.bmi,
-                            bmr = item.bmr,
-                            fm = item.fm,
-                            ffm = item.ffm,
-                            abdominalFatMass = item.abdominalFatMass,
-                            tbw = item.tbw,
-                            hip = item.hip,
-                            belly = item.belly,
-                            waistToHeight = item.waistToHeight,
-                        )
-                    )
-                }
-                is ExamDetailsTabViewModel.Silhouette -> {
-                    ExamSilhouetteFragment.newInstance(
-                        silhouetteUrl = item.silhouetteUrl
-                    )
-                }
-            }
-
-            fun getTitle(
-                position: Int
-            ) = items[position].title
-
-        }
-    }
+    private var pagerAdapter: ViewPagerAdapter? = null
 
     override fun createDiffuser(
         viewBinding: FragmentExamDetailsBinding
@@ -91,7 +45,7 @@ class ExamDetailsFragment : ViewBindingFragment<FragmentExamDetailsBinding>(
             map(
                 { it.tabs },
                 into {
-                    pagerAdapter.setItems(it)
+                    pagerAdapter?.setItems(it)
                 }
             ),
             map(
@@ -113,6 +67,9 @@ class ExamDetailsFragment : ViewBindingFragment<FragmentExamDetailsBinding>(
                 ExamDetailsEvent.ExitTap
             )
         }
+        val pagerAdapter = ViewPagerAdapter(this).also {
+            pagerAdapter = it
+        }
         viewBinding.viewPager.adapter = pagerAdapter
         TabLayoutMediator(
             viewBinding.tabLayout,
@@ -122,9 +79,63 @@ class ExamDetailsFragment : ViewBindingFragment<FragmentExamDetailsBinding>(
         }.attach()
     }
 
+    override fun onViewBindingDestroyed() {
+        super.onViewBindingDestroyed()
+    }
+
     override fun renderViewModel(
         viewModel: ExamDetailsViewModel
     ) {
         diffuserProvider?.invoke()?.run(viewModel)
     }
+
+}
+
+private class ViewPagerAdapter(
+    fragment: Fragment
+) : FragmentStateAdapter(fragment) {
+
+    private val items = mutableListOf<ExamDetailsTabViewModel>()
+
+    fun setItems(
+        items: List<ExamDetailsTabViewModel>
+    ) {
+        this.items.clear()
+        this.items.addAll(items)
+        notifyDataSetChanged()
+    }
+
+    override fun getItemCount() = items.size
+
+    override fun createFragment(
+        position: Int
+    ) = when (val item = items[position]) {
+        is ExamDetailsTabViewModel.NumericMeasurementValues -> {
+            ExamNumericMeasurementValuesFragment.newInstance(
+                ExamNumericMeasurementValuesFragment.Arguments(
+                    createdAt = item.createdAt,
+                    weight = item.weight,
+                    bmi = item.bmi,
+                    bmr = item.bmr,
+                    fm = item.fm,
+                    ffm = item.ffm,
+                    abdominalFatMass = item.abdominalFatMass,
+                    tbw = item.tbw,
+                    hip = item.hip,
+                    belly = item.belly,
+                    waistToHeight = item.waistToHeight,
+                )
+            )
+        }
+        is ExamDetailsTabViewModel.Silhouette -> {
+            ExamSilhouetteFragment.newInstance(
+                silhouetteUrl = item.silhouetteUrl
+            )
+        }
+    }
+
+    fun getTitle(
+        position: Int
+    ) = items[position].title
+
 }
