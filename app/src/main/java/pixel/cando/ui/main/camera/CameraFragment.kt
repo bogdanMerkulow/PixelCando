@@ -7,7 +7,6 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.Canvas
 import android.graphics.Color
-import android.graphics.ImageDecoder
 import android.graphics.Matrix
 import android.graphics.Paint
 import android.hardware.Sensor
@@ -47,6 +46,7 @@ import pixel.cando.ui._base.fragment.findImplementation
 import pixel.cando.utils.context
 import pixel.cando.utils.dpToPx
 import pixel.cando.utils.gone
+import pixel.cando.utils.loadReducedBitmap
 import pixel.cando.utils.logError
 import pixel.cando.utils.visibleOrGone
 import java.io.File
@@ -341,8 +341,16 @@ class CameraFragment : ViewBindingFullscreenDialogFragment<FragmentCameraBinding
                                 outputFileResults.savedUri!!
                             )
                             withContext(Dispatchers.Main) {
-                                dismiss()
-                                findImplementation<Callback>()?.onCameraResult(uri)
+                                if (uri != null) {
+                                    dismiss()
+                                    findImplementation<Callback>()?.onCameraResult(uri)
+                                } else {
+                                    Toast.makeText(
+                                        context,
+                                        getString(R.string.something_went_wrong),
+                                        Toast.LENGTH_LONG
+                                    ).show()
+                                }
                             }
                         }
                     }
@@ -620,19 +628,11 @@ private class DeviceRotationChecker(
 private fun getPortraitBitmap(
     context: Context,
     uri: Uri
-): Uri {
+): Uri? {
 
     return try {
 
-        val bitmapGetter = {
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                ImageDecoder.decodeBitmap(
-                    ImageDecoder.createSource(context.contentResolver, uri)
-                )
-            } else {
-                MediaStore.Images.Media.getBitmap(context.contentResolver, uri)
-            }
-        }
+        val bitmap = context.loadReducedBitmap(uri)
 
         val stream = context.contentResolver.openInputStream(uri)
             ?: return uri
@@ -646,18 +646,15 @@ private fun getPortraitBitmap(
 
         val rotatedBitmap = when (orientation) {
             ExifInterface.ORIENTATION_ROTATE_90 -> {
-                val bitmap = bitmapGetter.invoke()
                 if (bitmap.width > bitmap.height) rotate(bitmap, 90) else bitmap
             }
             ExifInterface.ORIENTATION_ROTATE_180 -> {
-                val bitmap = bitmapGetter.invoke()
                 rotate(bitmap, 180)
             }
             ExifInterface.ORIENTATION_ROTATE_270 -> {
-                val bitmap = bitmapGetter.invoke()
                 if (bitmap.width > bitmap.height) rotate(bitmap, 270) else bitmap
             }
-            else -> return uri
+            else -> bitmap
         }
 
         val photoFile = File(
@@ -673,11 +670,14 @@ private fun getPortraitBitmap(
             )
         }
 
+        bitmap.recycle()
+        rotatedBitmap.recycle()
+
         photoFile.toUri()
 
     } catch (ex: IOException) {
         logError(ex)
-        uri
+        null
     }
 }
 

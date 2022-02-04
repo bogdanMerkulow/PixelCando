@@ -1,11 +1,8 @@
 package pixel.cando.ui.main.patient_details
 
 import android.content.Context
-import android.graphics.ImageDecoder
 import android.net.Uri
-import android.os.Build
 import android.os.Parcelable
-import android.provider.MediaStore
 import com.spotify.mobius.Connectable
 import com.spotify.mobius.First
 import com.spotify.mobius.Next
@@ -35,7 +32,9 @@ import pixel.cando.utils.MessageDisplayer
 import pixel.cando.utils.PermissionChecker
 import pixel.cando.utils.ResourceProvider
 import pixel.cando.utils.TimeAgoFormatter
-import pixel.cando.utils.base64ForSending
+import pixel.cando.utils.base64
+import pixel.cando.utils.handleSkippingCancellation
+import pixel.cando.utils.loadReducedBitmap
 import pixel.cando.utils.logError
 import pixel.cando.utils.onLeft
 import pixel.cando.utils.onRight
@@ -448,15 +447,10 @@ object PatientDetailsLogic {
                     imagePicker.pickImage()
                 }
                 is PatientDetailsEffect.UploadPhoto -> {
-                    val bitmap = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
-                        ImageDecoder.decodeBitmap(
-                            ImageDecoder.createSource(context.contentResolver, effect.uri)
-                        )
-                    } else {
-                        MediaStore.Images.Media.getBitmap(context.contentResolver, effect.uri)
-                    }
-                    val base64 = bitmap.base64ForSending
-                    if (base64 != null) {
+                    try {
+                        val bitmap = context.loadReducedBitmap(effect.uri)
+                        val base64 = bitmap.base64
+                        bitmap.recycle()
                         val result = remoteRepository.uploadPhotoByDoctor(
                             patientId = effect.patientId,
                             weight = effect.weight,
@@ -485,10 +479,13 @@ object PatientDetailsLogic {
                                 }
                             }
                         }
-                    } else {
-                        output.accept(
-                            PatientDetailsEvent.PhotoUploadFailure()
-                        )
+                    } catch (t: Throwable) {
+                        t.handleSkippingCancellation {
+                            logError(t)
+                            output.accept(
+                                PatientDetailsEvent.PhotoUploadFailure()
+                            )
+                        }
                     }
                 }
                 is PatientDetailsEffect.ConfirmPhoto -> {
