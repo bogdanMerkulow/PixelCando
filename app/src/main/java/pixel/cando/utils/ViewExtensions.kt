@@ -197,13 +197,14 @@ fun View.setListRoundedBgWithDividers(
 }
 
 fun Fragment.hideKeyboard() {
-    (context?.getSystemService(Activity.INPUT_METHOD_SERVICE) as? InputMethodManager)?.let { inputMethodService ->
-        view?.findFocus()?.let { view ->
-            view.clearFocus()
-            inputMethodService.hideSoftInputFromWindow(
-                view.windowToken,
-                0
-            )
-        }
+    val inputMethodService = requireContext().getSystemService(
+        Activity.INPUT_METHOD_SERVICE
+    ) as InputMethodManager
+    requireView().findFocus()?.apply {
+        clearFocus()
+        inputMethodService.hideSoftInputFromWindow(
+            windowToken,
+            0
+        )
     }
 }

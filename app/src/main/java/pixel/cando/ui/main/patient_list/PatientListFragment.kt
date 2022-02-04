@@ -150,24 +150,27 @@ class PatientListFragment : ViewBindingFragment<FragmentPatientListBinding>(
                 override fun onTabReselected(tab: TabLayout.Tab) {}
             }
         )
-        (viewBinding.toolbar.menu.findItem(R.id.search).actionView as SearchView).setOnQueryTextListener(
-            object : SearchView.OnQueryTextListener {
+        (viewBinding.toolbar.menu.findItem(R.id.search).actionView as SearchView)
+            .apply {
+                setOnQueryTextListener(
+                    object : SearchView.OnQueryTextListener {
 
-                override fun onQueryTextSubmit(query: String): Boolean {
-                    hideKeyboard()
-                    return true
-                }
+                        override fun onQueryTextSubmit(query: String): Boolean {
+                            hideKeyboard()
+                            return true
+                        }
 
-                override fun onQueryTextChange(newText: String): Boolean {
-                    eventSender?.sendEvent(
-                        PatientListEvent.SearchQueryChanged(
-                            searchQuery = newText
-                        )
-                    )
-                    return true
-                }
+                        override fun onQueryTextChange(newText: String): Boolean {
+                            eventSender?.sendEvent(
+                                PatientListEvent.SearchQueryChanged(
+                                    searchQuery = newText
+                                )
+                            )
+                            return true
+                        }
+                    }
+                )
             }
-        )
     }
 
     override fun renderViewModel(
@@ -175,6 +178,22 @@ class PatientListFragment : ViewBindingFragment<FragmentPatientListBinding>(
     ) {
         diffuserProvider?.invoke()?.run(viewModel)
     }
+
+    override fun onStart() {
+        super.onStart()
+        hideKeyboard()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        hideKeyboard()
+    }
+
+    override fun onPause() {
+        super.onPause()
+        hideKeyboard()
+    }
+
 }
 
 private sealed class PatientListItem : ListItem {
