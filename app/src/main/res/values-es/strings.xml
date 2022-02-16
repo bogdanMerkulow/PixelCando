@@ -110,7 +110,7 @@
         <item quantity="other">%d segundos</item>
     </plurals>
     <string name="camera_rotation_check_not_available_title">Atención</string>
-    <string name="camera_rotation_check_not_available_message">La función de giroscopio no está presente en el dispositivo. Para obtener una guía sobre cómo tomar la foto correctamente, haga clic en AYUDA</string>
+    <string name="camera_rotation_check_not_available_message">La función de giroscopio no está presente en el dispositivo. Las fotos pueden no ser adecuadas para el análisis corporal. Para obtener una guía sobre cómo tomar la foto correctamente, haga clic en AYUDA</string>
     <string name="camera_rotation_check_not_available_skip_instructions">Continúa</string>
     <string name="camera_rotation_check_not_available_open_instructions">AYUDA</string>
     <string name="camera_help_link">https://www.pixelcando.com/camera-hint?lang=es</string>

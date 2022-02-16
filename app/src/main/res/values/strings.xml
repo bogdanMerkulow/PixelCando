@@ -117,7 +117,7 @@
         <item quantity="other">%d seconds</item>
     </plurals>
     <string name="camera_rotation_check_not_available_title">Warning</string>
-    <string name="camera_rotation_check_not_available_message">Gyroscope is not available in device. Here instructions on how to take picture</string>
+    <string name="camera_rotation_check_not_available_message">The gyroscope function is not present on the device. Photos may not be adequate for body analysis. For a guide on how to properly make the photo, click on Instructions</string>
     <string name="camera_rotation_check_not_available_skip_instructions">Continue</string>
     <string name="camera_rotation_check_not_available_open_instructions">Instructions</string>
     <string name="camera_help_link">https://www.pixelcando.com/camera-hint</string>
