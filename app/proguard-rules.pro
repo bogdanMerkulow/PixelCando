@@ -56,6 +56,10 @@
 # Keep generic signature of Call (R8 full mode strips signatures from non-kept items).
 -keep,allowobfuscation,allowshrinking interface retrofit2.Call
 
+#For some language packs, class uses "getSimpleName" (for example, Deutsch or Japanese).
+#Disabling the obfication prevents an error
+-keepnames class ** implements org.ocpsoft.prettytime.TimeUnit
+
 # With R8 full mode generic signatures are stripped for classes that are not
 # kept. Suspend functions are wrapped in continuations where the type argument
 # is used.
