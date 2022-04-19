@@ -126,6 +126,8 @@ dependencies {
 
     implementation("org.ocpsoft.prettytime:prettytime:5.0.2.Final")
 
+    implementation("com.google.mlkit:pose-detection-accurate:18.0.0-beta2")
+
     implementation("com.onesignal:OneSignal:[4.0.0, 4.99.99]")
 
     val appCenterSdkVersion = "4.3.1"
