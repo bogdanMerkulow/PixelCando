@@ -123,20 +123,17 @@
     <string name="camera_help_link">https://www.pixelcando.com/camera-hint</string>
 
     <!-- Pose detection -->
-    <string name="pose_detection_failed">Pose detection failed</string>
-    <string name="pose_detection_missed_head_or_feet">Missing head or feet</string>
-    <string name="pose_detection_too_far_from_camera">Subject is too far from camera</string>
-    <string name="pose_detection_not_vertical_position">Subject is not in a vertical position</string>
-    <string name="pose_detection_upside_down">Subject is upside down</string>
-    <string name="pose_detection_arm_not_vertical_wirst_misaligned">arm not vertical, wirst misaligned</string>
-    <string name="pose_detection_arm_not_vertical_elbow_misaligned">arm not vertical, elbow misaligned</string>
-    <string name="pose_detection_arm_not_vertical">arm not vertical</string>
-    <string name="pose_detection_shoulders_not_found">Shoulders are not found</string>
-    <string name="pose_detection_eyes_not_found">Eyes are not found</string>
-    <string name="pose_detection_ankles_not_found">Ankles are not found</string>
-    <string name="pose_detection_hips_not_found">Hips are not found</string>
-    <string name="pose_detection_elbows_not_found">Elbows are not found</string>
-    <string name="pose_detection_wrists_not_found">Wrists are not found</string>
-    <string name="pose_detection_knees_not_found">Knees are not found</string>
+    <string name="pose_detection_title">Postural issues detected</string>
+    <string name="pose_detection_subtitle">We recommend to repeat the shot and void detected issues:</string>
+    <string name="pose_detection_continue_btn">Post anyway</string>
+    <string name="pose_detection_retake_btn">New shot</string>
+    <string name="pose_detection_failed">No human being detected</string>
+    <string name="pose_detection_missed_head_or_feet">Head and/or feet not detected</string>
+    <string name="pose_detection_too_far_from_camera">Way too far from the camera</string>
+    <string name="pose_detection_not_vertical_position">Subject not standing vertical</string>
+    <string name="pose_detection_upside_down">Profile seems upside-down</string>
+    <string name="pose_detection_arm_not_vertical_wirst_misaligned">Forearm not vertical, wrist misaligned</string>
+    <string name="pose_detection_arm_not_vertical_elbow_misaligned">Arm not fully extended</string>
+    <string name="pose_detection_arm_not_vertical">Arm not vertical</string>
 
 </resources>
