@@ -41,9 +41,11 @@ import pixel.cando.ui.main.patient_list.PatientListFragment
 import pixel.cando.ui.main.patient_profile.PatientProfileFragment
 import pixel.cando.ui.main.photo_list.PhotoListFragment
 import pixel.cando.ui.main.photo_preview.PhotoPreviewFragment
+import pixel.cando.ui.main.pose_analysis.PoseAnalysisFragment
 import pixel.cando.ui.root.RootEvent
 import pixel.cando.ui.root.RootFragment
 import pixel.cando.utils.OneSignalPushNotificationsSubscriber
+import pixel.cando.utils.PoseChecker
 import pixel.cando.utils.PushNotificationsSubscriber
 import pixel.cando.utils.RealResourceProvider
 import pixel.cando.utils.ResourceProvider
@@ -97,6 +99,12 @@ class DependencyManager(
         RealSessionWiper(
             accessTokenStore = accessTokenStore,
             userRoleStore = userRoleStore,
+        )
+    }
+
+    private val poseChecker: PoseChecker by lazy {
+        PoseChecker(
+            context = app
         )
     }
 
@@ -188,6 +196,7 @@ class DependencyManager(
                                         accessTokenStore = accessTokenStore,
                                         userRoleStore = userRoleStore,
                                         loggedInUserIdStore = loggedInUserIdStore,
+                                        poseChecker = poseChecker,
                                         pushNotificationsSubscriber = pushNotificationsSubscriber,
                                         resourceProvider = resourceProvider,
                                         context = context,
@@ -217,6 +226,7 @@ class DependencyManager(
                                 is PatientDetailsFragment -> {
                                     fragment.setup(
                                         remoteRepository = remoteRepository,
+                                        poseChecker = poseChecker,
                                         resourceProvider = resourceProvider,
                                         context = app,
                                         flowRouter = fragment.findImplementationOrThrow(),
@@ -239,6 +249,7 @@ class DependencyManager(
                                 is PhotoListFragment -> {
                                     fragment.setup(
                                         remoteRepository = remoteRepository,
+                                        poseChecker = poseChecker,
                                         resourceProvider = resourceProvider,
                                         context = app,
                                     )
@@ -285,6 +296,11 @@ class DependencyManager(
                                 }
                                 is ChatWithDoctorFragment -> {
                                     fragment.setup()
+                                }
+                                is PoseAnalysisFragment -> {
+                                    fragment.setup(
+                                        poseChecker = poseChecker
+                                    )
                                 }
                             }
                         }

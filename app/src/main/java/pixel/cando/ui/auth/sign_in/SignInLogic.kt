@@ -1,5 +1,6 @@
 package pixel.cando.ui.auth.sign_in
 
+import android.net.Uri
 import android.os.Parcelable
 import com.spotify.mobius.Connectable
 import com.spotify.mobius.First
@@ -18,6 +19,7 @@ import pixel.cando.ui._base.tea.CoroutineScopeEffectHandler
 import pixel.cando.utils.Either
 import pixel.cando.utils.MessageDisplayer
 import pixel.cando.utils.PermissionChecker
+import pixel.cando.utils.PoseChecker
 import pixel.cando.utils.PushNotificationsSubscriber
 import pixel.cando.utils.ResourceProvider
 import pixel.cando.utils.logError
@@ -100,6 +102,22 @@ object SignInLogic {
                     )
                 )
             }
+            is SignInEvent.PhotoTaken -> {
+                Next.dispatch(
+                    setOf(
+                        SignInEffect.CheckPoseInPhoto(
+                            uri = event.uri
+                        )
+                    )
+                )
+            }
+            is SignInEvent.PoseInPhotoChecked -> {
+                Next.dispatch(
+                    setOf(
+                        SignInEffect.ShowTakePhotoSuccessMessage
+                    )
+                )
+            }
             // model
             is SignInEvent.SignInSucceeded -> {
                 Next.next(
@@ -164,6 +182,9 @@ object SignInLogic {
         pushNotificationsSubscriber: PushNotificationsSubscriber,
         resourceProvider: ResourceProvider,
         photoTakerOpener: () -> Unit,
+        poseAnalyserOpener: (Uri) -> Unit,
+        poseChecker: PoseChecker,
+        takePhotoSuccessMessageDisplayer: () -> Unit,
         cameraPermissionChecker: PermissionChecker,
         writeStoragePermissionChecker: PermissionChecker,
     ): Connectable<SignInEffect, SignInEvent> =
@@ -224,6 +245,18 @@ object SignInLogic {
                 is SignInEffect.OpenPhotoTaker -> {
                     photoTakerOpener.invoke()
                 }
+                is SignInEffect.CheckPoseInPhoto -> {
+                    val result = poseChecker.check(effect.uri)
+                    if (result.success) {
+                        output.accept(
+                            SignInEvent.PoseInPhotoChecked(
+                                uri = effect.uri
+                            )
+                        )
+                    } else {
+                        poseAnalyserOpener.invoke(effect.uri)
+                    }
+                }
                 is SignInEffect.CheckCameraPermission -> {
                     if (cameraPermissionChecker.checkPermission()) {
                         output.accept(
@@ -241,6 +274,9 @@ object SignInLogic {
                     } else {
                         writeStoragePermissionChecker.requestPermission()
                     }
+                }
+                is SignInEffect.ShowTakePhotoSuccessMessage -> {
+                    takePhotoSuccessMessageDisplayer.invoke()
                 }
                 is SignInEffect.ShowUnexpectedError -> {
                     messageDisplayer.showMessage(
@@ -276,6 +312,14 @@ sealed class SignInEvent {
 
     object TapRecoverPassword : SignInEvent()
 
+    data class PhotoTaken(
+        val uri: Uri
+    ) : SignInEvent()
+
+    data class PoseInPhotoChecked(
+        val uri: Uri
+    ) : SignInEvent()
+
     // model
     object SignInSucceeded : SignInEvent()
     object SignInFailed : SignInEvent()
@@ -304,6 +348,12 @@ sealed class SignInEffect {
     object CheckWriteStoragePermission : SignInEffect()
 
     object OpenPhotoTaker : SignInEffect()
+
+    data class CheckPoseInPhoto(
+        val uri: Uri,
+    ) : SignInEffect()
+
+    object ShowTakePhotoSuccessMessage: SignInEffect()
 
     object ShowUnexpectedError : SignInEffect()
 

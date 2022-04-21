@@ -98,6 +98,16 @@ class SignInFragment : ViewBindingFragment<FragmentSignInBinding>(
     }
 
     override fun onCameraResult(uri: Uri) {
+        eventSender?.sendEvent(
+            SignInEvent.PhotoTaken(
+                uri = uri
+            )
+        )
+    }
+
+    override fun onCameraCancel() {}
+
+    fun showTakePhotoSuccessMessage() {
         MaterialAlertDialogBuilder(requireContext())
             .setTitle(R.string.sing_in_take_photo_success_title)
             .setMessage(R.string.sing_in_take_photo_success_message)
@@ -108,5 +118,4 @@ class SignInFragment : ViewBindingFragment<FragmentSignInBinding>(
             .show()
     }
 
-    override fun onCameraCancel() {}
 }
