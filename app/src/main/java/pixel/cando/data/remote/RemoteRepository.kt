@@ -200,7 +200,8 @@ class RealRemoteRepository(
                         createdAt = it.createdAt,
                         url = it.file.original
                     )
-                }
+                },
+                units = it.patient.units
             )
         }
     }

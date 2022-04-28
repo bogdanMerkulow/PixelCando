@@ -8,6 +8,7 @@ import kotlinx.parcelize.Parcelize
 import pixel.cando.R
 import pixel.cando.data.models.Gender
 import pixel.cando.data.remote.RemoteRepository
+import pixel.cando.data.remote.dto.Units
 import pixel.cando.ui._base.fragment.FlowRouter
 import pixel.cando.ui._base.list.ListItem
 import pixel.cando.ui._base.tea.CoroutineScopeEffectHandler
@@ -96,24 +97,28 @@ object PatientInfoLogic {
             when (effect) {
                 is PatientInfoEffect.LoadData -> {
                     val result = remoteRepository.getPatient(effect.patientId)
-                    result.onLeft {
-                        output.accept(
-                            PatientInfoEvent.LoadDataSuccess(
-                                PatientDataModel(
-                                    fullName = it.fullName,
-                                    gender = it.gender,
-                                    age = it.age,
-                                    weight = it.weight,
-                                    height = it.height,
-                                    phoneNumber = it.phoneNumber,
-                                    email = it.email,
-                                    address = it.address,
-                                    country = it.country,
-                                    city = it.city,
-                                    postalCode = it.postalCode,
+
+                    remoteRepository.getDoctor().onLeft { doctor ->
+                        result.onLeft {
+                            output.accept(
+                                PatientInfoEvent.LoadDataSuccess(
+                                    PatientDataModel(
+                                        fullName = it.fullName,
+                                        gender = it.gender,
+                                        age = it.age,
+                                        weight = it.weight,
+                                        height = it.height,
+                                        phoneNumber = it.phoneNumber,
+                                        email = it.email,
+                                        address = it.address,
+                                        country = it.country,
+                                        city = it.city,
+                                        postalCode = it.postalCode,
+                                        units = doctor.units
+                                    )
                                 )
                             )
-                        )
+                        }
                     }
                     result.onRight {
                         logError(it)
@@ -186,6 +191,7 @@ data class PatientDataModel(
     val country: String?,
     val city: String?,
     val postalCode: String?,
+    val units: Units?
 ) : Parcelable
 
 enum class PatientInfoLoadingState {
@@ -255,14 +261,14 @@ fun PatientInfoDataModel.viewModel(
             PatientInfoListItem.Measurement(
                 title = resourceProvider.getString(R.string.height),
                 value = it.height.toString(),
-                unit = resourceProvider.getString(R.string.cm),
+                unit = it.units?.height.orEmpty(),
                 isFirst = false,
                 isLast = false,
             ),
             PatientInfoListItem.Measurement(
                 title = resourceProvider.getString(R.string.weight),
                 value = it.weight.toString(),
-                unit = resourceProvider.getString(R.string.kg),
+                unit = it.units?.weight.orEmpty(),
                 isFirst = false,
                 isLast = false,
             ),
