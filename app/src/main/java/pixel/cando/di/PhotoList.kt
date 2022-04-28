@@ -122,6 +122,7 @@ fun PhotoListFragment.setup(
                                 PhotoPreviewArguments(
                                     uri = it.uri,
                                     weight = it.weight,
+                                    weightUnit = it.weightUnit,
                                     height = it.height,
                                 )
                             )

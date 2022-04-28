@@ -271,6 +271,7 @@ object PatientDetailsLogic {
                             PatientDetailsEffect.AskToConfirmPhoto(
                                 uri = event.uri,
                                 weight = patientData.weight,
+                                weightUnit = patientData.weightUnit,
                                 height = patientData.height,
                             )
                         )
@@ -285,6 +286,7 @@ object PatientDetailsLogic {
                             PatientDetailsEffect.AskToConfirmPhoto(
                                 uri = event.uri,
                                 weight = patientData.weight,
+                                weightUnit = patientData.weightUnit,
                                 height = patientData.height,
                             )
                         )
@@ -398,24 +400,29 @@ object PatientDetailsLogic {
                     val result = remoteRepository.getPatient(
                         patientId = effect.patientId
                     )
-                    result.onLeft {
-                        output.accept(
-                            PatientDetailsEvent.LoadPatientInfoSuccess(
-                                PatientLoadableDataModel(
-                                    fullName = it.fullName,
-                                    weight = it.weight,
-                                    height = it.height,
-                                    photoToReview = it.photoToReview?.let {
-                                        PatientPhotoToReviewDataModel(
-                                            id = it.id,
-                                            createdAt = it.createdAt,
-                                            url = it.url,
-                                        )
-                                    }
-                                )
+                    val doctor = remoteRepository.getDoctor()
 
+                    doctor.onLeft { doctor ->
+                        result.onLeft {
+                            output.accept(
+                                PatientDetailsEvent.LoadPatientInfoSuccess(
+                                    PatientLoadableDataModel(
+                                        fullName = it.fullName,
+                                        weight = it.weight,
+                                        weightUnit = doctor.units?.weight ?: "",
+                                        height = it.height,
+                                        photoToReview = it.photoToReview?.let {
+                                            PatientPhotoToReviewDataModel(
+                                                id = it.id,
+                                                createdAt = it.createdAt,
+                                                url = it.url,
+                                            )
+                                        }
+                                    )
+
+                                )
                             )
-                        )
+                        }
                     }
                 }
                 is PatientDetailsEffect.LoadExamPage -> {
@@ -545,6 +552,7 @@ object PatientDetailsLogic {
                         PhotoPreviewArguments(
                             uri = effect.uri,
                             weight = effect.weight,
+                            weightUnit = effect.weightUnit,
                             height = effect.height,
                         )
                     )
@@ -709,6 +717,7 @@ sealed class PatientDetailsEffect {
     data class AskToConfirmPhoto(
         val uri: Uri,
         val weight: Float,
+        val weightUnit: String,
         val height: String,
     ) : PatientDetailsEffect()
 
@@ -764,6 +773,7 @@ data class ExamDataModel(
 data class PatientLoadableDataModel(
     val fullName: String,
     val weight: Float,
+    val weightUnit: String,
     val height: String,
     val photoToReview: PatientPhotoToReviewDataModel?
 ) : Parcelable

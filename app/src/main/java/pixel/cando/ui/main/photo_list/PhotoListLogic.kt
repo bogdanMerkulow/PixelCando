@@ -127,6 +127,7 @@ object PhotoListLogic {
                             PhotoListEffect.AskToConfirmPhoto(
                                 uri = event.uri,
                                 weight = patientData.weight,
+                                weightUnit = patientData.weightUnit,
                                 height = patientData.height,
                             )
                         )
@@ -141,6 +142,7 @@ object PhotoListLogic {
                             PhotoListEffect.AskToConfirmPhoto(
                                 uri = event.uri,
                                 weight = patientData.weight,
+                                weightUnit = patientData.weightUnit,
                                 height = patientData.height,
                             )
                         )
@@ -277,15 +279,19 @@ object PhotoListLogic {
                 }
                 is PhotoListEffect.LoadPatientData -> {
                     val result = remoteRepository.getPatientAccount()
-                    result.onLeft {
-                        output.accept(
-                            PhotoListEvent.LoadPatientDataSuccess(
-                                PatientLoadableDataModel(
-                                    weight = it.weight,
-                                    height = it.height,
+                    val doctor = remoteRepository.getDoctor()
+                    doctor.onLeft { doctor ->
+                        result.onLeft {
+                            output.accept(
+                                PhotoListEvent.LoadPatientDataSuccess(
+                                    PatientLoadableDataModel(
+                                        weight = it.weight,
+                                        weightUnit = doctor.units?.weight ?: "",
+                                        height = it.height,
+                                    )
                                 )
                             )
-                        )
+                        }
                     }
                 }
                 is PhotoListEffect.UploadPhoto -> {
@@ -374,6 +380,7 @@ object PhotoListLogic {
                         PhotoPreviewArguments(
                             uri = effect.uri,
                             weight = effect.weight,
+                            weightUnit = effect.weightUnit,
                             height = effect.height,
                         )
                     )
@@ -486,6 +493,7 @@ sealed class PhotoListEffect {
     data class AskToConfirmPhoto(
         val uri: Uri,
         val weight: Float,
+        val weightUnit: String,
         val height: String,
     ) : PhotoListEffect()
 
@@ -524,6 +532,7 @@ data class PhotoDataModel(
 @Parcelize
 data class PatientLoadableDataModel(
     val weight: Float,
+    val weightUnit: String,
     val height: String,
 ) : Parcelable
 

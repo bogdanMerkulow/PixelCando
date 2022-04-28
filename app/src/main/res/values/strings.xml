@@ -57,7 +57,7 @@
     <string name="patient_code">Patient Code</string>
     <string name="photo_preview_title">Enter height and weight</string>
     <string name="photo_preview_subtitle">Height and weight params are required for proper calculations</string>
-    <string name="photo_preview_weight_field_hint">Weight, kg</string>
+    <string name="photo_preview_weight_field_hint">Weight, </string>
     <string name="photo_preview_height_field_hint">Height, cm</string>
     <string name="exam_details_screen_title">%s, Exam #%d</string>
     <string name="exam_details_tab_details">Details</string>

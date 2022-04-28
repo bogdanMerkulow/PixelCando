@@ -43,7 +43,9 @@ class PhotoPreviewFragment : ViewBindingFullscreenDialogFragment<FragmentPhotoPr
             map(
                 { it.weight },
                 intoOnce {
-                    viewBinding.weightField.setText(it)
+                    viewBinding.weightField.setText(it.value.toString())
+                    viewBinding.weightFieldParent.hint =
+                        "${viewBinding.weightFieldParent.hint} ${it.measures}"
                 }
             ),
             map(

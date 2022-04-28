@@ -26,6 +26,7 @@ import pixel.cando.utils.diffuser.DiffuserFragmentDelegate
 data class PhotoPreviewArguments(
     val uri: Uri,
     val weight: Float,
+    val weightUnit: String,
     val height: String,
 ) : Parcelable
 
@@ -71,6 +72,7 @@ fun PhotoPreviewFragment.setup(
                 uri = arguments.uri,
                 height = arguments.height,
                 weight = arguments.weight,
+                weightUnit = arguments.weightUnit
             )
         },
         modelMapper = {
