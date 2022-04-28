@@ -5,6 +5,7 @@ import android.os.Bundle
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import pixel.cando.R
+import pixel.cando.data.remote.dto.Units
 import pixel.cando.databinding.FragmentExamNumericMeasurementValuesBinding
 import pixel.cando.databinding.ListItemHeaderBinding
 import pixel.cando.databinding.ListItemNumericMeasurementValueBinding
@@ -34,6 +35,7 @@ class ExamNumericMeasurementValuesFragment :
         val hip: Float,
         val belly: Float,
         val waistToHeight: Float,
+        val units: Units?
     ) : Parcelable
 
     companion object {

@@ -8,6 +8,7 @@ import kotlinx.coroutines.async
 import kotlinx.parcelize.Parcelize
 import pixel.cando.R
 import pixel.cando.data.remote.RemoteRepository
+import pixel.cando.data.remote.dto.Units
 import pixel.cando.ui._base.fragment.FlowRouter
 import pixel.cando.ui._base.tea.CoroutineScopeEffectHandler
 import pixel.cando.utils.MessageDisplayer
@@ -85,41 +86,52 @@ object ExamDetailsLogic {
 
                     val examDeferred = async { remoteRepository.getExam(effect.examId) }
                     val patientDeferred = async { remoteRepository.getPatient(effect.patientId) }
+                    val doctorDeferred = async { remoteRepository.getDoctor() }
 
                     val examResult = examDeferred.await()
                     val patientResult = patientDeferred.await()
+                    val doctorResult = doctorDeferred.await()
 
-                    examResult.onLeft { exam ->
-                        patientResult.onLeft { patient ->
-                            output.accept(
-                                ExamDetailsEvent.LoadDataSuccess(
-                                    ExamDetailsLoadedDataModel(
-                                        patientFullName = patient.fullName,
-                                        examCreatedAt = exam.createdAt,
-                                        examNumber = exam.number,
-                                        weight = exam.weight,
-                                        bmi = exam.bmi,
-                                        bmr = exam.bmr,
-                                        fm = exam.fm,
-                                        ffm = exam.ffm,
-                                        abdominalFatMass = exam.abdominalFatMass,
-                                        tbw = exam.tbw,
-                                        hip = exam.hip,
-                                        belly = exam.belly,
-                                        waistToHeight = exam.waistToHeight,
-                                        silhouetteUrl = exam.silhouetteUrl,
+                    doctorResult.onLeft { doctor ->
+                        examResult.onLeft { exam ->
+                            patientResult.onLeft { patient ->
+                                output.accept(
+                                    ExamDetailsEvent.LoadDataSuccess(
+                                        ExamDetailsLoadedDataModel(
+                                            patientFullName = patient.fullName,
+                                            examCreatedAt = exam.createdAt,
+                                            examNumber = exam.number,
+                                            weight = exam.weight,
+                                            bmi = exam.bmi,
+                                            bmr = exam.bmr,
+                                            fm = exam.fm,
+                                            ffm = exam.ffm,
+                                            abdominalFatMass = exam.abdominalFatMass,
+                                            tbw = exam.tbw,
+                                            hip = exam.hip,
+                                            belly = exam.belly,
+                                            waistToHeight = exam.waistToHeight,
+                                            silhouetteUrl = exam.silhouetteUrl,
+                                            units = doctor.units
+                                        )
                                     )
                                 )
-                            )
-                        }
-                        patientResult.onRight {
-                            logError(it)
-                            output.accept(
-                                ExamDetailsEvent.LoadDataFailure
-                            )
+                            }
+                            patientResult.onRight {
+                                logError(it)
+                                output.accept(
+                                    ExamDetailsEvent.LoadDataFailure
+                                )
+                            }
                         }
                     }
                     examResult.onRight {
+                        logError(it)
+                        output.accept(
+                            ExamDetailsEvent.LoadDataFailure
+                        )
+                    }
+                    doctorResult.onRight {
                         logError(it)
                         output.accept(
                             ExamDetailsEvent.LoadDataFailure
@@ -196,6 +208,7 @@ data class ExamDetailsLoadedDataModel(
     val belly: Float,
     val waistToHeight: Float,
     val silhouetteUrl: String?,
+    val units: Units?
 ) : Parcelable
 
 data class ExamDetailsViewModel(
@@ -221,6 +234,7 @@ sealed class ExamDetailsTabViewModel {
         val hip: Float,
         val belly: Float,
         val waistToHeight: Float,
+        val units: Units?
     ) : ExamDetailsTabViewModel()
 
     data class Silhouette(
@@ -248,6 +262,7 @@ fun ExamDetailsDataModel.viewModel(
                 hip = it.hip,
                 belly = it.belly,
                 waistToHeight = it.waistToHeight,
+                units = it.units
             )
         )
         if (it.silhouetteUrl != null) {
