@@ -395,7 +395,8 @@ class RealRemoteRepository(
                             country = account.country,
                             city = account.city,
                             postalCode = account.postalCode,
-                            units = null
+                            units = null,
+                            measurement = account.measurement
                         ),
                     )
                 )
@@ -741,6 +742,7 @@ private fun DoctorAccountUserDto.model(
     country = country,
     city = city,
     postalCode = postalCode,
+    measurement = measurement
 )
 
 private fun PatientAccountDto.model(

@@ -122,4 +122,11 @@
     <string name="camera_rotation_check_not_available_open_instructions">Instructions</string>
     <string name="camera_help_link">https://www.pixelcando.com/camera-hint</string>
 
+    <string name="measurement" translatable="false">Measurement</string>
+
+    <string-array name="measurement">
+        <item>Metric</item>
+        <item>Imperial</item>
+    </string-array>
+
 </resources>

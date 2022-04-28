@@ -61,6 +61,15 @@ object DoctorProfileLogic {
                     )
                 )
             }
+            is DoctorProfileEvent.MeasurementChanged -> {
+                Next.next(
+                    model.copy(
+                        account = model.account?.copy(
+                            measurement = event.value
+                        )
+                    )
+                )
+            }
             is DoctorProfileEvent.PhoneNumberChanged -> {
                 Next.next(
                     model.copy(
@@ -254,6 +263,10 @@ sealed class DoctorProfileEvent {
         val value: String
     ) : DoctorProfileEvent()
 
+    data class MeasurementChanged(
+        val value: String
+    ) : DoctorProfileEvent()
+
     data class PhoneNumberChanged(
         val value: String
     ) : DoctorProfileEvent()
@@ -322,6 +335,7 @@ data class AccountDataModel(
     val country: String?,
     val city: String?,
     val postalCode: String?,
+    val measurement: String?
 ) : Parcelable
 
 data class DoctorProfileViewModel(
@@ -340,6 +354,7 @@ data class ProfileFieldListViewModel(
     val countryField: ProfileFieldViewModel,
     val cityField: ProfileFieldViewModel,
     val postalCodeField: ProfileFieldViewModel,
+    val measurement: ProfileFieldViewModel
 )
 
 data class ProfileFieldViewModel(
@@ -361,6 +376,10 @@ fun DoctorProfileDataModel.viewModel(
                 value = it.email,
                 error = if (it.isEmailValid) null
                 else resourceProvider.getString(R.string.invalid_email)
+            ),
+            measurement = ProfileFieldViewModel(
+                value = it.measurement,
+                error = null
             ),
             phoneNumberField = ProfileFieldViewModel(
                 value = it.phoneNumber,
@@ -420,6 +439,7 @@ private val DoctorAccount.dataModel: AccountDataModel
         country = country,
         city = city,
         postalCode = postalCode,
+        measurement = measurement
     )
 
 private val AccountDataModel.model: DoctorAccount
@@ -432,4 +452,5 @@ private val AccountDataModel.model: DoctorAccount
         country = country,
         city = city,
         postalCode = postalCode,
+        measurement = measurement
     )

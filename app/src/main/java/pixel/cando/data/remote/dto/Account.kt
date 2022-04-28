@@ -35,7 +35,8 @@ data class DoctorAccountUserDto(
     @Json(name = "country") val country: String?,
     @Json(name = "city") val city: String?,
     @Json(name = "postalCode") val postalCode: String?,
-    @Json(name = "units") val units: Units?
+    @Json(name = "units") val units: Units?,
+    @Json(name = "measurement") val measurement: String?
 )
 
 @JsonClass(generateAdapter = true)

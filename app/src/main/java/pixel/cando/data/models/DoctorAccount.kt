@@ -16,6 +16,7 @@ data class DoctorAccount(
     val country: String?,
     val city: String?,
     val postalCode: String?,
+    val measurement: String?
 )
 
 data class PatientAccount(
