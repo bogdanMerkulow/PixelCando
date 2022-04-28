@@ -184,7 +184,7 @@ data class PatientDataModel(
     val gender: Gender,
     val age: Int,
     val weight: Float,
-    val height: Float,
+    val height: String,
     val phoneNumber: String?,
     val email: String?,
     val address: String?,
@@ -260,7 +260,7 @@ fun PatientInfoDataModel.viewModel(
             ),
             PatientInfoListItem.Measurement(
                 title = resourceProvider.getString(R.string.height),
-                value = it.height.toString(),
+                value = it.height,
                 unit = it.units?.height.orEmpty(),
                 isFirst = false,
                 isLast = false,

@@ -38,7 +38,7 @@ interface RemoteRepository {
     suspend fun uploadPhotoByDoctor(
         patientId: Long,
         weight: Float,
-        height: Float,
+        height: String,
         photo: String
     ): Either<Unit, UploadPhotoFailure>
 
@@ -285,7 +285,7 @@ class RealRemoteRepository(
     override suspend fun uploadPhotoByDoctor(
         patientId: Long,
         weight: Float,
-        height: Float,
+        height: String,
         photo: String,
     ): Either<Unit, UploadPhotoFailure> {
         return callApi(

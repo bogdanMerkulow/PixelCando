@@ -75,7 +75,7 @@ object PhotoPreviewLogic {
     fun initialModel(
         uri: Uri,
         weight: Float,
-        height: Float,
+        height: String,
     ) = PhotoPreviewDataModel(
         uri = uri,
         weight = weight,
@@ -99,7 +99,7 @@ sealed class PhotoPreviewEffect {
     data class Confirm(
         val uri: Uri,
         val weight: Float,
-        val height: Float
+        val height: String
     ) : PhotoPreviewEffect()
 
     object Exit : PhotoPreviewEffect()
@@ -109,7 +109,7 @@ sealed class PhotoPreviewEffect {
 data class PhotoPreviewDataModel(
     val uri: Uri,
     val weight: Float,
-    val height: Float
+    val height: String
 ) : Parcelable
 
 data class PhotoPreviewViewModel(
@@ -122,11 +122,11 @@ fun PhotoPreviewDataModel.viewModel(
 ) = PhotoPreviewViewModel(
     uri = uri,
     weight = weight.toString(),
-    height = String.format("%.0f", height),
+    height = height,
 )
 
 data class PhotoPreviewResult(
     val uri: Uri,
     val weight: Float,
-    val height: Float
+    val height: String
 )

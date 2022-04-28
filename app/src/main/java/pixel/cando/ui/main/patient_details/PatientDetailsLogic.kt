@@ -616,7 +616,7 @@ sealed class PatientDetailsEvent {
     data class PhotoAccepted(
         val uri: Uri,
         val weight: Float,
-        val height: Float,
+        val height: String,
     ) : PatientDetailsEvent()
 
     data class ExamTap(
@@ -703,13 +703,13 @@ sealed class PatientDetailsEffect {
         val patientId: Long,
         val uri: Uri,
         val weight: Float,
-        val height: Float,
+        val height: String,
     ) : PatientDetailsEffect()
 
     data class AskToConfirmPhoto(
         val uri: Uri,
         val weight: Float,
-        val height: Float,
+        val height: String,
     ) : PatientDetailsEffect()
 
     data class NavigateToPatientPhotoReview(
@@ -764,7 +764,7 @@ data class ExamDataModel(
 data class PatientLoadableDataModel(
     val fullName: String,
     val weight: Float,
-    val height: Float,
+    val height: String,
     val photoToReview: PatientPhotoToReviewDataModel?
 ) : Parcelable
 

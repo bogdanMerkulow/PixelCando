@@ -19,7 +19,7 @@ data class PatientSingleItemInfo(
     val gender: Gender,
     val age: Int,
     val weight: Float,
-    val height: Float,
+    val height: String,
     val phoneNumber: String?,
     val email: String?,
     val address: String?,

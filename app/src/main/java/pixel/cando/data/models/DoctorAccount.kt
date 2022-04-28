@@ -23,7 +23,7 @@ data class PatientAccount(
     val email: String,
     val patientCode: String,
     val weight: Float,
-    val height: Float,
+    val height: String,
     val phoneNumber: String?,
     val contactEmail: String?,
     val address: String?,

@@ -486,7 +486,7 @@ sealed class PhotoListEffect {
     data class AskToConfirmPhoto(
         val uri: Uri,
         val weight: Float,
-        val height: Float,
+        val height: String,
     ) : PhotoListEffect()
 
     object ShowUnexpectedError : PhotoListEffect()
@@ -524,7 +524,7 @@ data class PhotoDataModel(
 @Parcelize
 data class PatientLoadableDataModel(
     val weight: Float,
-    val height: Float,
+    val height: String,
 ) : Parcelable
 
 data class PhotoListViewModel(
