@@ -23,6 +23,7 @@ data class UpdateDoctorAccountResponse(
 @JsonClass(generateAdapter = true)
 data class DoctorAccountDto(
     @Json(name = "user") val user: DoctorAccountUserDto,
+    @Json(name = "units") val units: Units? = null
 )
 
 @JsonClass(generateAdapter = true)
@@ -35,7 +36,6 @@ data class DoctorAccountUserDto(
     @Json(name = "country") val country: String?,
     @Json(name = "city") val city: String?,
     @Json(name = "postalCode") val postalCode: String?,
-    @Json(name = "units") val units: Units?,
     @Json(name = "measurement") val measurement: String?
 )
 

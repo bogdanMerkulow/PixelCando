@@ -395,9 +395,8 @@ class RealRemoteRepository(
                             country = account.country,
                             city = account.city,
                             postalCode = account.postalCode,
-                            units = null,
                             measurement = account.measurement
-                        ),
+                        )
                     )
                 )
             )
@@ -729,7 +728,7 @@ private fun String.toGender() = when (this) {
 private fun GetDoctorAccountResponse.model(
 ) = Doctor(
     doctor.user.model(),
-    doctor.user.units
+    doctor.units
 )
 
 private fun DoctorAccountUserDto.model(
