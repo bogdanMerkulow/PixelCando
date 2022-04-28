@@ -1,57 +1,8 @@
 package pixel.cando.data.remote
 
 import com.squareup.moshi.Moshi
-import pixel.cando.data.models.ChatItem
-import pixel.cando.data.models.ChatMessage
-import pixel.cando.data.models.ChatRecentMessage
-import pixel.cando.data.models.DoctorAccount
-import pixel.cando.data.models.ExamListItemInfo
-import pixel.cando.data.models.ExamSingleItemInfo
-import pixel.cando.data.models.Folder
-import pixel.cando.data.models.Gender
-import pixel.cando.data.models.MessageListPortion
-import pixel.cando.data.models.PatientAccount
-import pixel.cando.data.models.PatientListItemInfo
-import pixel.cando.data.models.PatientPhotoToReview
-import pixel.cando.data.models.PatientSingleItemInfo
-import pixel.cando.data.models.Photo
-import pixel.cando.data.models.PhotoState
-import pixel.cando.data.models.UploadPhotoFailure
-import pixel.cando.data.remote.dto.ChatItemDto
-import pixel.cando.data.remote.dto.ChatListFilterDto
-import pixel.cando.data.remote.dto.ChatListRequest
-import pixel.cando.data.remote.dto.ChatMessageListFilterDto
-import pixel.cando.data.remote.dto.ChatMessageListResponse
-import pixel.cando.data.remote.dto.ChatWithDoctorMessageListRequest
-import pixel.cando.data.remote.dto.ChatWithPatientMessageListRequest
-import pixel.cando.data.remote.dto.ConfirmPhotoRequest
-import pixel.cando.data.remote.dto.DeletePhotoRequest
-import pixel.cando.data.remote.dto.DeviceRegisterDto
-import pixel.cando.data.remote.dto.DeviceRegisterRequest
-import pixel.cando.data.remote.dto.DoctorAccountDto
-import pixel.cando.data.remote.dto.DoctorAccountUserDto
-import pixel.cando.data.remote.dto.EmptyRequest
-import pixel.cando.data.remote.dto.ExamListRequest
-import pixel.cando.data.remote.dto.FolderListRequest
-import pixel.cando.data.remote.dto.GetExamRequest
-import pixel.cando.data.remote.dto.PatientAccountDto
-import pixel.cando.data.remote.dto.PatientGetRequest
-import pixel.cando.data.remote.dto.PatientListFilterDto
-import pixel.cando.data.remote.dto.PatientListRequest
-import pixel.cando.data.remote.dto.ReadChatWithDoctorMessagesRequest
-import pixel.cando.data.remote.dto.ReadChatWithPatientMessagesRequest
-import pixel.cando.data.remote.dto.RejectPhotoRequest
-import pixel.cando.data.remote.dto.SendMessageToChatWithDoctorDto
-import pixel.cando.data.remote.dto.SendMessageToChatWithDoctorRequest
-import pixel.cando.data.remote.dto.SendMessageToChatWithPatientDto
-import pixel.cando.data.remote.dto.SendMessageToChatWithPatientRequest
-import pixel.cando.data.remote.dto.UpdateDoctorAccountRequest
-import pixel.cando.data.remote.dto.UpdatePatientAccountDto
-import pixel.cando.data.remote.dto.UpdatePatientAccountRequest
-import pixel.cando.data.remote.dto.UpdatePatientAccountUserDto
-import pixel.cando.data.remote.dto.UploadPhotoByDoctorRequest
-import pixel.cando.data.remote.dto.UploadPhotoByPatientRequest
-import pixel.cando.data.remote.dto.UploadPhotoForPatientWeightHeightDto
+import pixel.cando.data.models.*
+import pixel.cando.data.remote.dto.*
 import pixel.cando.utils.Either
 import pixel.cando.utils.handleSkippingCancellation
 import pixel.cando.utils.logError
@@ -95,6 +46,8 @@ interface RemoteRepository {
         weight: Float,
         photo: String
     ): Either<Unit, UploadPhotoFailure>
+
+    suspend fun getDoctor(): Either<Doctor, Throwable>
 
     suspend fun getDoctorAccount(
     ): Either<DoctorAccount, Throwable>
@@ -404,6 +357,16 @@ class RealRemoteRepository(
         )
     }
 
+    override suspend fun getDoctor(): Either<Doctor, Throwable> {
+        return callApi {
+            getDoctorAccount(
+                EmptyRequest()
+            )
+        }.mapOnlyLeft {
+            it.model()
+        }
+    }
+
     override suspend fun getDoctorAccount(
     ): Either<DoctorAccount, Throwable> {
         return callApi {
@@ -431,7 +394,8 @@ class RealRemoteRepository(
                             country = account.country,
                             city = account.city,
                             postalCode = account.postalCode,
-                        )
+                            units = null
+                        ),
                     )
                 )
             )
@@ -760,6 +724,12 @@ private fun String.toGender() = when (this) {
     else -> Gender.MALE
 }
 
+private fun GetDoctorAccountResponse.model(
+) = Doctor(
+    doctor.user.model(),
+    doctor.user.units
+)
+
 private fun DoctorAccountUserDto.model(
 ) = DoctorAccount(
     fullName = fullName,
@@ -785,6 +755,7 @@ private fun PatientAccountDto.model(
     country = user.country,
     city = user.city,
     postalCode = user.postalCode,
+    units = units
 )
 
 private fun ChatItemDto.model(

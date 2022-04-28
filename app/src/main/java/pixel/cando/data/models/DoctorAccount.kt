@@ -1,5 +1,12 @@
 package pixel.cando.data.models
 
+import pixel.cando.data.remote.dto.Units
+
+data class Doctor(
+    val account: DoctorAccount,
+    val units: Units?
+)
+
 data class DoctorAccount(
     val fullName: String,
     val email: String,
@@ -23,4 +30,5 @@ data class PatientAccount(
     val country: String?,
     val city: String?,
     val postalCode: String?,
+    val units: Units?
 )
