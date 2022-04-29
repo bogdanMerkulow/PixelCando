@@ -13,7 +13,6 @@ import pixel.cando.data.remote.RemoteRepository
 import pixel.cando.ui.Screens
 import pixel.cando.ui._base.fragment.RootRouter
 import pixel.cando.ui._base.tea.CoroutineScopeEffectHandler
-import pixel.cando.ui.main.doctor_profile.DoctorProfileEvent
 import pixel.cando.utils.MessageDisplayer
 import pixel.cando.utils.ResourceProvider
 import pixel.cando.utils.logError

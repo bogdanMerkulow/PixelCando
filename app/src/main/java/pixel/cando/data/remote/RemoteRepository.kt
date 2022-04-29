@@ -1,6 +1,5 @@
 package pixel.cando.data.remote
 
-import com.squareup.moshi.Json
 import com.squareup.moshi.Moshi
 import pixel.cando.data.models.*
 import pixel.cando.data.remote.dto.*
