@@ -8,13 +8,9 @@ import com.google.mlkit.vision.pose.Pose
 import com.google.mlkit.vision.pose.PoseDetection
 import com.google.mlkit.vision.pose.PoseDetectorOptionsBase
 import pixel.cando.utils.logError
-import java.util.concurrent.Executors
 
 class PoseDetectorProcessor(
     options: PoseDetectorOptionsBase,
-    private val showInFrameLikelihood: Boolean,
-    private val visualizeZ: Boolean,
-    private val rescaleZForVisualization: Boolean,
 ) : VisionProcessorBase<Pose>() {
 
     private val detector = PoseDetection.getClient(options)
@@ -42,10 +38,6 @@ class PoseDetectorProcessor(
             PoseGraphic(
                 graphicOverlay,
                 results,
-                showInFrameLikelihood,
-                visualizeZ,
-                rescaleZForVisualization,
-                emptyList()
             )
         )
     }

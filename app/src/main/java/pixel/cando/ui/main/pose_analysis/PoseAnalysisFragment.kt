@@ -1,12 +1,7 @@
 package pixel.cando.ui.main.pose_analysis
 
-import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
-import android.net.Uri
 import android.os.Bundle
-import android.view.ViewTreeObserver
-import androidx.fragment.app.FragmentManager
-import com.google.mlkit.vision.pose.Pose
 import com.google.mlkit.vision.pose.accurate.AccuratePoseDetectorOptions
 import pixel.cando.databinding.FragmentPoseAnalysisBinding
 import pixel.cando.ui._base.fragment.OnBackPressedListener
@@ -21,7 +16,6 @@ import pixel.cando.utils.diffuser.DiffuserCreator
 import pixel.cando.utils.diffuser.DiffuserProvider
 import pixel.cando.utils.diffuser.DiffuserProviderNeeder
 import pixel.cando.utils.mlkit.PoseDetectorProcessor
-import pixel.cando.utils.mlkit.PoseGraphic
 
 class PoseAnalysisFragment : ViewBindingFullscreenDialogFragment<FragmentPoseAnalysisBinding>(
     FragmentPoseAnalysisBinding::inflate
@@ -40,9 +34,6 @@ class PoseAnalysisFragment : ViewBindingFullscreenDialogFragment<FragmentPoseAna
             options = AccuratePoseDetectorOptions.Builder()
                 .setDetectorMode(AccuratePoseDetectorOptions.SINGLE_IMAGE_MODE)
                 .build(),
-            showInFrameLikelihood = false,
-            visualizeZ = false,
-            rescaleZForVisualization = false,
         )
     }
 
@@ -63,30 +54,6 @@ class PoseAnalysisFragment : ViewBindingFullscreenDialogFragment<FragmentPoseAna
                         bitmap,
                         viewBinding.photoOverlayView
                     )
-
-//                    viewBinding.root.viewTreeObserver.addOnGlobalLayoutListener(
-//                        object : ViewTreeObserver.OnGlobalLayoutListener {
-//                            override fun onGlobalLayout() {
-//                                viewBinding.root.viewTreeObserver.removeOnGlobalLayoutListener(this)
-//
-//                                val scaleFactor = originalBitmap.height.toFloat() / viewBinding.photoImageView.height.toFloat()
-//                                val resizedBitmap = Bitmap.createScaledBitmap(
-//                                    originalBitmap,
-//                                    (originalBitmap.width / scaleFactor).toInt(),
-//                                    (originalBitmap.height / scaleFactor).toInt(),
-//                                    true
-//                                )
-//
-//                                viewBinding.photoOverlayView.setImageSourceInfo(
-//                                    resizedBitmap.width, resizedBitmap.height, false
-//                                )
-//                                poseDetectorProcessor.processBitmap(
-//                                    resizedBitmap,
-//                                    viewBinding.photoOverlayView
-//                                )
-//                            }
-//                        }
-//                    )
                 }
             ),
             map(
