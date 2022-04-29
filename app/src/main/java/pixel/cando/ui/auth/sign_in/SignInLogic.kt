@@ -246,16 +246,11 @@ object SignInLogic {
                     photoTakerOpener.invoke()
                 }
                 is SignInEffect.CheckPoseInPhoto -> {
-                    val result = poseChecker.check(effect.uri)
-                    if (result.success) {
-                        output.accept(
-                            SignInEvent.PoseInPhotoChecked(
-                                uri = effect.uri
-                            )
+                    output.accept(
+                        SignInEvent.PoseInPhotoChecked(
+                            uri = effect.uri
                         )
-                    } else {
-                        poseAnalyserOpener.invoke(effect.uri)
-                    }
+                    )
                 }
                 is SignInEffect.CheckCameraPermission -> {
                     if (cameraPermissionChecker.checkPermission()) {
