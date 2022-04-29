@@ -279,19 +279,17 @@ object PhotoListLogic {
                 }
                 is PhotoListEffect.LoadPatientData -> {
                     val result = remoteRepository.getPatientAccount()
-                    val doctor = remoteRepository.getDoctor()
-                    doctor.onLeft { doctor ->
-                        result.onLeft {
-                            output.accept(
-                                PhotoListEvent.LoadPatientDataSuccess(
-                                    PatientLoadableDataModel(
-                                        weight = it.weight,
-                                        weightUnit = doctor.units?.weight ?: "",
-                                        height = it.height,
-                                    )
+
+                    result.onLeft {
+                        output.accept(
+                            PhotoListEvent.LoadPatientDataSuccess(
+                                PatientLoadableDataModel(
+                                    weight = it.weight,
+                                    weightUnit = it.units?.weight ?: "",
+                                    height = it.height,
                                 )
                             )
-                        }
+                        )
                     }
                 }
                 is PhotoListEffect.UploadPhoto -> {
