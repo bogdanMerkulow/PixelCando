@@ -97,7 +97,7 @@ data class PatientAccountDto(
     @Json(name = "code") val code: String,
     @Json(name = "weight") val weight: Float,
     @Json(name = "height") val height: String,
-    @Json(name = "units") val units: Units
+    @Json(name = "units") val units: Units?
 )
 
 @JsonClass(generateAdapter = true)
@@ -110,6 +110,7 @@ data class PatientAccountUserDto(
     @Json(name = "country") val country: String?,
     @Json(name = "city") val city: String?,
     @Json(name = "postalCode") val postalCode: String?,
+    @Json(name = "measurement") val measurement: String,
 )
 
 @JsonClass(generateAdapter = true)
@@ -126,4 +127,5 @@ data class UpdatePatientAccountUserDto(
     @Json(name = "address") val address: String?,
     @Json(name = "city") val city: String?,
     @Json(name = "postalCode") val postalCode: String?,
+    @Json(name = "measurement") val measurement: String?
 )

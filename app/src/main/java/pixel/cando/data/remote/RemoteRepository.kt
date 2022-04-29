@@ -1,5 +1,6 @@
 package pixel.cando.data.remote
 
+import com.squareup.moshi.Json
 import com.squareup.moshi.Moshi
 import pixel.cando.data.models.*
 import pixel.cando.data.remote.dto.*
@@ -67,6 +68,7 @@ interface RemoteRepository {
         address: String?,
         city: String?,
         postalCode: String?,
+        measurement: String?
     ): Either<PatientAccount, Throwable>
 
     suspend fun subscribeForPushNotifications(
@@ -424,6 +426,7 @@ class RealRemoteRepository(
         address: String?,
         city: String?,
         postalCode: String?,
+        measurement: String?
     ): Either<PatientAccount, Throwable> {
         return callApi {
             updatePatientAccount(
@@ -437,6 +440,7 @@ class RealRemoteRepository(
                             address = address,
                             city = city,
                             postalCode = postalCode,
+                            measurement = measurement
                         ),
                     )
                 )
@@ -757,6 +761,7 @@ private fun PatientAccountDto.model(
     country = user.country,
     city = user.city,
     postalCode = user.postalCode,
+    measurement = user.measurement,
     units = units
 )
 

@@ -13,6 +13,7 @@ import pixel.cando.data.remote.RemoteRepository
 import pixel.cando.ui.Screens
 import pixel.cando.ui._base.fragment.RootRouter
 import pixel.cando.ui._base.tea.CoroutineScopeEffectHandler
+import pixel.cando.ui.main.doctor_profile.DoctorProfileEvent
 import pixel.cando.utils.MessageDisplayer
 import pixel.cando.utils.ResourceProvider
 import pixel.cando.utils.logError
@@ -57,6 +58,15 @@ object PatientProfileLogic {
                     model.copy(
                         account = model.account?.copy(
                             email = event.value
+                        )
+                    )
+                )
+            }
+            is PatientProfileEvent.MeasurementChanged -> {
+                Next.next(
+                    model.copy(
+                        account = model.account?.copy(
+                            measurement = event.value
                         )
                     )
                 )
@@ -210,6 +220,7 @@ object PatientProfileLogic {
                         address = effect.account.address,
                         city = effect.account.city,
                         postalCode = effect.account.postalCode,
+                        measurement = effect.account.measurement
                     )
                     result.onLeft {
                         output.accept(
@@ -257,6 +268,10 @@ sealed class PatientProfileEvent {
     ) : PatientProfileEvent()
 
     data class EmailChanged(
+        val value: String
+    ) : PatientProfileEvent()
+
+    data class MeasurementChanged(
         val value: String
     ) : PatientProfileEvent()
 
@@ -330,6 +345,7 @@ data class AccountDataModel(
     val country: String?,
     val city: String?,
     val postalCode: String?,
+    val measurement: String?
 ) : Parcelable
 
 data class PatientProfileViewModel(
@@ -349,6 +365,7 @@ data class ProfileFieldListViewModel(
     val countryField: ProfileFieldViewModel,
     val cityField: ProfileFieldViewModel,
     val postalCodeField: ProfileFieldViewModel,
+    val measurement: ProfileFieldViewModel
 )
 
 data class ProfileFieldViewModel(
@@ -375,6 +392,7 @@ fun PatientProfileDataModel.viewModel(
                 value = it.patientCode,
                 error = null
             ),
+
             phoneNumberField = ProfileFieldViewModel(
                 value = it.phoneNumber,
                 error = null
@@ -400,6 +418,10 @@ fun PatientProfileDataModel.viewModel(
                 value = it.postalCode,
                 error = null
             ),
+            measurement = ProfileFieldViewModel(
+                value = it.measurement,
+                error = null
+            )
         )
     },
     isLoaderVisible = isLoading,
@@ -434,4 +456,5 @@ private val PatientAccount.dataModel: AccountDataModel
         country = country,
         city = city,
         postalCode = postalCode,
+        measurement = measurement
     )

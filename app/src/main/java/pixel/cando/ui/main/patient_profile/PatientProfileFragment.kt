@@ -2,6 +2,7 @@ package pixel.cando.ui.main.patient_profile
 
 import android.os.Bundle
 import android.view.MenuItem
+import android.widget.Spinner
 import com.google.android.material.textfield.TextInputLayout
 import pixel.cando.R
 import pixel.cando.databinding.FragmentPatientProfileBinding
@@ -20,6 +21,7 @@ import pixel.cando.utils.diffuser.ViewDiffusers.intoEnabled
 import pixel.cando.utils.diffuser.ViewDiffusers.intoVisibleOrGone
 import pixel.cando.utils.diffuser.map
 import pixel.cando.utils.doAfterTextChanged
+import java.util.*
 
 class PatientProfileFragment : ViewBindingFragment<FragmentPatientProfileBinding>(
     FragmentPatientProfileBinding::inflate
@@ -63,6 +65,10 @@ class PatientProfileFragment : ViewBindingFragment<FragmentPatientProfileBinding
                         map(
                             { it?.patientCodeField },
                             fieldDiffuser(viewBinding.patientCodeFieldParent)
+                        ),
+                        map(
+                            { it?.measurement },
+                            spinnerDiffuser(viewBinding.measurement)
                         ),
                         map(
                             { it?.phoneNumberField },
@@ -114,6 +120,11 @@ class PatientProfileFragment : ViewBindingFragment<FragmentPatientProfileBinding
             }
 
         viewBinding.saveButton.setOnClickListener {
+            eventSender?.sendEvent(
+                PatientProfileEvent.MeasurementChanged(
+                    viewBinding.measurement.selectedItem.toString().lowercase(Locale.getDefault())
+                )
+            )
             eventSender?.sendEvent(
                 PatientProfileEvent.SaveTap
             )
@@ -181,6 +192,28 @@ private fun fieldDiffuser(
         map(
             { it?.error },
             into { textInputLayout.error = it }
+        )
+    )
+)
+
+private fun spinnerDiffuser(
+    spinner: Spinner
+): Diffuser<ProfileFieldViewModel?> = intoAll(
+    listOf(
+        map(
+            { it?.value },
+            intoOnce {
+                val selectedItemIndex = when(it?.lowercase(Locale.getDefault())) {
+                    "metric" -> 0
+                    "imperial" -> 1
+                    else -> 0
+                }
+                spinner.setSelection(selectedItemIndex)
+            }
+        ),
+        map(
+            { it?.error },
+            into {  }
         )
     )
 )

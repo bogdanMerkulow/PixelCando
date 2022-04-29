@@ -31,5 +31,6 @@ data class PatientAccount(
     val country: String?,
     val city: String?,
     val postalCode: String?,
+    val measurement: String?,
     val units: Units?
 )
