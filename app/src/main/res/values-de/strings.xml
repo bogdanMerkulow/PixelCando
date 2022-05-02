@@ -123,4 +123,17 @@
     <string name="camera_rotation_check_not_available_skip_instructions">"weiter"</string>
     <string name="camera_rotation_check_not_available_open_instructions">"Anleitungen"</string>
     <string name="camera_help_link">"https://www.pixelcando.com/camera-hint"</string>
+
+    <string name="pose_detection_title">Haltungsprobleme erkannt</string>
+    <string name="pose_detection_subtitle">Wir empfehlen, die von Shot and Void erkannten Probleme zu wiederholen:</string>
+    <string name="pose_detection_continue_btn">TROTZDEM POSTEN</string>
+    <string name="pose_detection_retake_btn">NEUES BILD</string>
+    <string name="pose_detection_failed">Kein Mensch entdeckt</string>
+    <string name="pose_detection_missed_head_or_feet">Kopf und/oder Füße nicht erkannt</string>
+    <string name="pose_detection_too_far_from_camera">Viel zu weit von der Kamera entfernt</string>
+    <string name="pose_detection_not_vertical_position">Das Subjekt steht nicht vertikal</string>
+    <string name="pose_detection_upside_down">Profil scheint auf dem Kopf zu stehen</string>
+    <string name="pose_detection_arm_not_vertical_wirst_misaligned">Unterarm nicht vertikal, Handgelenk falsch ausgerichtet</string>
+    <string name="pose_detection_arm_not_vertical_elbow_misaligned">Arm nicht vollständig ausgestreckt</string>
+    <string name="pose_detection_arm_not_vertical">Arm nicht vertikal</string>
 </resources>
