@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/white"
+    >
+
+    <TextView
+        android:id="@+id/titleLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginHorizontal="@dimen/spacing_16"
+        android:layout_marginTop="@dimen/spacing_16"
+        android:fontFamily="sans-serif-medium"
+        android:text="@string/pose_detection_title"
+        android:textColor="@color/red_orange"
+        android:textSize="20sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        />
+
+    <TextView
+        android:id="@+id/subtitleLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/spacing_16"
+        android:text="@string/pose_detection_subtitle"
+        android:textColor="@color/black_mine_shaft"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="@id/titleLabel"
+        app:layout_constraintStart_toStartOf="@id/titleLabel"
+        app:layout_constraintTop_toBottomOf="@+id/titleLabel"
+        />
+
+    <TextView
+        android:id="@+id/messageLabel"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:textColor="@color/black_mine_shaft"
+        android:textSize="16sp"
+        app:layout_constraintEnd_toEndOf="@id/subtitleLabel"
+        app:layout_constraintStart_toStartOf="@id/subtitleLabel"
+        app:layout_constraintTop_toBottomOf="@+id/subtitleLabel"
+        />
+
+    <ImageView
+        android:id="@+id/photoImageView"
+        android:layout_width="wrap_content"
+        android:layout_height="0dp"
+        android:layout_marginVertical="@dimen/spacing_16"
+        android:adjustViewBounds="true"
+        app:layout_constraintBottom_toTopOf="@+id/continueButton"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/messageLabel"
+        />
+
+    <pixel.cando.utils.mlkit.GraphicOverlay
+        android:id="@+id/photoOverlayView"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="@+id/photoImageView"
+        app:layout_constraintEnd_toEndOf="@+id/photoImageView"
+        app:layout_constraintStart_toStartOf="@+id/photoImageView"
+        app:layout_constraintTop_toTopOf="@+id/photoImageView"
+        />
+
+    <Button
+        android:id="@+id/continueButton"
+        style="@style/PositiveTextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/spacing_16"
+        android:layout_marginBottom="@dimen/spacing_16"
+        android:text="@string/pose_detection_continue_btn"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        />
+
+    <Button
+        android:id="@+id/cancelButton"
+        style="@style/NeutralTextButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/spacing_16"
+        android:text="@string/cancel"
+        app:layout_constraintBottom_toBottomOf="@+id/continueButton"
+        app:layout_constraintEnd_toStartOf="@+id/continueButton"
+        app:layout_constraintTop_toTopOf="@+id/continueButton"
+        />
+
+
+</androidx.constraintlayout.widget.ConstraintLayout>

@@ -122,4 +122,18 @@
     <string name="camera_rotation_check_not_available_open_instructions">Instructions</string>
     <string name="camera_help_link">https://www.pixelcando.com/camera-hint</string>
 
+    <!-- Pose detection -->
+    <string name="pose_detection_title">Postural issues detected</string>
+    <string name="pose_detection_subtitle">We recommend to repeat the shot and void detected issues:</string>
+    <string name="pose_detection_continue_btn">Post anyway</string>
+    <string name="pose_detection_retake_btn">New shot</string>
+    <string name="pose_detection_failed">No human being detected</string>
+    <string name="pose_detection_missed_head_or_feet">Head and/or feet not detected</string>
+    <string name="pose_detection_too_far_from_camera">Way too far from the camera</string>
+    <string name="pose_detection_not_vertical_position">Subject not standing vertical</string>
+    <string name="pose_detection_upside_down">Profile seems upside-down</string>
+    <string name="pose_detection_arm_not_vertical_wirst_misaligned">Forearm not vertical, wrist misaligned</string>
+    <string name="pose_detection_arm_not_vertical_elbow_misaligned">Arm not fully extended</string>
+    <string name="pose_detection_arm_not_vertical">Arm not vertical</string>
+
 </resources>

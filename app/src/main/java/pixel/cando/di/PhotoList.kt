@@ -14,6 +14,7 @@ import pixel.cando.ui._base.fragment.SimpleFragmentDelegate
 import pixel.cando.ui._base.fragment.withArgumentSet
 import pixel.cando.ui._base.tea.ControllerFragmentDelegate
 import pixel.cando.ui._base.tea.ResultEventSource
+import pixel.cando.ui.auth.sign_in.SignInEvent
 import pixel.cando.ui.main.camera.CameraFragment
 import pixel.cando.ui.main.photo_list.PhotoListDataModel
 import pixel.cando.ui.main.photo_list.PhotoListEffect
@@ -24,7 +25,10 @@ import pixel.cando.ui.main.photo_list.PhotoListViewModel
 import pixel.cando.ui.main.photo_list.viewModel
 import pixel.cando.ui.main.photo_preview.PhotoPreviewFragment
 import pixel.cando.ui.main.photo_preview.PhotoPreviewResult
+import pixel.cando.ui.main.pose_analysis.PoseAnalysisFragment
+import pixel.cando.ui.main.pose_analysis.PoseAnalysisResult
 import pixel.cando.utils.PermissionCheckerResult
+import pixel.cando.utils.PoseChecker
 import pixel.cando.utils.RealImagePicker
 import pixel.cando.utils.RealPermissionChecker
 import pixel.cando.utils.ResourceProvider
@@ -35,6 +39,7 @@ import pixel.cando.utils.messageDisplayer
 
 fun PhotoListFragment.setup(
     remoteRepository: RemoteRepository,
+    poseChecker: PoseChecker,
     resourceProvider: ResourceProvider,
     context: Context,
 ) {
@@ -79,6 +84,14 @@ fun PhotoListFragment.setup(
             PhotoListEvent.PhotoAccepted(
                 uri = it.uri,
                 weight = it.weight,
+            )
+        }
+    )
+
+    val poseAnalysisDependencies = PoseAnalysisForPhotoListDependencies(
+        resultEmitter = ResultEventSource {
+            PhotoListEvent.PoseInPhotoChecked(
+                uri = it.uri,
             )
         }
     )
@@ -164,6 +177,14 @@ fun PhotoListFragment.setup(
                             .show()
                     }
                 },
+                poseAnalyserOpener = {
+                    lifecycleScope.launch {
+                        PoseAnalysisFragment()
+                            .withArgumentSet(it)
+                            .show(childFragmentManager, "")
+                    }
+                },
+                poseChecker = poseChecker,
                 remoteRepository = remoteRepository,
                 messageDisplayer = messageDisplayer,
                 resourceProvider = resourceProvider,
@@ -180,6 +201,7 @@ fun PhotoListFragment.setup(
                 photoPreviewDependencies.resultEmitter,
                 howToGetPhotoResultEventSource,
                 photoRemovalConfirmationResultEventSource,
+                poseAnalysisDependencies.resultEmitter,
             )
             .logger(AndroidLogger.tag("PhotoList")),
         initialState = {
@@ -207,6 +229,7 @@ fun PhotoListFragment.setup(
         writeStoragePermissionChecker,
         imagePicker,
         photoPreviewDependencies,
+        poseAnalysisDependencies,
     )
 }
 
@@ -215,3 +238,8 @@ class PhotoPreviewForPhotoListDependencies(
     override val resultEmitter: ResultEventSource<PhotoPreviewResult, PhotoListEvent>
 ) : SimpleFragmentDelegate(),
     PhotoPreviewDependencies
+
+private class PoseAnalysisForPhotoListDependencies(
+    override val resultEmitter: ResultEventSource<PoseAnalysisResult, PhotoListEvent>
+) : SimpleFragmentDelegate(),
+    PoseAnalysisDependencies

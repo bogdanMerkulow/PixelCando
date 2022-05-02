@@ -27,7 +27,10 @@ import pixel.cando.ui.main.patient_details.viewModel
 import pixel.cando.ui.main.patient_photo_review.PatientPhotoReviewFragment
 import pixel.cando.ui.main.photo_preview.PhotoPreviewFragment
 import pixel.cando.ui.main.photo_preview.PhotoPreviewResult
+import pixel.cando.ui.main.pose_analysis.PoseAnalysisFragment
+import pixel.cando.ui.main.pose_analysis.PoseAnalysisResult
 import pixel.cando.utils.PermissionCheckerResult
+import pixel.cando.utils.PoseChecker
 import pixel.cando.utils.RealImagePicker
 import pixel.cando.utils.RealPermissionChecker
 import pixel.cando.utils.ResourceProvider
@@ -38,6 +41,7 @@ import pixel.cando.utils.messageDisplayer
 
 fun PatientDetailsFragment.setup(
     remoteRepository: RemoteRepository,
+    poseChecker: PoseChecker,
     resourceProvider: ResourceProvider,
     context: Context,
     flowRouter: FlowRouter,
@@ -85,6 +89,14 @@ fun PatientDetailsFragment.setup(
                 uri = it.uri,
                 weight = it.weight,
                 height = it.height,
+            )
+        }
+    )
+
+    val poseAnalysisDependencies = PoseAnalysisForPatientDetailsDependencies(
+        resultEmitter = ResultEventSource {
+            PatientDetailsEvent.PoseInPhotoChecked(
+                uri = it.uri,
             )
         }
     )
@@ -154,6 +166,14 @@ fun PatientDetailsFragment.setup(
                             .show(childFragmentManager, "")
                     }
                 },
+                poseAnalyserOpener = {
+                    lifecycleScope.launch {
+                        PoseAnalysisFragment()
+                            .withArgumentSet(it)
+                            .show(childFragmentManager, "")
+                    }
+                },
+                poseChecker = poseChecker,
                 remoteRepository = remoteRepository,
                 messageDisplayer = messageDisplayer,
                 resourceProvider = resourceProvider,
@@ -169,6 +189,7 @@ fun PatientDetailsFragment.setup(
                 writeStoragePermissionResultEventSource,
                 imagePickerResultEventSource,
                 photoPreviewDependencies.resultEmitter,
+                poseAnalysisDependencies.resultEmitter,
                 howToGetPhotoResultEventSource,
             )
             .logger(AndroidLogger.tag("PatientDetails")),
@@ -199,10 +220,16 @@ fun PatientDetailsFragment.setup(
         writeStoragePermissionChecker,
         imagePicker,
         photoPreviewDependencies,
+        poseAnalysisDependencies,
     )
 }
 
-class PhotoPreviewForPatientDetailsDependencies(
+private class PhotoPreviewForPatientDetailsDependencies(
     override val resultEmitter: ResultEventSource<PhotoPreviewResult, PatientDetailsEvent>
 ) : SimpleFragmentDelegate(),
     PhotoPreviewDependencies
+
+private class PoseAnalysisForPatientDetailsDependencies(
+    override val resultEmitter: ResultEventSource<PoseAnalysisResult, PatientDetailsEvent>
+) : SimpleFragmentDelegate(),
+    PoseAnalysisDependencies
