@@ -2,6 +2,7 @@ package pixel.cando.ui.main.photo_preview
 
 import android.os.Bundle
 import coil.load
+import pixel.cando.R
 import pixel.cando.databinding.FragmentPhotoPreviewBinding
 import pixel.cando.ui._base.fragment.OnBackPressedListener
 import pixel.cando.ui._base.fragment.ViewBindingFullscreenDialogFragment
@@ -43,9 +44,11 @@ class PhotoPreviewFragment : ViewBindingFullscreenDialogFragment<FragmentPhotoPr
             map(
                 { it.weight },
                 intoOnce {
+                    val weightFiledHint =
+                        resources.getString(R.string.photo_preview_weight_field_hint)
+
                     viewBinding.weightField.setText(it.value.toString())
-                    viewBinding.weightFieldParent.hint =
-                        "${viewBinding.weightFieldParent.hint} ${it.measures}"
+                    viewBinding.weightFieldParent.hint = "$weightFiledHint ${it.measures}"
                 }
             ),
             map(
