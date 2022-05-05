@@ -1,6 +1,5 @@
 package pixel.cando.data.models
 
-import pixel.cando.data.remote.dto.Units
 import java.time.LocalDateTime
 
 data class PatientListItemInfo(
@@ -26,8 +25,7 @@ data class PatientSingleItemInfo(
     val country: String?,
     val city: String?,
     val postalCode: String?,
-    val photoToReview: PatientPhotoToReview?,
-    val units: Units?
+    val photoToReview: PatientPhotoToReview?
 )
 
 data class PatientPhotoToReview(

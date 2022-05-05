@@ -409,7 +409,7 @@ object PatientDetailsLogic {
                                     PatientLoadableDataModel(
                                         fullName = it.fullName,
                                         weight = it.weight,
-                                        weightUnit = doctor.units?.weight ?: "",
+                                        weightUnit = doctor.units.weight,
                                         height = it.height,
                                         photoToReview = it.photoToReview?.let {
                                             PatientPhotoToReviewDataModel(

@@ -12,7 +12,7 @@ data class GetDoctorAccountResponse(
 
 @JsonClass(generateAdapter = true)
 data class UpdateDoctorAccountRequest(
-    @Json(name = "doctor") val doctor: DoctorAccountDto
+    @Json(name = "doctor") val doctor: DoctorUpdateAccountDto
 )
 
 @JsonClass(generateAdapter = true)
@@ -23,7 +23,12 @@ data class UpdateDoctorAccountResponse(
 @JsonClass(generateAdapter = true)
 data class DoctorAccountDto(
     @Json(name = "user") val user: DoctorAccountUserDto,
-    @Json(name = "units") val units: Units? = null
+    @Json(name = "units") val units: UnitsDto
+)
+
+@JsonClass(generateAdapter = true)
+data class DoctorUpdateAccountDto(
+    @Json(name = "user") val user: DoctorAccountUserDto
 )
 
 @JsonClass(generateAdapter = true)
@@ -46,39 +51,18 @@ data class GetPatientAccountResponse(
 
 @Parcelize
 @JsonClass(generateAdapter = true)
-data class Units(
-    @Json(name = "bmr") val bmr: String?,
-    @Json(name = "bmi") val bmi: String?,
-    @Json(name = "fmPct") val fmPct: String?,
-    @Json(name = "ffmPct") val ffmPct: String?,
-    @Json(name = "tbwPct") val tbwPct: String?,
-    @Json(name = "eyePos") val eyePos: String?,
-    @Json(name = "anklePos") val anklePos: String?,
-    @Json(name = "totalEnergy1") val totalEnergy1: String?,
-    @Json(name = "totalEnergy2") val totalEnergy2: String?,
-    @Json(name = "totalEnergy3") val totalEnergy3: String?,
-    @Json(name = "totalEnergy4") val totalEnergy4: String?,
-    @Json(name = "totalEnergy5") val totalEnergy5: String?,
-    @Json(name = "totalEnergy6") val totalEnergy6: String?,
+data class UnitsDto(
+    @Json(name = "bmr") val bmr: String,
+    @Json(name = "bmi") val bmi: String,
     @Json(name = "waistToHeight") val waistToHeight: String?,
-    @Json(name = "fm") val fm: String?,
-    @Json(name = "ecw") val ecw: String?,
-    @Json(name = "ffm") val ffm: String?,
-    @Json(name = "fmi") val fmi: String?,
-    @Json(name = "hip") val hip: String?,
-    @Json(name = "icw") val icw: String?,
-    @Json(name = "leg") val leg: String?,
-    @Json(name = "tbw") val tbw: String?,
-    @Json(name = "calf") val calf: String?,
-    @Json(name = "ffmi") val ffmi: String?,
-    @Json(name = "foot") val foot: String?,
-    @Json(name = "belly") val belly: String?,
-    @Json(name = "chest") val chest: String?,
-    @Json(name = "thigh") val thigh: String?,
-    @Json(name = "trunk") val trunk: String?,
-    @Json(name = "height") val height: String?,
-    @Json(name = "weight") val weight: String?,
-    @Json(name = "abdominalFm") val abdominalFm: String?,
+    @Json(name = "fm") val fm: String,
+    @Json(name = "ffm") val ffm: String,
+    @Json(name = "hip") val hip: String,
+    @Json(name = "tbw") val tbw: String,
+    @Json(name = "belly") val belly: String,
+    @Json(name = "height") val height: String,
+    @Json(name = "weight") val weight: String,
+    @Json(name = "abdominalFm") val abdominalFm: String,
 ) : Parcelable
 
 @JsonClass(generateAdapter = true)
@@ -88,7 +72,7 @@ data class UpdatePatientAccountRequest(
 
 @JsonClass(generateAdapter = true)
 data class UpdatePatientAccountResponse(
-    @Json(name = "patient") val patient: PatientAccountDto
+    @Json(name = "patient") val patient: PatientAccountUpdateDto
 )
 
 @JsonClass(generateAdapter = true)
@@ -97,7 +81,15 @@ data class PatientAccountDto(
     @Json(name = "code") val code: String,
     @Json(name = "weight") val weight: Float,
     @Json(name = "height") val height: String,
-    @Json(name = "units") val units: Units?
+    @Json(name = "units") val units: UnitsDto
+)
+
+@JsonClass(generateAdapter = true)
+data class PatientAccountUpdateDto(
+    @Json(name = "user") val user: PatientAccountUserDto,
+    @Json(name = "code") val code: String,
+    @Json(name = "weight") val weight: Float,
+    @Json(name = "height") val height: String
 )
 
 @JsonClass(generateAdapter = true)

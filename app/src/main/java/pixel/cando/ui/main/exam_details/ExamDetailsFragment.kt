@@ -124,7 +124,7 @@ private class ViewPagerAdapter(
                     hip = item.hip,
                     belly = item.belly,
                     waistToHeight = item.waistToHeight,
-                    units = item.units
+                    units = item.units.toExamUnits()
                 )
             )
         }

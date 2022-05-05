@@ -6,12 +6,13 @@ import com.spotify.mobius.First
 import com.spotify.mobius.Next
 import kotlinx.parcelize.Parcelize
 import pixel.cando.R
+import pixel.cando.data.models.ExamUnits
 import pixel.cando.data.models.Gender
 import pixel.cando.data.remote.RemoteRepository
-import pixel.cando.data.remote.dto.Units
 import pixel.cando.ui._base.fragment.FlowRouter
 import pixel.cando.ui._base.list.ListItem
 import pixel.cando.ui._base.tea.CoroutineScopeEffectHandler
+import pixel.cando.ui.main.exam_details.toExamUnits
 import pixel.cando.utils.MessageDisplayer
 import pixel.cando.utils.ResourceProvider
 import pixel.cando.utils.logError
@@ -114,7 +115,7 @@ object PatientInfoLogic {
                                         country = it.country,
                                         city = it.city,
                                         postalCode = it.postalCode,
-                                        units = doctor.units
+                                        units = doctor.units.toExamUnits()
                                     )
                                 )
                             )
@@ -191,7 +192,7 @@ data class PatientDataModel(
     val country: String?,
     val city: String?,
     val postalCode: String?,
-    val units: Units?
+    val units: ExamUnits
 ) : Parcelable
 
 enum class PatientInfoLoadingState {
@@ -261,14 +262,14 @@ fun PatientInfoDataModel.viewModel(
             PatientInfoListItem.Measurement(
                 title = resourceProvider.getString(R.string.height),
                 value = it.height,
-                unit = it.units?.height.orEmpty(),
+                unit = it.units.height,
                 isFirst = false,
                 isLast = false,
             ),
             PatientInfoListItem.Measurement(
                 title = resourceProvider.getString(R.string.weight),
                 value = it.weight.toString(),
-                unit = it.units?.weight.orEmpty(),
+                unit = it.units.weight,
                 isFirst = false,
                 isLast = false,
             ),

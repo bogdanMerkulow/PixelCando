@@ -7,8 +7,9 @@ import com.spotify.mobius.Next
 import kotlinx.coroutines.async
 import kotlinx.parcelize.Parcelize
 import pixel.cando.R
+import pixel.cando.data.models.ExamUnits
+import pixel.cando.data.models.Units
 import pixel.cando.data.remote.RemoteRepository
-import pixel.cando.data.remote.dto.Units
 import pixel.cando.ui._base.fragment.FlowRouter
 import pixel.cando.ui._base.tea.CoroutineScopeEffectHandler
 import pixel.cando.utils.MessageDisplayer
@@ -112,7 +113,7 @@ object ExamDetailsLogic {
                                             belly = exam.belly,
                                             waistToHeight = exam.waistToHeight,
                                             silhouetteUrl = exam.silhouetteUrl,
-                                            units = doctor.units
+                                            examUnits = doctor.units.toExamUnits()
                                         )
                                     )
                                 )
@@ -208,8 +209,36 @@ data class ExamDetailsLoadedDataModel(
     val belly: Float,
     val waistToHeight: Float,
     val silhouetteUrl: String?,
-    val units: Units?
+    val examUnits: ExamUnits
 ) : Parcelable
+
+fun Units.toExamUnits() = ExamUnits(
+    bmr = bmr,
+    bmi = bmi,
+    waistToHeight = waistToHeight,
+    fm = fm,
+    ffm = ffm,
+    hip = hip,
+    tbw = tbw,
+    belly = belly,
+    height = height,
+    weight = weight,
+    abdominalFm = abdominalFm
+)
+
+fun ExamUnits.toUnits() = Units(
+    bmr = bmr,
+    bmi = bmi,
+    waistToHeight = waistToHeight,
+    fm = fm,
+    ffm = ffm,
+    hip = hip,
+    tbw = tbw,
+    belly = belly,
+    height = height,
+    weight = weight,
+    abdominalFm = abdominalFm
+)
 
 data class ExamDetailsViewModel(
     val title: String?,
@@ -234,7 +263,7 @@ sealed class ExamDetailsTabViewModel {
         val hip: Float,
         val belly: Float,
         val waistToHeight: Float,
-        val units: Units?
+        val units: Units
     ) : ExamDetailsTabViewModel()
 
     data class Silhouette(
@@ -262,7 +291,7 @@ fun ExamDetailsDataModel.viewModel(
                 hip = it.hip,
                 belly = it.belly,
                 waistToHeight = it.waistToHeight,
-                units = it.units
+                units = it.examUnits.toUnits()
             )
         )
         if (it.silhouetteUrl != null) {

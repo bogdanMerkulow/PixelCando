@@ -12,11 +12,13 @@ import pixel.cando.data.models.Folder
 import pixel.cando.data.models.Gender
 import pixel.cando.data.models.MessageListPortion
 import pixel.cando.data.models.PatientAccount
+import pixel.cando.data.models.PatientAccountUpdated
 import pixel.cando.data.models.PatientListItemInfo
 import pixel.cando.data.models.PatientPhotoToReview
 import pixel.cando.data.models.PatientSingleItemInfo
 import pixel.cando.data.models.Photo
 import pixel.cando.data.models.PhotoState
+import pixel.cando.data.models.Units
 import pixel.cando.data.models.UploadPhotoFailure
 import pixel.cando.data.remote.dto.ChatItemDto
 import pixel.cando.data.remote.dto.ChatListFilterDto
@@ -29,14 +31,15 @@ import pixel.cando.data.remote.dto.ConfirmPhotoRequest
 import pixel.cando.data.remote.dto.DeletePhotoRequest
 import pixel.cando.data.remote.dto.DeviceRegisterDto
 import pixel.cando.data.remote.dto.DeviceRegisterRequest
-import pixel.cando.data.remote.dto.DoctorAccountDto
 import pixel.cando.data.remote.dto.DoctorAccountUserDto
+import pixel.cando.data.remote.dto.DoctorUpdateAccountDto
 import pixel.cando.data.remote.dto.EmptyRequest
 import pixel.cando.data.remote.dto.ExamListRequest
 import pixel.cando.data.remote.dto.FolderListRequest
 import pixel.cando.data.remote.dto.GetDoctorAccountResponse
 import pixel.cando.data.remote.dto.GetExamRequest
 import pixel.cando.data.remote.dto.PatientAccountDto
+import pixel.cando.data.remote.dto.PatientAccountUpdateDto
 import pixel.cando.data.remote.dto.PatientGetRequest
 import pixel.cando.data.remote.dto.PatientListFilterDto
 import pixel.cando.data.remote.dto.PatientListRequest
@@ -47,6 +50,7 @@ import pixel.cando.data.remote.dto.SendMessageToChatWithDoctorDto
 import pixel.cando.data.remote.dto.SendMessageToChatWithDoctorRequest
 import pixel.cando.data.remote.dto.SendMessageToChatWithPatientDto
 import pixel.cando.data.remote.dto.SendMessageToChatWithPatientRequest
+import pixel.cando.data.remote.dto.UnitsDto
 import pixel.cando.data.remote.dto.UpdateDoctorAccountRequest
 import pixel.cando.data.remote.dto.UpdatePatientAccountDto
 import pixel.cando.data.remote.dto.UpdatePatientAccountRequest
@@ -119,7 +123,7 @@ interface RemoteRepository {
         city: String?,
         postalCode: String?,
         measurement: String?
-    ): Either<PatientAccount, Throwable>
+    ): Either<PatientAccountUpdated, Throwable>
 
     suspend fun subscribeForPushNotifications(
         identifier: String
@@ -252,8 +256,7 @@ class RealRemoteRepository(
                         createdAt = it.createdAt,
                         url = it.file.original
                     )
-                },
-                units = it.patient.units
+                }
             )
         }
     }
@@ -437,7 +440,7 @@ class RealRemoteRepository(
         return callApi {
             updateDoctorAccount(
                 UpdateDoctorAccountRequest(
-                    DoctorAccountDto(
+                    DoctorUpdateAccountDto(
                         DoctorAccountUserDto(
                             fullName = account.fullName,
                             email = account.email,
@@ -477,7 +480,7 @@ class RealRemoteRepository(
         city: String?,
         postalCode: String?,
         measurement: String?
-    ): Either<PatientAccount, Throwable> {
+    ): Either<PatientAccountUpdated, Throwable> {
         return callApi {
             updatePatientAccount(
                 UpdatePatientAccountRequest(
@@ -782,7 +785,7 @@ private fun String.toGender() = when (this) {
 private fun GetDoctorAccountResponse.model(
 ) = Doctor(
     doctor.user.model(),
-    doctor.units
+    doctor.units.model()
 )
 
 private fun DoctorAccountUserDto.model(
@@ -812,7 +815,23 @@ private fun PatientAccountDto.model(
     city = user.city,
     postalCode = user.postalCode,
     measurement = user.measurement,
-    units = units
+    units = units.model()
+)
+
+private fun PatientAccountUpdateDto.model(
+) = PatientAccountUpdated(
+    fullName = user.fullName,
+    email = user.email,
+    patientCode = code,
+    weight = weight,
+    height = height,
+    phoneNumber = user.contactPhone,
+    contactEmail = user.contactEmail,
+    address = user.address,
+    country = user.country,
+    city = user.city,
+    postalCode = user.postalCode,
+    measurement = user.measurement
 )
 
 private fun ChatItemDto.model(
@@ -844,4 +863,19 @@ private fun ChatMessageListResponse.model(
             content = it.content,
         )
     }
+)
+
+private fun UnitsDto.model(
+) = Units(
+    bmr = bmr,
+    bmi = bmi,
+    waistToHeight = waistToHeight,
+    fm = fm,
+    ffm = ffm,
+    hip = hip,
+    tbw = tbw,
+    belly = belly,
+    height = height,
+    weight = weight,
+    abdominalFm = abdominalFm
 )

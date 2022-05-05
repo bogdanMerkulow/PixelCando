@@ -285,7 +285,7 @@ object PhotoListLogic {
                             PhotoListEvent.LoadPatientDataSuccess(
                                 PatientLoadableDataModel(
                                     weight = it.weight,
-                                    weightUnit = it.units?.weight ?: "",
+                                    weightUnit = it.units.weight,
                                     height = it.height,
                                 )
                             )

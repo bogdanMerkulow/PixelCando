@@ -5,7 +5,7 @@ import android.os.Bundle
 import android.os.Parcelable
 import kotlinx.parcelize.Parcelize
 import pixel.cando.R
-import pixel.cando.data.remote.dto.Units
+import pixel.cando.data.models.ExamUnits
 import pixel.cando.databinding.FragmentExamNumericMeasurementValuesBinding
 import pixel.cando.databinding.ListItemHeaderBinding
 import pixel.cando.databinding.ListItemNumericMeasurementValueBinding
@@ -35,7 +35,7 @@ class ExamNumericMeasurementValuesFragment :
         val hip: Float,
         val belly: Float,
         val waistToHeight: Float,
-        val units: Units?
+        val units: ExamUnits
     ) : Parcelable
 
     companion object {
@@ -157,49 +157,49 @@ private fun ExamNumericMeasurementValuesFragment.Arguments.toListItems(
         ExamDetailsListItem.Measurement(
             title = context.getString(R.string.weight),
             value = weight.toString(),
-            unit = units?.weight ?: context.getString(R.string.kg),
+            unit = units.weight,
             isFirst = false,
             isLast = false,
         ),
         ExamDetailsListItem.Measurement(
             title = context.getString(R.string.bmi),
             value = bmi.toString(),
-            unit = units?.bmi ?: context.getString(R.string.kg_m2),
+            unit = units.bmi,
             isFirst = false,
             isLast = false,
         ),
         ExamDetailsListItem.Measurement(
             title = context.getString(R.string.bmr),
             value = bmr.toString(),
-            unit = units?.bmr ?: context.getString(R.string.kcal),
+            unit = units.bmr,
             isFirst = false,
             isLast = false,
         ),
         ExamDetailsListItem.Measurement(
             title = context.getString(R.string.fat_mass),
             value = fm.toString(),
-            unit = units?.fm ?: context.getString(R.string.kg),
+            unit = units.fm,
             isFirst = false,
             isLast = false,
         ),
         ExamDetailsListItem.Measurement(
             title = context.getString(R.string.fat_free_mass),
             value = ffm.toString(),
-            unit = units?.ffm ?: context.getString(R.string.kg),
+            unit = units.ffm,
             isFirst = false,
             isLast = false,
         ),
         ExamDetailsListItem.Measurement(
             title = context.getString(R.string.abdominal_fat_mass),
             value = abdominalFatMass.toString(),
-            unit = units?.abdominalFm ?: context.getString(R.string.kg),
+            unit = units.abdominalFm,
             isFirst = false,
             isLast = false,
         ),
         ExamDetailsListItem.Measurement(
             title = context.getString(R.string.tbw),
             value = tbw.toString(),
-            unit = units?.tbw ?: context.getString(R.string.kg),
+            unit = units.tbw,
             isFirst = false,
             isLast = false,
         ),
@@ -211,21 +211,21 @@ private fun ExamNumericMeasurementValuesFragment.Arguments.toListItems(
         ExamDetailsListItem.Measurement(
             title = context.getString(R.string.hip),
             value = hip.toString(),
-            unit = units?.hip ?: context.getString(R.string.cm),
+            unit = units.hip,
             isFirst = false,
             isLast = false,
         ),
         ExamDetailsListItem.Measurement(
             title = context.getString(R.string.belly),
             value = belly.toString(),
-            unit = units?.belly ?: context.getString(R.string.cm),
+            unit = units.belly,
             isFirst = false,
             isLast = false,
         ),
         ExamDetailsListItem.Measurement(
             title = context.getString(R.string.waist_to_height),
             value = waistToHeight.toString(),
-            unit = units?.waistToHeight ?: context.getString(R.string.percent),
+            unit = units.waistToHeight ?: context.getString(R.string.percent),
             isFirst = false,
             isLast = true,
         ),

@@ -9,6 +9,7 @@ import kotlinx.parcelize.Parcelize
 import pixel.cando.R
 import pixel.cando.data.local.SessionWiper
 import pixel.cando.data.models.PatientAccount
+import pixel.cando.data.models.PatientAccountUpdated
 import pixel.cando.data.remote.RemoteRepository
 import pixel.cando.ui.Screens
 import pixel.cando.ui._base.fragment.RootRouter
@@ -445,6 +446,20 @@ private val AccountDataModel.maySave: Boolean
             && isContactEmailValid
 
 private val PatientAccount.dataModel: AccountDataModel
+    get() = AccountDataModel(
+        fullName = fullName,
+        email = email,
+        patientCode = patientCode,
+        phoneNumber = phoneNumber,
+        contactEmail = contactEmail,
+        address = address,
+        country = country,
+        city = city,
+        postalCode = postalCode,
+        measurement = measurement
+    )
+
+private val PatientAccountUpdated.dataModel: AccountDataModel
     get() = AccountDataModel(
         fullName = fullName,
         email = email,

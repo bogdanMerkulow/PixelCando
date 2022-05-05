@@ -43,8 +43,7 @@ data class PatientDto(
     @Json(name = "age") val age: Int,
     @Json(name = "user") val user: PatientUserDto,
     @Json(name = "photo") val photo: PatientPhotoDto?,
-    @Json(name = "lastExamAt") val lastExamAt: LocalDateTime?,
-    @Json(name = "units") val units: Units?
+    @Json(name = "lastExamAt") val lastExamAt: LocalDateTime?
 )
 
 @JsonClass(generateAdapter = true)
