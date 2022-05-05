@@ -1,5 +1,6 @@
 package pixel.cando.ui.main.patient_profile
 
+import android.content.Context
 import android.os.Bundle
 import android.view.MenuItem
 import android.widget.Spinner
@@ -68,7 +69,7 @@ class PatientProfileFragment : ViewBindingFragment<FragmentPatientProfileBinding
                         ),
                         map(
                             { it?.measurement },
-                            spinnerDiffuser(viewBinding.measurement)
+                            spinnerDiffuser(viewBinding.measurement, context)
                         ),
                         map(
                             { it?.phoneNumberField },
@@ -197,23 +198,20 @@ private fun fieldDiffuser(
 )
 
 private fun spinnerDiffuser(
-    spinner: Spinner
+    spinner: Spinner,
+    context: Context?
 ): Diffuser<ProfileFieldViewModel?> = intoAll(
     listOf(
         map(
             { it?.value },
             intoOnce {
-                val selectedItemIndex = when(it?.lowercase(Locale.getDefault())) {
-                    "metric" -> 0
-                    "imperial" -> 1
-                    else -> 0
+                context?.let { nonNullContext ->
+                    val measurement = nonNullContext.resources.getStringArray(R.array.measurement)
+
+                    val value = it?.replaceFirstChar { it.uppercase() }
+                    spinner.setSelection(measurement.indexOf(value))
                 }
-                spinner.setSelection(selectedItemIndex)
             }
-        ),
-        map(
-            { it?.error },
-            into {  }
         )
     )
 )
