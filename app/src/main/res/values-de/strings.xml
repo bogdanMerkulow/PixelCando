@@ -57,7 +57,7 @@
     <string name="patient_code">"Patienten-Code"</string>
     <string name="photo_preview_title">"Gewicht und Grösse eingeben"</string>
     <string name="photo_preview_subtitle">"Gewicht und Grösse werden für die Berechnungen benötigt"</string>
-    <string name="photo_preview_weight_field_hint">"Gewicht, "</string>
+    <string name="photo_preview_weight_field_hint">"Gewicht, %s"</string>
     <string name="photo_preview_height_field_hint">"Körpergrösse, cm"</string>
     <string name="exam_details_screen_title">"%s, Test #%d"</string>
     <string name="exam_details_tab_details">"Details"</string>

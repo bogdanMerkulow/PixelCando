@@ -53,7 +53,7 @@
     <string name="patient_code">Código de Sujeto</string>
     <string name="photo_preview_title">Ingrese el peso</string>
     <string name="photo_preview_subtitle">La altura y el peso deben definirse para un examen adecuado.</string>
-    <string name="photo_preview_weight_field_hint">de peso</string>
+    <string name="photo_preview_weight_field_hint">%s de peso</string>
     <string name="photo_preview_height_field_hint">Altura (cm)</string>
     <string name="exam_details_screen_title">%s, examen #%d</string>
     <string name="exam_details_tab_details">Detalles</string>

@@ -53,7 +53,7 @@
     <string name="patient_code">Codice Paziente</string>
     <string name="photo_preview_title">Inserire peso</string>
     <string name="photo_preview_subtitle">Altezza e peso devono essere definiti per un corretto esame</string>
-    <string name="photo_preview_weight_field_hint">Peso, </string>
+    <string name="photo_preview_weight_field_hint">Peso, %s</string>
     <string name="photo_preview_height_field_hint">Altezza, cm</string>
     <string name="exam_details_screen_title">%s, Esame #%d</string>
     <string name="exam_details_tab_details">Dettagli</string>

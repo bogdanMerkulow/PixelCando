@@ -48,7 +48,7 @@ class PhotoPreviewFragment : ViewBindingFullscreenDialogFragment<FragmentPhotoPr
                         resources.getString(R.string.photo_preview_weight_field_hint)
 
                     viewBinding.weightField.setText(it.value.toString())
-                    viewBinding.weightFieldParent.hint = "$weightFiledHint ${it.measures}"
+                    viewBinding.weightFieldParent.hint = String.format(weightFiledHint, it.measures)
                 }
             ),
             map(
