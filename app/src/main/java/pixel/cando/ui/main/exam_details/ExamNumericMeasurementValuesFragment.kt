@@ -25,16 +25,16 @@ class ExamNumericMeasurementValuesFragment :
     @Parcelize
     data class Arguments(
         val createdAt: LocalDateTime,
-        val weight: Float,
-        val bmi: Float,
-        val bmr: Float,
-        val fm: Float,
-        val ffm: Float,
-        val abdominalFatMass: Float,
-        val tbw: Float,
-        val hip: Float,
-        val belly: Float,
-        val waistToHeight: Float,
+        val weight: String,
+        val bmi: String,
+        val bmr: String,
+        val fm: String,
+        val ffm: String,
+        val abdominalFatMass: String,
+        val tbw: String,
+        val hip: String,
+        val belly: String,
+        val waistToHeight: String,
         val units: ExamUnits
     ) : Parcelable
 

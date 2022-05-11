@@ -54,14 +54,14 @@ data class ExamDto(
 
 @JsonClass(generateAdapter = true)
 data class ExamParamsDto(
-    @Json(name = "weight") val weight: Float,
-    @Json(name = "bmi") val bmi: Float,
-    @Json(name = "bmr") val bmr: Float,
-    @Json(name = "fm") val fm: Float,
-    @Json(name = "ffm") val ffm: Float,
-    @Json(name = "abdominalFm") val abdominalFm: Float,
-    @Json(name = "tbw") val tbw: Float,
-    @Json(name = "hip") val hip: Float,
-    @Json(name = "belly") val belly: Float,
-    @Json(name = "waistToHeight") val waistToHeight: Float,
+    @Json(name = "weight") val weight: String,
+    @Json(name = "bmi") val bmi: String,
+    @Json(name = "bmr") val bmr: String,
+    @Json(name = "fm") val fm: String,
+    @Json(name = "ffm") val ffm: String,
+    @Json(name = "abdominalFm") val abdominalFm: String,
+    @Json(name = "tbw") val tbw: String,
+    @Json(name = "hip") val hip: String,
+    @Json(name = "belly") val belly: String,
+    @Json(name = "waistToHeight") val waistToHeight: String,
 )
