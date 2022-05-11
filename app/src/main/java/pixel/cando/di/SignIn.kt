@@ -13,7 +13,10 @@ import pixel.cando.data.local.UserRoleStore
 import pixel.cando.data.remote.AuthRepository
 import pixel.cando.ui._base.fragment.FlowRouter
 import pixel.cando.ui._base.fragment.RootRouter
+import pixel.cando.ui._base.fragment.SimpleFragmentDelegate
+import pixel.cando.ui._base.fragment.withArgumentSet
 import pixel.cando.ui._base.tea.ControllerFragmentDelegate
+import pixel.cando.ui._base.tea.ResultEventSource
 import pixel.cando.ui.auth.sign_in.SignInDataModel
 import pixel.cando.ui.auth.sign_in.SignInEffect
 import pixel.cando.ui.auth.sign_in.SignInEvent
@@ -22,7 +25,10 @@ import pixel.cando.ui.auth.sign_in.SignInLogic
 import pixel.cando.ui.auth.sign_in.SignInViewModel
 import pixel.cando.ui.auth.sign_in.viewModel
 import pixel.cando.ui.main.camera.CameraFragment
+import pixel.cando.ui.main.pose_analysis.PoseAnalysisFragment
+import pixel.cando.ui.main.pose_analysis.PoseAnalysisResult
 import pixel.cando.utils.PermissionCheckerResult
+import pixel.cando.utils.PoseChecker
 import pixel.cando.utils.PushNotificationsSubscriber
 import pixel.cando.utils.RealPermissionChecker
 import pixel.cando.utils.ResourceProvider
@@ -37,6 +43,7 @@ fun SignInFragment.setup(
     accessTokenStore: AccessTokenStore,
     userRoleStore: UserRoleStore,
     loggedInUserIdStore: LoggedInUserIdStore,
+    poseChecker: PoseChecker,
     pushNotificationsSubscriber: PushNotificationsSubscriber,
     resourceProvider: ResourceProvider,
     context: Context,
@@ -69,6 +76,14 @@ fun SignInFragment.setup(
         resultEmitter = writeStoragePermissionResultEventSource
     )
 
+    val poseAnalysisDependencies = PoseAnalysisForSignInDependencies(
+        resultEmitter = ResultEventSource {
+            SignInEvent.PoseInPhotoChecked(
+                uri = it.uri,
+            )
+        }
+    )
+
     val controllerFragmentDelegate = ControllerFragmentDelegate<
             SignInViewModel,
             SignInDataModel,
@@ -98,6 +113,19 @@ fun SignInFragment.setup(
                         )
                     }
                 },
+                poseAnalyserOpener = {
+                    lifecycleScope.launch {
+                        PoseAnalysisFragment()
+                            .withArgumentSet(it)
+                            .show(childFragmentManager, "")
+                    }
+                },
+                poseChecker = poseChecker,
+                takePhotoSuccessMessageDisplayer = {
+                    lifecycleScope.launch {
+                        showTakePhotoSuccessMessage()
+                    }
+                },
                 cameraPermissionChecker = cameraPermissionChecker,
                 writeStoragePermissionChecker = writeStoragePermissionChecker,
             )
@@ -105,6 +133,7 @@ fun SignInFragment.setup(
             .eventSources(
                 cameraPermissionResultEventSource,
                 writeStoragePermissionResultEventSource,
+                poseAnalysisDependencies.resultEmitter,
             )
             .logger(AndroidLogger.tag("SignIn")),
         initialState = {
@@ -128,5 +157,11 @@ fun SignInFragment.setup(
         controllerFragmentDelegate,
         cameraPermissionChecker,
         writeStoragePermissionChecker,
+        poseAnalysisDependencies,
     )
 }
+
+private class PoseAnalysisForSignInDependencies(
+    override val resultEmitter: ResultEventSource<PoseAnalysisResult, SignInEvent>
+) : SimpleFragmentDelegate(),
+    PoseAnalysisDependencies

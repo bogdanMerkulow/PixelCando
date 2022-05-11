@@ -13,7 +13,7 @@ android {
         applicationId = "com.pixelcando.fityouroutfit"
         minSdk = 21
         targetSdk = 31
-        versionCode = 26
+        versionCode = 29
         versionName = "1.3.0"
         resourceConfigurations.add("en")
         resourceConfigurations.add("it")
@@ -125,6 +125,10 @@ dependencies {
     coreLibraryDesugaring("com.android.tools:desugar_jdk_libs:1.1.5")
 
     implementation("org.ocpsoft.prettytime:prettytime:5.0.2.Final")
+
+    implementation(platform("com.google.firebase:firebase-bom:29.3.1"))
+
+    implementation("com.google.mlkit:pose-detection-accurate:18.0.0-beta2")
 
     implementation("com.onesignal:OneSignal:[4.0.0, 4.99.99]")
 

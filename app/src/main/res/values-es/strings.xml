@@ -121,4 +121,19 @@
     <string name="logout_dialog_title">Sortir</string>
     <string name="logout_dialog_message">¿Quieres cerrar el acceso?</string>
     <string name="logout_dialog_logout_btn_title">Sortir</string>
+
+    <!-- Pose detection -->
+    <string name="pose_detection_title">Problemas posturales detectados</string>
+    <string name="pose_detection_subtitle">Recomendamos repetir la toma y anular los problemas detectados:</string>
+    <string name="pose_detection_continue_btn">ENVIAR</string>
+    <string name="pose_detection_retake_btn">NUEVA IMAGEN</string>
+    <string name="pose_detection_failed">Ningún ser humano detectado</string>
+    <string name="pose_detection_missed_head_or_feet">Cabeza y/o pies no detectados</string>
+    <string name="pose_detection_too_far_from_camera">El sujeto está demasiado lejos de la cámara</string>
+    <string name="pose_detection_not_vertical_position">El sujeto no está de pie vertical</string>
+    <string name="pose_detection_upside_down">El perfil parece al revés</string>
+    <string name="pose_detection_arm_not_vertical_wirst_misaligned">Antebrazo no vertical, muñeca desalineada</string>
+    <string name="pose_detection_arm_not_vertical_elbow_misaligned">Brazo no completamente extendido</string>
+    <string name="pose_detection_arm_not_vertical">Brazo no vertical</string>
+
 </resources>

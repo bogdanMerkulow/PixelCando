@@ -19,6 +19,7 @@ import pixel.cando.ui._common.NoDataListPlaceholder
 import pixel.cando.utils.ImagePicker
 import pixel.cando.utils.MessageDisplayer
 import pixel.cando.utils.PermissionChecker
+import pixel.cando.utils.PoseChecker
 import pixel.cando.utils.ResourceProvider
 import pixel.cando.utils.TimeAgoFormatter
 import pixel.cando.utils.base64
@@ -120,21 +121,24 @@ object PhotoListLogic {
                 )
             }
             is PhotoListEvent.PhotoTaken -> {
-                val patientData = model.patientData
-                if (patientData != null) {
-                    Next.dispatch(
-                        setOf(
-                            PhotoListEffect.AskToConfirmPhoto(
-                                uri = event.uri,
-                                weight = patientData.weight,
-                                weightUnit = patientData.weightUnit,
-                                height = patientData.height,
-                            )
+                Next.dispatch(
+                    setOf(
+                        PhotoListEffect.CheckPoseInPhoto(
+                            uri = event.uri
                         )
                     )
-                } else Next.noChange()
+                )
             }
             is PhotoListEvent.ImagePicked -> {
+                Next.dispatch(
+                    setOf(
+                        PhotoListEffect.CheckPoseInPhoto(
+                            uri = event.uri
+                        )
+                    )
+                )
+            }
+            is PhotoListEvent.PoseInPhotoChecked -> {
                 val patientData = model.patientData
                 if (patientData != null) {
                     Next.dispatch(
@@ -147,7 +151,11 @@ object PhotoListLogic {
                             )
                         )
                     )
-                } else Next.noChange()
+                } else Next.dispatch(
+                    setOf(
+                        PhotoListEffect.ShowUnexpectedError
+                    )
+                )
             }
             // model
             is PhotoListEvent.LoadPhotoListSuccess -> {
@@ -249,6 +257,8 @@ object PhotoListLogic {
         photoConfirmationAsker: (PhotoPreviewArguments) -> Unit,
         howToGetPhotoAsker: () -> Unit,
         photoRemovalConfirmationAsker: (Long) -> Unit,
+        poseAnalyserOpener: (Uri) -> Unit,
+        poseChecker: PoseChecker,
         remoteRepository: RemoteRepository,
         messageDisplayer: MessageDisplayer,
         resourceProvider: ResourceProvider,
@@ -352,6 +362,18 @@ object PhotoListLogic {
                 is PhotoListEffect.OpenImagePicker -> {
                     imagePicker.pickImage()
                 }
+                is PhotoListEffect.CheckPoseInPhoto -> {
+                    val result = poseChecker.check(effect.uri)
+                    if (result.success) {
+                        output.accept(
+                            PhotoListEvent.PoseInPhotoChecked(
+                                uri = effect.uri
+                            )
+                        )
+                    } else {
+                        poseAnalyserOpener.invoke(effect.uri)
+                    }
+                }
                 is PhotoListEffect.CheckCameraPermission -> {
                     if (cameraPermissionChecker.checkPermission()) {
                         output.accept(
@@ -434,6 +456,10 @@ sealed class PhotoListEvent {
         val uri: Uri
     ) : PhotoListEvent()
 
+    data class PoseInPhotoChecked(
+        val uri: Uri,
+    ) : PhotoListEvent()
+
     data class ImagePicked(
         val uri: Uri
     ) : PhotoListEvent()
@@ -493,6 +519,10 @@ sealed class PhotoListEffect {
         val weight: Float,
         val weightUnit: String,
         val height: String,
+    ) : PhotoListEffect()
+
+    data class CheckPoseInPhoto(
+        val uri: Uri,
     ) : PhotoListEffect()
 
     object ShowUnexpectedError : PhotoListEffect()

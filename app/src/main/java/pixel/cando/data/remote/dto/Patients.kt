@@ -38,12 +38,12 @@ data class PatientDto(
     @Json(name = "userId") val userId: Long,
     @Json(name = "dateOfBirth") val dateOfBirth: LocalDate,
     @Json(name = "gender") val gender: String,
-    @Json(name = "height") val height: String,
+    @Json(name = "heightText") val height: String,
     @Json(name = "weight") val weight: Float,
     @Json(name = "age") val age: Int,
     @Json(name = "user") val user: PatientUserDto,
     @Json(name = "photo") val photo: PatientPhotoDto?,
-    @Json(name = "lastExamAt") val lastExamAt: LocalDateTime?
+    @Json(name = "lastExamAt") val lastExamAt: LocalDateTime?,
 )
 
 @JsonClass(generateAdapter = true)

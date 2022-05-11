@@ -31,7 +31,7 @@ data class UploadPhotoByPatientRequest(
 @JsonClass(generateAdapter = true)
 data class UploadPhotoForPatientWeightHeightDto(
     @Json(name = "weight") val weight: Float,
-    @Json(name = "height") val height: String,
+    @Json(name = "heightText") val height: String,
 )
 
 @JsonClass(generateAdapter = true)

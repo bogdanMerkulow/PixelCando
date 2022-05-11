@@ -30,6 +30,7 @@ import pixel.cando.ui.main.patient_photo_review.PatientPhotoReviewArguments
 import pixel.cando.utils.ImagePicker
 import pixel.cando.utils.MessageDisplayer
 import pixel.cando.utils.PermissionChecker
+import pixel.cando.utils.PoseChecker
 import pixel.cando.utils.ResourceProvider
 import pixel.cando.utils.TimeAgoFormatter
 import pixel.cando.utils.base64
@@ -264,21 +265,24 @@ object PatientDetailsLogic {
                 )
             }
             is PatientDetailsEvent.PhotoTaken -> {
-                val patientData = model.patientData
-                if (patientData != null) {
-                    Next.dispatch(
-                        setOf(
-                            PatientDetailsEffect.AskToConfirmPhoto(
-                                uri = event.uri,
-                                weight = patientData.weight,
-                                weightUnit = patientData.weightUnit,
-                                height = patientData.height,
-                            )
+                Next.dispatch(
+                    setOf(
+                        PatientDetailsEffect.CheckPoseInPhoto(
+                            uri = event.uri,
                         )
                     )
-                } else Next.noChange()
+                )
             }
             is PatientDetailsEvent.ImagePicked -> {
+                Next.dispatch(
+                    setOf(
+                        PatientDetailsEffect.CheckPoseInPhoto(
+                            uri = event.uri,
+                        )
+                    )
+                )
+            }
+            is PatientDetailsEvent.PoseInPhotoChecked -> {
                 val patientData = model.patientData
                 if (patientData != null) {
                     Next.dispatch(
@@ -384,6 +388,8 @@ object PatientDetailsLogic {
         photoConfirmationAsker: (PhotoPreviewArguments) -> Unit,
         howToGetPhotoAsker: () -> Unit,
         patientPhotoReviewOpener: (PatientPhotoReviewArguments) -> Unit,
+        poseAnalyserOpener: (Uri) -> Unit,
+        poseChecker: PoseChecker,
         remoteRepository: RemoteRepository,
         messageDisplayer: MessageDisplayer,
         resourceProvider: ResourceProvider,
@@ -544,6 +550,18 @@ object PatientDetailsLogic {
                         writeStoragePermissionChecker.requestPermission()
                     }
                 }
+                is PatientDetailsEffect.CheckPoseInPhoto -> {
+                    val result = poseChecker.check(effect.uri)
+                    if (result.success) {
+                        output.accept(
+                            PatientDetailsEvent.PoseInPhotoChecked(
+                                uri = effect.uri
+                            )
+                        )
+                    } else {
+                        poseAnalyserOpener.invoke(effect.uri)
+                    }
+                }
                 is PatientDetailsEffect.AskHowToGetPhoto -> {
                     howToGetPhotoAsker.invoke()
                 }
@@ -620,6 +638,10 @@ sealed class PatientDetailsEvent {
 
     object PhotoTakingChosen : PatientDetailsEvent()
     object ImagePickingChosen : PatientDetailsEvent()
+
+    data class PoseInPhotoChecked(
+        val uri: Uri,
+    ) : PatientDetailsEvent()
 
     data class PhotoAccepted(
         val uri: Uri,
@@ -712,6 +734,10 @@ sealed class PatientDetailsEffect {
         val uri: Uri,
         val weight: Float,
         val height: String,
+    ) : PatientDetailsEffect()
+
+    data class CheckPoseInPhoto(
+        val uri: Uri,
     ) : PatientDetailsEffect()
 
     data class AskToConfirmPhoto(
