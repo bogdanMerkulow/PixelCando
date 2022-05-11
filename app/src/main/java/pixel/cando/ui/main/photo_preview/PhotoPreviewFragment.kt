@@ -45,10 +45,10 @@ class PhotoPreviewFragment : ViewBindingFullscreenDialogFragment<FragmentPhotoPr
                 { it.weight },
                 intoOnce {
                     val weightFiledHint =
-                        resources.getString(R.string.photo_preview_weight_field_hint)
+                        resources.getString(R.string.photo_preview_weight_field_hint, it.measures)
 
                     viewBinding.weightField.setText(it.value.toString())
-                    viewBinding.weightFieldParent.hint = String.format(weightFiledHint, it.measures)
+                    viewBinding.weightFieldParent.hint = weightFiledHint
                 }
             ),
             map(
