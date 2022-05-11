@@ -65,7 +65,7 @@ class DoctorProfileFragment : ViewBindingFragment<FragmentDoctorProfileBinding>(
                         ),
                         map(
                             { it?.measurement },
-                            spinnerDiffuser(viewBinding.measurement, context)
+                            spinnerDiffuser(viewBinding.measurement)
                         ),
                         map(
                             { it?.phoneNumberField },
@@ -191,19 +191,16 @@ private fun fieldDiffuser(
 )
 
 private fun spinnerDiffuser(
-    spinner: Spinner,
-    context: Context?
+    spinner: Spinner
 ): Diffuser<ProfileFieldViewModel?> = intoAll(
     listOf(
         map(
             { it?.value },
             intoOnce {
-                context?.let { nonNullContext ->
-                    val measurement = nonNullContext.resources.getStringArray(R.array.measurement)
+                val measurement = spinner.context.resources.getStringArray(R.array.measurement)
 
-                    val value = it?.replaceFirstChar { it.uppercase() }
-                    spinner.setSelection(measurement.indexOf(value))
-                }
+                val value = it?.replaceFirstChar { it.uppercase() }
+                spinner.setSelection(measurement.indexOf(value))
             }
         )
     )
