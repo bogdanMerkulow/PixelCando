@@ -1,9 +1,7 @@
 package pixel.cando.data.remote.dto
 
-import android.os.Parcelable
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
-import kotlinx.parcelize.Parcelize
 
 @JsonClass(generateAdapter = true)
 data class GetDoctorAccountResponse(
@@ -49,7 +47,6 @@ data class GetPatientAccountResponse(
     @Json(name = "patient") val patient: PatientAccountDto
 )
 
-@Parcelize
 @JsonClass(generateAdapter = true)
 data class UnitsDto(
     @Json(name = "bmr") val bmr: String,
@@ -63,7 +60,7 @@ data class UnitsDto(
     @Json(name = "height") val height: String,
     @Json(name = "weight") val weight: String,
     @Json(name = "abdominalFm") val abdominalFm: String,
-) : Parcelable
+)
 
 @JsonClass(generateAdapter = true)
 data class UpdatePatientAccountRequest(
